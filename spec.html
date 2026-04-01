@@ -40931,9 +40931,9 @@ THH:mm:ss.sss
           1. [id="step-array-sort-comparefn"] If _comparator_ is not *undefined* and IsCallable(_comparator_) is *false*, throw a *TypeError* exception.
           1. Let _obj_ be ? ToObject(*this* value).
           1. [id="step-array-sort-len"] Let _len_ be ? LengthOfArrayLike(_obj_).
-          1. Let _SortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
+          1. Let _sortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
             1. Return ? CompareArrayElements(_x_, _y_, _comparator_).
-          1. [id="step-array-sortindexedproperties"] Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _SortCompare_, ~skip-holes~).
+          1. [id="step-array-sortindexedproperties"] Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _sortCompare_, ~skip-holes~).
           1. Let _itemCount_ be the number of elements in _sortedList_.
           1. Let _j_ be 0.
           1. Repeat, while _j_ &lt; _itemCount_,
@@ -40949,7 +40949,7 @@ THH:mm:ss.sss
           <p>Because non-existent property values always compare greater than *undefined* property values, and *undefined* always compares greater than any other value (see CompareArrayElements), *undefined* property values always sort to the end of the result, followed by non-existent property values.</p>
         </emu-note>
         <emu-note>
-          <p>Method calls performed by the ToString abstract operations in steps <emu-xref href="#step-sortcompare-tostring-x"></emu-xref> and <emu-xref href="#step-sortcompare-tostring-y"></emu-xref> have the potential to cause _SortCompare_ to not behave as a consistent comparator.</p>
+          <p>Method calls performed by the ToString abstract operations in steps <emu-xref href="#step-sortcompare-tostring-x"></emu-xref> and <emu-xref href="#step-sortcompare-tostring-y"></emu-xref> have the potential to cause _sortCompare_ to not behave as a consistent comparator.</p>
         </emu-note>
         <emu-note>
           <p>This method is intentionally generic; it does not require that its *this* value be an Array. Therefore, it can be transferred to other kinds of objects for use as a method.</p>
@@ -40960,7 +40960,7 @@ THH:mm:ss.sss
             SortIndexedProperties (
               _obj_: an Object,
               _len_: a non-negative integer,
-              _SortCompare_: an Abstract Closure with two parameters,
+              _sortCompare_: an Abstract Closure with two parameters,
               _holes_: ~skip-holes~ or ~read-through-holes~,
             ): either a normal completion containing a List of ECMAScript language values or a throw completion
           </h1>
@@ -40980,20 +40980,20 @@ THH:mm:ss.sss
                 1. Let _kValue_ be ? Get(_obj_, _pk_).
                 1. Append _kValue_ to _items_.
               1. Set _k_ to _k_ + 1.
-            1. [id="step-array-sort"] Sort _items_ using an implementation-defined sequence of <emu-meta effects="user-code">calls to _SortCompare_</emu-meta>. If any such call returns an abrupt completion, stop before performing any further calls to _SortCompare_ and return that Completion Record.
+            1. [id="step-array-sort"] Sort _items_ using an implementation-defined sequence of <emu-meta effects="user-code">calls to _sortCompare_</emu-meta>. If any such call returns an abrupt completion, stop before performing any further calls to _sortCompare_ and return that Completion Record.
             1. Return _items_.
           </emu-alg>
-          <p>The <dfn id="sort-order">sort order</dfn> is the ordering of _items_ after completion of step <emu-xref href="#step-array-sort"></emu-xref> of the algorithm above. The sort order is implementation-defined if _SortCompare_ is not a consistent comparator for the elements of _items_. When SortIndexedProperties is invoked by <emu-xref href="#sec-array.prototype.sort">Array.prototype.sort</emu-xref> or <emu-xref href="#sec-array.prototype.tosorted">Array.prototype.toSorted</emu-xref>, the sort order is also implementation-defined if _comparator_ is *undefined*, and all applications of ToString, to any specific value passed as an argument to _SortCompare_, do not produce the same result.</p>
+          <p>The <dfn id="sort-order">sort order</dfn> is the ordering of _items_ after completion of step <emu-xref href="#step-array-sort"></emu-xref> of the algorithm above. The sort order is implementation-defined if _sortCompare_ is not a consistent comparator for the elements of _items_. When SortIndexedProperties is invoked by <emu-xref href="#sec-array.prototype.sort">Array.prototype.sort</emu-xref> or <emu-xref href="#sec-array.prototype.tosorted">Array.prototype.toSorted</emu-xref>, the sort order is also implementation-defined if _comparator_ is *undefined*, and all applications of ToString, to any specific value passed as an argument to _sortCompare_, do not produce the same result.</p>
           <p>Unless the sort order is specified to be implementation-defined, it must satisfy all of the following conditions:</p>
           <ul>
             <li>
               There must be some mathematical permutation π of the non-negative integers less than _itemCount_, such that for every non-negative integer _j_ less than _itemCount_, the element <emu-eqn>old[_j_]</emu-eqn> is exactly the same as <emu-eqn>new[π(_j_)]</emu-eqn>.
             </li>
             <li>
-              Then for all non-negative integers _j_ and _k_, each less than _itemCount_, if <emu-eqn>ℝ(_SortCompare_(old[_j_], old[_k_])) &lt; 0</emu-eqn>, then <emu-eqn>π(_j_) &lt; π(_k_)</emu-eqn>.
+              Then for all non-negative integers _j_ and _k_, each less than _itemCount_, if <emu-eqn>ℝ(_sortCompare_(old[_j_], old[_k_])) &lt; 0</emu-eqn>, then <emu-eqn>π(_j_) &lt; π(_k_)</emu-eqn>.
             </li>
             <li>
-              And for all non-negative integers _j_ and _k_ such that _j_ &lt; _k_ &lt; _itemCount_, if <emu-eqn>ℝ(_SortCompare_(old[_j_], old[_k_])) = 0</emu-eqn>, then <emu-eqn>π(_j_) &lt; π(_k_)</emu-eqn>; i.e., the sort is stable.
+              And for all non-negative integers _j_ and _k_ such that _j_ &lt; _k_ &lt; _itemCount_, if <emu-eqn>ℝ(_sortCompare_(old[_j_], old[_k_])) = 0</emu-eqn>, then <emu-eqn>π(_j_) &lt; π(_k_)</emu-eqn>; i.e., the sort is stable.
             </li>
           </ul>
           <p>Here the notation <emu-eqn>old[_j_]</emu-eqn> is used to refer to <emu-eqn>_items_[_j_]</emu-eqn> before step <emu-xref href="#step-array-sort"></emu-xref> is executed, and the notation <emu-eqn>new[_j_]</emu-eqn> to refer to <emu-eqn>_items_[_j_]</emu-eqn> after step <emu-xref href="#step-array-sort"></emu-xref> has been executed.</p>
@@ -41184,9 +41184,9 @@ THH:mm:ss.sss
           1. Let _obj_ be ? ToObject(*this* value).
           1. Let _len_ be ? LengthOfArrayLike(_obj_).
           1. Let _array_ be ? ArrayCreate(_len_).
-          1. Let _SortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
+          1. Let _sortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
             1. Return ? CompareArrayElements(_x_, _y_, _comparator_).
-          1. Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _SortCompare_, ~read-through-holes~).
+          1. Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _sortCompare_, ~read-through-holes~).
           1. Let _j_ be 0.
           1. Repeat, while _j_ &lt; _len_,
             1. Perform ! CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_j_)), _sortedList_[_j_]).
@@ -42570,9 +42570,9 @@ THH:mm:ss.sss
           1. Let _taRecord_ be ? ValidateTypedArray(_obj_, ~seq-cst~).
           1. Let _len_ be TypedArrayLength(_taRecord_).
           1. NOTE: The following closure performs a numeric comparison rather than the string comparison used in <emu-xref href="#sec-array.prototype.sort"></emu-xref>.
-          1. Let _SortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
+          1. Let _sortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
             1. Return ? CompareTypedArrayElements(_x_, _y_, _comparator_).
-          1. Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _SortCompare_, ~read-through-holes~).
+          1. Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _sortCompare_, ~read-through-holes~).
           1. Let _j_ be 0.
           1. Repeat, while _j_ &lt; _len_,
             1. Perform ! Set(_obj_, ! ToString(𝔽(_j_)), _sortedList_[_j_], *true*).
@@ -42657,9 +42657,9 @@ THH:mm:ss.sss
           1. Let _len_ be TypedArrayLength(_taRecord_).
           1. Let _resultArray_ be ? TypedArrayCreateSameType(_obj_, _len_).
           1. NOTE: The following closure performs a numeric comparison rather than the string comparison used in <emu-xref href="#sec-array.prototype.tosorted"></emu-xref>.
-          1. Let _SortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
+          1. Let _sortCompare_ be a new Abstract Closure with parameters (_x_, _y_) that captures _comparator_ and performs the following steps when called:
             1. Return ? CompareTypedArrayElements(_x_, _y_, _comparator_).
-          1. Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _SortCompare_, ~read-through-holes~).
+          1. Let _sortedList_ be ? SortIndexedProperties(_obj_, _len_, _sortCompare_, ~read-through-holes~).
           1. Let _j_ be 0.
           1. Repeat, while _j_ &lt; _len_,
             1. Perform ! Set(_resultArray_, ! ToString(𝔽(_j_)), _sortedList_[_j_], *true*).
