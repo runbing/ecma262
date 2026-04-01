@@ -6200,15 +6200,15 @@
         <dd>It is used to retrieve the value of a specific property of an ECMAScript language value. If the value is not an object, the property lookup is performed using a wrapper object appropriate for the type of the value.</dd>
       </dl>
       <emu-alg>
-        1. Let _O_ be ? ToObject(_V_).
-        1. Return ? <emu-meta effects="user-code">_O_.[[Get]](_P_, _V_)</emu-meta>.
+        1. Let _obj_ be ? ToObject(_V_).
+        1. Return ? <emu-meta effects="user-code">_obj_.[[Get]](_P_, _V_)</emu-meta>.
       </emu-alg>
     </emu-clause>
 
     <emu-clause id="sec-set-o-p-v-throw" type="abstract operation">
       <h1>
         Set (
-          _O_: an Object,
+          _obj_: an Object,
           _P_: a property key,
           _V_: an ECMAScript language value,
           _Throw_: a Boolean,
@@ -6219,7 +6219,7 @@
         <dd>It is used to set the value of a specific property of an object. _V_ is the new value for the property.</dd>
       </dl>
       <emu-alg>
-        1. Let _success_ be ? <emu-meta effects="user-code">_O_.[[Set]](_P_, _V_, _O_)</emu-meta>.
+        1. Let _success_ be ? <emu-meta effects="user-code">_obj_.[[Set]](_P_, _V_, _obj_)</emu-meta>.
         1. If _success_ is *false* and _Throw_ is *true*, throw a *TypeError* exception.
         1. Return ~unused~.
       </emu-alg>
@@ -6228,7 +6228,7 @@
     <emu-clause id="sec-createdataproperty" type="abstract operation">
       <h1>
         CreateDataProperty (
-          _O_: an Object,
+          _obj_: an Object,
           _P_: a property key,
           _V_: an ECMAScript language value,
         ): either a normal completion containing a Boolean or a throw completion
@@ -6239,10 +6239,10 @@
       </dl>
       <emu-alg>
         1. Let _newDesc_ be the PropertyDescriptor { [[Value]]: _V_, [[Writable]]: *true*, [[Enumerable]]: *true*, [[Configurable]]: *true* }.
-        1. Return ? <emu-meta effects="user-code">_O_.[[DefineOwnProperty]](_P_, _newDesc_)</emu-meta>.
+        1. Return ? <emu-meta effects="user-code">_obj_.[[DefineOwnProperty]](_P_, _newDesc_)</emu-meta>.
       </emu-alg>
       <emu-note>
-        <p>This abstract operation creates a property whose attributes are set to the same defaults used for properties created by the ECMAScript language assignment operator. Normally, the property will not already exist. If it does exist and is not configurable or if _O_ is not extensible, [[DefineOwnProperty]] will return *false*.</p>
+        <p>This abstract operation creates a property whose attributes are set to the same defaults used for properties created by the ECMAScript language assignment operator. Normally, the property will not already exist. If it does exist and is not configurable or if _obj_ is not extensible, [[DefineOwnProperty]] will return *false*.</p>
       </emu-note>
     </emu-clause>
 
@@ -6586,12 +6586,12 @@
           1. Let _BC_ be _C_.[[BoundTargetFunction]].
           1. Return ? InstanceofOperator(_O_, _BC_).
         1. If _O_ is not an Object, return *false*.
-        1. Let _P_ be ? Get(_C_, *"prototype"*).
-        1. If _P_ is not an Object, throw a *TypeError* exception.
+        1. Let _proto_ be ? Get(_C_, *"prototype"*).
+        1. If _proto_ is not an Object, throw a *TypeError* exception.
         1. Repeat,
           1. Set _O_ to ? <emu-meta effects="user-code">_O_.[[GetPrototypeOf]]()</emu-meta>.
           1. If _O_ is *null*, return *false*.
-          1. If SameValue(_P_, _O_) is *true*, return *true*.
+          1. If SameValue(_proto_, _O_) is *true*, return *true*.
       </emu-alg>
     </emu-clause>
 
@@ -9829,29 +9829,29 @@
       <emu-grammar>BindingRestElement : `...` BindingIdentifier</emu-grammar>
       <emu-alg>
         1. Let _lhs_ be ? ResolveBinding(StringValue of |BindingIdentifier|, _environment_).
-        1. Let _A_ be ! ArrayCreate(0).
+        1. Let _array_ be ! ArrayCreate(0).
         1. Let _n_ be 0.
         1. Repeat,
           1. Let _next_ be ~done~.
           1. If _iteratorRecord_.[[Done]] is *false*, then
             1. Set _next_ to ? IteratorStepValue(_iteratorRecord_).
           1. If _next_ is ~done~, then
-            1. If _environment_ is *undefined*, return ? PutValue(_lhs_, _A_).
-            1. Return ? InitializeReferencedBinding(_lhs_, _A_).
-          1. Perform ! CreateDataPropertyOrThrow(_A_, ! ToString(𝔽(_n_)), _next_).
+            1. If _environment_ is *undefined*, return ? PutValue(_lhs_, _array_).
+            1. Return ? InitializeReferencedBinding(_lhs_, _array_).
+          1. Perform ! CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_n_)), _next_).
           1. Set _n_ to _n_ + 1.
       </emu-alg>
       <emu-grammar>BindingRestElement : `...` BindingPattern</emu-grammar>
       <emu-alg>
-        1. Let _A_ be ! ArrayCreate(0).
+        1. Let _array_ be ! ArrayCreate(0).
         1. Let _n_ be 0.
         1. Repeat,
           1. Let _next_ be ~done~.
           1. If _iteratorRecord_.[[Done]] is *false*, then
             1. Set _next_ to ? IteratorStepValue(_iteratorRecord_).
           1. If _next_ is ~done~, then
-            1. Return ? BindingInitialization of |BindingPattern| with arguments _A_ and _environment_.
-          1. Perform ! CreateDataPropertyOrThrow(_A_, ! ToString(𝔽(_n_)), _next_).
+            1. Return ? BindingInitialization of |BindingPattern| with arguments _array_ and _environment_.
+          1. Perform ! CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_n_)), _next_).
           1. Set _n_ to _n_ + 1.
       </emu-alg>
       <emu-grammar>FormalParameters : [empty]</emu-grammar>
@@ -12755,18 +12755,18 @@
         </dl>
         <emu-alg>
           1. If _O_ does not have an own property with key _P_, return *undefined*.
-          1. Let _D_ be a newly created Property Descriptor with no fields.
-          1. Let _X_ be _O_'s own property whose key is _P_.
-          1. If _X_ is a data property, then
-            1. Set _D_.[[Value]] to the value of _X_'s [[Value]] attribute.
-            1. Set _D_.[[Writable]] to the value of _X_'s [[Writable]] attribute.
+          1. Let _desc_ be a newly created Property Descriptor with no fields.
+          1. Let _ownProperty_ be _O_'s own property whose key is _P_.
+          1. If _ownProperty_ is a data property, then
+            1. Set _desc_.[[Value]] to the value of _ownProperty_'s [[Value]] attribute.
+            1. Set _desc_.[[Writable]] to the value of _ownProperty_'s [[Writable]] attribute.
           1. Else,
-            1. Assert: _X_ is an accessor property.
-            1. Set _D_.[[Get]] to the value of _X_'s [[Get]] attribute.
-            1. Set _D_.[[Set]] to the value of _X_'s [[Set]] attribute.
-          1. Set _D_.[[Enumerable]] to the value of _X_'s [[Enumerable]] attribute.
-          1. Set _D_.[[Configurable]] to the value of _X_'s [[Configurable]] attribute.
-          1. Return _D_.
+            1. Assert: _ownProperty_ is an accessor property.
+            1. Set _desc_.[[Get]] to the value of _ownProperty_'s [[Get]] attribute.
+            1. Set _desc_.[[Set]] to the value of _ownProperty_'s [[Set]] attribute.
+          1. Set _desc_.[[Enumerable]] to the value of _ownProperty_'s [[Enumerable]] attribute.
+          1. Set _desc_.[[Configurable]] to the value of _ownProperty_'s [[Configurable]] attribute.
+          1. Return _desc_.
         </emu-alg>
       </emu-clause>
     </emu-clause>
@@ -13099,9 +13099,9 @@
       <emu-alg>
         1. Let _internalSlotsList_ be « [[Prototype]], [[Extensible]] ».
         1. If _additionalInternalSlotsList_ is present, set _internalSlotsList_ to the list-concatenation of _internalSlotsList_ and _additionalInternalSlotsList_.
-        1. Let _O_ be MakeBasicObject(_internalSlotsList_).
-        1. Set _O_.[[Prototype]] to _proto_.
-        1. Return _O_.
+        1. Let _obj_ be MakeBasicObject(_internalSlotsList_).
+        1. Set _obj_.[[Prototype]] to _proto_.
+        1. Return _obj_.
       </emu-alg>
 
       <emu-note>
@@ -13588,35 +13588,35 @@
       </dl>
       <emu-alg>
         1. Let _internalSlotsList_ be the internal slots listed in <emu-xref href="#table-internal-slots-of-ecmascript-function-objects"></emu-xref>.
-        1. Let _F_ be OrdinaryObjectCreate(_functionPrototype_, _internalSlotsList_).
-        1. Set _F_.[[Call]] to the definition specified in <emu-xref href="#sec-ecmascript-function-objects-call-thisargument-argumentslist"></emu-xref>.
-        1. Set _F_.[[SourceText]] to _sourceText_.
-        1. Set _F_.[[FormalParameters]] to _ParameterList_.
-        1. Set _F_.[[ECMAScriptCode]] to _Body_.
+        1. Let _func_ be OrdinaryObjectCreate(_functionPrototype_, _internalSlotsList_).
+        1. Set _func_.[[Call]] to the definition specified in <emu-xref href="#sec-ecmascript-function-objects-call-thisargument-argumentslist"></emu-xref>.
+        1. Set _func_.[[SourceText]] to _sourceText_.
+        1. Set _func_.[[FormalParameters]] to _ParameterList_.
+        1. Set _func_.[[ECMAScriptCode]] to _Body_.
         1. Let _Strict_ be IsStrict(_Body_).
-        1. Set _F_.[[Strict]] to _Strict_.
-        1. If _thisMode_ is ~lexical-this~, set _F_.[[ThisMode]] to ~lexical~.
-        1. Else if _Strict_ is *true*, set _F_.[[ThisMode]] to ~strict~.
-        1. Else, set _F_.[[ThisMode]] to ~global~.
-        1. Set _F_.[[IsClassConstructor]] to *false*.
-        1. Set _F_.[[Environment]] to _env_.
-        1. Set _F_.[[PrivateEnvironment]] to _privateEnv_.
-        1. Set _F_.[[ScriptOrModule]] to GetActiveScriptOrModule().
-        1. Set _F_.[[Realm]] to the current Realm Record.
-        1. Set _F_.[[HomeObject]] to *undefined*.
-        1. Set _F_.[[Fields]] to a new empty List.
-        1. Set _F_.[[PrivateMethods]] to a new empty List.
-        1. Set _F_.[[ClassFieldInitializerName]] to ~empty~.
+        1. Set _func_.[[Strict]] to _Strict_.
+        1. If _thisMode_ is ~lexical-this~, set _func_.[[ThisMode]] to ~lexical~.
+        1. Else if _Strict_ is *true*, set _func_.[[ThisMode]] to ~strict~.
+        1. Else, set _func_.[[ThisMode]] to ~global~.
+        1. Set _func_.[[IsClassConstructor]] to *false*.
+        1. Set _func_.[[Environment]] to _env_.
+        1. Set _func_.[[PrivateEnvironment]] to _privateEnv_.
+        1. Set _func_.[[ScriptOrModule]] to GetActiveScriptOrModule().
+        1. Set _func_.[[Realm]] to the current Realm Record.
+        1. Set _func_.[[HomeObject]] to *undefined*.
+        1. Set _func_.[[Fields]] to a new empty List.
+        1. Set _func_.[[PrivateMethods]] to a new empty List.
+        1. Set _func_.[[ClassFieldInitializerName]] to ~empty~.
         1. Let _len_ be the ExpectedArgumentCount of _ParameterList_.
-        1. Perform SetFunctionLength(_F_, _len_).
-        1. Return _F_.
+        1. Perform SetFunctionLength(_func_, _len_).
+        1. Return _func_.
       </emu-alg>
     </emu-clause>
 
     <emu-clause id="sec-addrestrictedfunctionproperties" type="abstract operation">
       <h1>
         AddRestrictedFunctionProperties (
-          _F_: a function object,
+          _func_: a function object,
           _realm_: a Realm Record,
         ): ~unused~
       </h1>
@@ -13625,8 +13625,8 @@
       <emu-alg>
         1. Assert: _realm_.[[Intrinsics]].[[%ThrowTypeError%]] exists and has been initialized.
         1. Let _thrower_ be _realm_.[[Intrinsics]].[[%ThrowTypeError%]].
-        1. Perform ! DefinePropertyOrThrow(_F_, *"caller"*, PropertyDescriptor { [[Get]]: _thrower_, [[Set]]: _thrower_, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
-        1. Perform ! DefinePropertyOrThrow(_F_, *"arguments"*, PropertyDescriptor { [[Get]]: _thrower_, [[Set]]: _thrower_, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
+        1. Perform ! DefinePropertyOrThrow(_func_, *"caller"*, PropertyDescriptor { [[Get]]: _thrower_, [[Set]]: _thrower_, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
+        1. Perform ! DefinePropertyOrThrow(_func_, *"arguments"*, PropertyDescriptor { [[Get]]: _thrower_, [[Set]]: _thrower_, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
         1. Return ~unused~.
       </emu-alg>
 
@@ -13647,7 +13647,7 @@
     <emu-clause id="sec-makeconstructor" type="abstract operation">
       <h1>
         MakeConstructor (
-          _F_: an ECMAScript function object or a built-in function object,
+          _func_: an ECMAScript function object or a built-in function object,
           optional _writablePrototype_: a Boolean,
           optional _prototype_: an Object,
         ): ~unused~
@@ -13890,18 +13890,18 @@
         1. Else,
           1. [id="step-functiondeclarationinstantiation-web-compat-insertion-point", normative-optional] If the host is a web browser or otherwise supports <emu-xref href="#sec-block-level-function-declarations-web-legacy-compatibility-semantics" title></emu-xref>, then
             1. For each |FunctionDeclaration| _f_ that is directly contained in the |StatementList| of any |Block|, |CaseClause|, or |DefaultClause| _x_ such that _code_ Contains _x_ is *true*, do
-              1. Let _F_ be the StringValue of the |BindingIdentifier| of _f_.
-              1. If replacing the |FunctionDeclaration| _f_ with a |VariableStatement| that has _F_ as a |BindingIdentifier| would not produce any Early Errors for _func_ and _parameterNames_ does not contain _F_, then
-                1. NOTE: A var binding for _F_ is only instantiated here if it is neither a VarDeclaredName, the name of a formal parameter, or another |FunctionDeclaration|.
-                1. If _instantiatedVarNames_ does not contain _F_ and _F_ is not *"arguments"*, then
-                  1. Perform ! _varEnv_.CreateMutableBinding(_F_, *false*).
-                  1. Perform ! _varEnv_.InitializeBinding(_F_, *undefined*).
-                  1. Append _F_ to _instantiatedVarNames_.
+              1. Let _funcName_ be the StringValue of the |BindingIdentifier| of _f_.
+              1. If replacing the |FunctionDeclaration| _f_ with a |VariableStatement| that has _funcName_ as a |BindingIdentifier| would not produce any Early Errors for _func_ and _parameterNames_ does not contain _funcName_, then
+                1. NOTE: A var binding for _funcName_ is only instantiated here if it is neither a VarDeclaredName, the name of a formal parameter, or another |FunctionDeclaration|.
+                1. If _instantiatedVarNames_ does not contain _funcName_ and _funcName_ is not *"arguments"*, then
+                  1. Perform ! _varEnv_.CreateMutableBinding(_funcName_, *false*).
+                  1. Perform ! _varEnv_.InitializeBinding(_funcName_, *undefined*).
+                  1. Append _funcName_ to _instantiatedVarNames_.
                 1. [id="step-functiondeclarationinstantiation-alt-funcdecl-eval"] When the |FunctionDeclaration| _f_ is evaluated, perform the following steps in place of the |FunctionDeclaration| Evaluation algorithm provided in <emu-xref href="#sec-function-definitions-runtime-semantics-evaluation"></emu-xref>:
                   1. Let _fEnv_ be the running execution context's VariableEnvironment.
                   1. Let _bEnv_ be the running execution context's LexicalEnvironment.
-                  1. Let _fObj_ be ! _bEnv_.GetBindingValue(_F_, *false*).
-                  1. Perform ! _fEnv_.SetMutableBinding(_F_, _fObj_, *false*).
+                  1. Let _fObj_ be ! _bEnv_.GetBindingValue(_funcName_, *false*).
+                  1. Perform ! _fEnv_.SetMutableBinding(_funcName_, _fObj_, *false*).
                   1. Return ~unused~.
           1. Let _lexEnv_ be NewDeclarativeEnvironment(_varEnv_).
           1. NOTE: Non-strict functions use a separate Environment Record for top-level lexical declarations so that a direct eval can determine whether any var scoped declarations introduced by the eval code conflict with pre-existing top-level lexically scoped declarations. This is not needed for strict functions because a strict direct eval always places all declarations into a new Environment Record.
@@ -14236,11 +14236,11 @@
         <emu-alg>
           1. If _length_ > 2<sup>32</sup> - 1, throw a *RangeError* exception.
           1. If _proto_ is not present, set _proto_ to %Array.prototype%.
-          1. Let _A_ be MakeBasicObject(« [[Prototype]], [[Extensible]] »).
-          1. Set _A_.[[Prototype]] to _proto_.
-          1. Set _A_.[[DefineOwnProperty]] as specified in <emu-xref href="#sec-array-exotic-objects-defineownproperty-p-desc"></emu-xref>.
-          1. Perform ! OrdinaryDefineOwnProperty(_A_, *"length"*, PropertyDescriptor { [[Value]]: 𝔽(_length_), [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-          1. Return _A_.
+          1. Let _array_ be MakeBasicObject(« [[Prototype]], [[Extensible]] »).
+          1. Set _array_.[[Prototype]] to _proto_.
+          1. Set _array_.[[DefineOwnProperty]] as specified in <emu-xref href="#sec-array-exotic-objects-defineownproperty-p-desc"></emu-xref>.
+          1. Perform ! OrdinaryDefineOwnProperty(_array_, *"length"*, PropertyDescriptor { [[Value]]: 𝔽(_length_), [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
+          1. Return _array_.
         </emu-alg>
       </emu-clause>
 
@@ -14407,22 +14407,22 @@
           <dd>It is used to specify the creation of new String exotic objects.</dd>
         </dl>
         <emu-alg>
-          1. Let _S_ be MakeBasicObject(« [[Prototype]], [[Extensible]], [[StringData]] »).
-          1. Set _S_.[[Prototype]] to _prototype_.
-          1. Set _S_.[[StringData]] to _value_.
-          1. Set _S_.[[GetOwnProperty]] as specified in <emu-xref href="#sec-string-exotic-objects-getownproperty-p"></emu-xref>.
-          1. Set _S_.[[DefineOwnProperty]] as specified in <emu-xref href="#sec-string-exotic-objects-defineownproperty-p-desc"></emu-xref>.
-          1. Set _S_.[[OwnPropertyKeys]] as specified in <emu-xref href="#sec-string-exotic-objects-ownpropertykeys"></emu-xref>.
+          1. Let _str_ be MakeBasicObject(« [[Prototype]], [[Extensible]], [[StringData]] »).
+          1. Set _str_.[[Prototype]] to _prototype_.
+          1. Set _str_.[[StringData]] to _value_.
+          1. Set _str_.[[GetOwnProperty]] as specified in <emu-xref href="#sec-string-exotic-objects-getownproperty-p"></emu-xref>.
+          1. Set _str_.[[DefineOwnProperty]] as specified in <emu-xref href="#sec-string-exotic-objects-defineownproperty-p-desc"></emu-xref>.
+          1. Set _str_.[[OwnPropertyKeys]] as specified in <emu-xref href="#sec-string-exotic-objects-ownpropertykeys"></emu-xref>.
           1. Let _length_ be the length of _value_.
-          1. Perform ! DefinePropertyOrThrow(_S_, *"length"*, PropertyDescriptor { [[Value]]: 𝔽(_length_), [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-          1. Return _S_.
+          1. Perform ! DefinePropertyOrThrow(_str_, *"length"*, PropertyDescriptor { [[Value]]: 𝔽(_length_), [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
+          1. Return _str_.
         </emu-alg>
       </emu-clause>
 
       <emu-clause id="sec-stringgetownproperty" type="abstract operation">
         <h1>
           StringGetOwnProperty (
-            _S_: an Object that has a [[StringData]] internal slot,
+            _str_: an Object that has a [[StringData]] internal slot,
             _P_: a property key,
           ): a Property Descriptor or *undefined*
         </h1>
@@ -14433,7 +14433,7 @@
           1. Let _index_ be CanonicalNumericIndexString(_P_).
           1. If _index_ is not an integral Number, return *undefined*.
           1. If _index_ is *-0*<sub>𝔽</sub> or _index_ &lt; *-0*<sub>𝔽</sub>, return *undefined*.
-          1. Let _str_ be _S_.[[StringData]].
+          1. Let _str_ be _str_.[[StringData]].
           1. Assert: _str_ is a String.
           1. Let _len_ be the length of _str_.
           1. If ℝ(_index_) ≥ _len_, return *undefined*.
@@ -14950,17 +14950,17 @@
         </dl>
         <emu-alg>
           1. Let _internalSlotsList_ be « [[Prototype]], [[Extensible]], [[ViewedArrayBuffer]], [[TypedArrayName]], [[ContentType]], [[ByteLength]], [[ByteOffset]], [[ArrayLength]] ».
-          1. Let _A_ be MakeBasicObject(_internalSlotsList_).
-          1. Set _A_.[[PreventExtensions]] as specified in <emu-xref href="#sec-typedarray-preventextensions"></emu-xref>.
-          1. Set _A_.[[GetOwnProperty]] as specified in <emu-xref href="#sec-typedarray-getownproperty"></emu-xref>.
-          1. Set _A_.[[HasProperty]] as specified in <emu-xref href="#sec-typedarray-hasproperty"></emu-xref>.
-          1. Set _A_.[[DefineOwnProperty]] as specified in <emu-xref href="#sec-typedarray-defineownproperty"></emu-xref>.
-          1. Set _A_.[[Get]] as specified in <emu-xref href="#sec-typedarray-get"></emu-xref>.
-          1. Set _A_.[[Set]] as specified in <emu-xref href="#sec-typedarray-set"></emu-xref>.
-          1. Set _A_.[[Delete]] as specified in <emu-xref href="#sec-typedarray-delete"></emu-xref>.
-          1. Set _A_.[[OwnPropertyKeys]] as specified in <emu-xref href="#sec-typedarray-ownpropertykeys"></emu-xref>.
-          1. Set _A_.[[Prototype]] to _prototype_.
-          1. Return _A_.
+          1. Let _array_ be MakeBasicObject(_internalSlotsList_).
+          1. Set _array_.[[PreventExtensions]] as specified in <emu-xref href="#sec-typedarray-preventextensions"></emu-xref>.
+          1. Set _array_.[[GetOwnProperty]] as specified in <emu-xref href="#sec-typedarray-getownproperty"></emu-xref>.
+          1. Set _array_.[[HasProperty]] as specified in <emu-xref href="#sec-typedarray-hasproperty"></emu-xref>.
+          1. Set _array_.[[DefineOwnProperty]] as specified in <emu-xref href="#sec-typedarray-defineownproperty"></emu-xref>.
+          1. Set _array_.[[Get]] as specified in <emu-xref href="#sec-typedarray-get"></emu-xref>.
+          1. Set _array_.[[Set]] as specified in <emu-xref href="#sec-typedarray-set"></emu-xref>.
+          1. Set _array_.[[Delete]] as specified in <emu-xref href="#sec-typedarray-delete"></emu-xref>.
+          1. Set _array_.[[OwnPropertyKeys]] as specified in <emu-xref href="#sec-typedarray-ownpropertykeys"></emu-xref>.
+          1. Set _array_.[[Prototype]] to _prototype_.
+          1. Return _array_.
         </emu-alg>
       </emu-clause>
 
@@ -14974,10 +14974,10 @@
         </dl>
         <emu-alg>
           1. Assert: IsTypedArrayOutOfBounds(_taRecord_) is *false*.
-          1. Let _O_ be _taRecord_.[[Object]].
-          1. If _O_.[[ByteLength]] is not ~auto~, return _O_.[[ByteLength]].
+          1. Let _obj_ be _taRecord_.[[Object]].
+          1. If _obj_.[[ByteLength]] is not ~auto~, return _obj_.[[ByteLength]].
           1. Let _length_ be TypedArrayLength(_taRecord_).
-          1. Let _elementSize_ be TypedArrayElementSize(_O_).
+          1. Let _elementSize_ be TypedArrayElementSize(_obj_).
           1. NOTE: The returned byte length is always an integer multiple of _elementSize_, even when the underlying buffer has been resized to a non-integer multiple.
           1. Return _length_ × _elementSize_.
         </emu-alg>
@@ -14993,11 +14993,11 @@
         </dl>
         <emu-alg>
           1. Assert: IsTypedArrayOutOfBounds(_taRecord_) is *false*.
-          1. Let _O_ be _taRecord_.[[Object]].
-          1. If _O_.[[ArrayLength]] is not ~auto~, return _O_.[[ArrayLength]].
-          1. Assert: IsFixedLengthArrayBuffer(_O_.[[ViewedArrayBuffer]]) is *false*.
-          1. Let _byteOffset_ be _O_.[[ByteOffset]].
-          1. Let _elementSize_ be TypedArrayElementSize(_O_).
+          1. Let _obj_ be _taRecord_.[[Object]].
+          1. If _obj_.[[ArrayLength]] is not ~auto~, return _obj_.[[ArrayLength]].
+          1. Assert: IsFixedLengthArrayBuffer(_obj_.[[ViewedArrayBuffer]]) is *false*.
+          1. Let _byteOffset_ be _obj_.[[ByteOffset]].
+          1. Let _elementSize_ be TypedArrayElementSize(_obj_).
           1. Let _byteLength_ be _taRecord_.[[CachedBufferByteLength]].
           1. Assert: _byteLength_ is not ~detached~.
           1. Return floor((_byteLength_ - _byteOffset_) / _elementSize_).
@@ -15015,18 +15015,18 @@
           <dd>It checks if any of the object's numeric properties reference a value at an index not contained within the underlying buffer's bounds.</dd>
         </dl>
         <emu-alg>
-          1. Let _O_ be _taRecord_.[[Object]].
+          1. Let _obj_ be _taRecord_.[[Object]].
           1. Let _bufferByteLength_ be _taRecord_.[[CachedBufferByteLength]].
-          1. If IsDetachedBuffer(_O_.[[ViewedArrayBuffer]]) is *true*, then
+          1. If IsDetachedBuffer(_obj_.[[ViewedArrayBuffer]]) is *true*, then
             1. Assert: _bufferByteLength_ is ~detached~.
             1. Return *true*.
           1. Assert: _bufferByteLength_ is a non-negative integer.
-          1. Let _byteOffsetStart_ be _O_.[[ByteOffset]].
-          1. If _O_.[[ArrayLength]] is ~auto~, then
+          1. Let _byteOffsetStart_ be _obj_.[[ByteOffset]].
+          1. If _obj_.[[ArrayLength]] is ~auto~, then
             1. Let _byteOffsetEnd_ be _bufferByteLength_.
           1. Else,
-            1. Let _elementSize_ be TypedArrayElementSize(_O_).
-            1. Let _arrayByteLength_ be _O_.[[ArrayLength]] × _elementSize_.
+            1. Let _elementSize_ be TypedArrayElementSize(_obj_).
+            1. Let _arrayByteLength_ be _obj_.[[ArrayLength]] × _elementSize_.
             1. Let _byteOffsetEnd_ be _byteOffsetStart_ + _arrayByteLength_.
           1. NOTE: A 0-length TypedArray whose [[ByteOffset]] is _bufferByteLength_ is not considered out-of-bounds.
           1. If _byteOffsetStart_ > _bufferByteLength_ or _byteOffsetEnd_ > _bufferByteLength_, return *true*.
@@ -15037,14 +15037,14 @@
       <emu-clause id="sec-istypedarrayfixedlength" type="abstract operation">
         <h1>
           IsTypedArrayFixedLength (
-            _O_: a TypedArray,
+            _obj_: a TypedArray,
           ): a Boolean
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. If _O_.[[ArrayLength]] is ~auto~, return *false*.
-          1. Let _buffer_ be _O_.[[ViewedArrayBuffer]].
+          1. If _obj_.[[ArrayLength]] is ~auto~, return *false*.
+          1. Let _buffer_ be _obj_.[[ViewedArrayBuffer]].
           1. If IsFixedLengthArrayBuffer(_buffer_) is *false* and IsSharedArrayBuffer(_buffer_) is *false*, return *false*.
           1. Return *true*.
         </emu-alg>
@@ -15386,14 +15386,14 @@
         <emu-alg>
           1. Assert: _module_.[[Namespace]] is ~empty~.
           1. Let _internalSlotsList_ be the internal slots listed in <emu-xref href="#table-internal-slots-of-module-namespace-exotic-objects"></emu-xref>.
-          1. Let _M_ be MakeBasicObject(_internalSlotsList_).
-          1. Set _M_'s essential internal methods to the definitions specified in <emu-xref href="#sec-module-namespace-exotic-objects"></emu-xref>.
-          1. Set _M_.[[Module]] to _module_.
+          1. Let _module_ be MakeBasicObject(_internalSlotsList_).
+          1. Set _module_'s essential internal methods to the definitions specified in <emu-xref href="#sec-module-namespace-exotic-objects"></emu-xref>.
+          1. Set _module_.[[Module]] to _module_.
           1. Let _sortedExports_ be a List whose elements are the elements of _exports_, sorted according to lexicographic code unit order.
-          1. Set _M_.[[Exports]] to _sortedExports_.
-          1. Create own properties of _M_ corresponding to the definitions in <emu-xref href="#sec-module-namespace-objects"></emu-xref>.
-          1. Set _module_.[[Namespace]] to _M_.
-          1. Return _M_.
+          1. Set _module_.[[Exports]] to _sortedExports_.
+          1. Create own properties of _module_ corresponding to the definitions in <emu-xref href="#sec-module-namespace-objects"></emu-xref>.
+          1. Set _module_.[[Namespace]] to _module_.
+          1. Return _module_.
         </emu-alg>
       </emu-clause>
     </emu-clause>
@@ -16167,15 +16167,15 @@
       <emu-alg>
         1. If _target_ is not an Object, throw a *TypeError* exception.
         1. If _handler_ is not an Object, throw a *TypeError* exception.
-        1. Let _P_ be MakeBasicObject(« [[ProxyHandler]], [[ProxyTarget]] »).
-        1. Set _P_'s essential internal methods, except for [[Call]] and [[Construct]], to the definitions specified in <emu-xref href="#sec-proxy-object-internal-methods-and-internal-slots"></emu-xref>.
+        1. Let _proxy_ be MakeBasicObject(« [[ProxyHandler]], [[ProxyTarget]] »).
+        1. Set _proxy_'s essential internal methods, except for [[Call]] and [[Construct]], to the definitions specified in <emu-xref href="#sec-proxy-object-internal-methods-and-internal-slots"></emu-xref>.
         1. If IsCallable(_target_) is *true*, then
-          1. Set _P_.[[Call]] as specified in <emu-xref href="#sec-proxy-object-internal-methods-and-internal-slots-call-thisargument-argumentslist"></emu-xref>.
+          1. Set _proxy_.[[Call]] as specified in <emu-xref href="#sec-proxy-object-internal-methods-and-internal-slots-call-thisargument-argumentslist"></emu-xref>.
           1. If IsConstructor(_target_) is *true*, then
-            1. Set _P_.[[Construct]] as specified in <emu-xref href="#sec-proxy-object-internal-methods-and-internal-slots-construct-argumentslist-newtarget"></emu-xref>.
-        1. Set _P_.[[ProxyTarget]] to _target_.
-        1. Set _P_.[[ProxyHandler]] to _handler_.
-        1. Return _P_.
+            1. Set _proxy_.[[Construct]] as specified in <emu-xref href="#sec-proxy-object-internal-methods-and-internal-slots-construct-argumentslist-newtarget"></emu-xref>.
+        1. Set _proxy_.[[ProxyTarget]] to _target_.
+        1. Set _proxy_.[[ProxyHandler]] to _handler_.
+        1. Return _proxy_.
       </emu-alg>
     </emu-clause>
   </emu-clause>
@@ -19532,9 +19532,9 @@
           1. Let _thisER_ be GetThisEnvironment().
           1. Assert: _thisER_ is a Function Environment Record.
           1. Perform ? BindThisValue(_thisER_, _result_).
-          1. Let _F_ be _thisER_.[[FunctionObject]].
-          1. Assert: _F_ is an ECMAScript function object.
-          1. Perform ? InitializeInstanceElements(_result_, _F_).
+          1. Let _funcObj_ be _thisER_.[[FunctionObject]].
+          1. Assert: _funcObj_ is an ECMAScript function object.
+          1. Perform ? InitializeInstanceElements(_result_, _funcObj_).
           1. Return _result_.
         </emu-alg>
       </emu-clause>
@@ -21156,17 +21156,17 @@
 
         <emu-grammar>AssignmentProperty : IdentifierReference Initializer?</emu-grammar>
         <emu-alg>
-          1. Let _P_ be the StringValue of |IdentifierReference|.
-          1. Let _lRef_ be ? ResolveBinding(_P_).
-          1. Let _v_ be ? GetV(_value_, _P_).
+          1. Let _propertyName_ be the StringValue of |IdentifierReference|.
+          1. Let _lRef_ be ? ResolveBinding(_propertyName_).
+          1. Let _v_ be ? GetV(_value_, _propertyName_).
           1. If |Initializer| is present and _v_ is *undefined*, then
             1. If IsAnonymousFunctionDefinition(|Initializer|) is *true*, then
-              1. Set _v_ to ? NamedEvaluation of |Initializer| with argument _P_.
+              1. Set _v_ to ? NamedEvaluation of |Initializer| with argument _propertyName_.
             1. Else,
               1. Let _defaultValue_ be ? Evaluation of |Initializer|.
               1. Set _v_ to ? GetValue(_defaultValue_).
           1. Perform ? PutValue(_lRef_, _v_).
-          1. Return « _P_ ».
+          1. Return « _propertyName_ ».
         </emu-alg>
 
         <emu-grammar>AssignmentProperty : PropertyName `:` AssignmentElement</emu-grammar>
@@ -21264,17 +21264,17 @@
         <emu-alg>
           1. If |DestructuringAssignmentTarget| is neither an |ObjectLiteral| nor an |ArrayLiteral|, then
             1. Let _lRef_ be ? Evaluation of |DestructuringAssignmentTarget|.
-          1. Let _A_ be ! ArrayCreate(0).
+          1. Let _array_ be ! ArrayCreate(0).
           1. Let _n_ be 0.
           1. Repeat, while _iteratorRecord_.[[Done]] is *false*,
             1. Let _next_ be ? IteratorStepValue(_iteratorRecord_).
             1. If _next_ is not ~done~, then
-              1. Perform ! CreateDataPropertyOrThrow(_A_, ! ToString(𝔽(_n_)), _next_).
+              1. Perform ! CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_n_)), _next_).
               1. Set _n_ to _n_ + 1.
           1. If |DestructuringAssignmentTarget| is neither an |ObjectLiteral| nor an |ArrayLiteral|, then
-            1. Return ? PutValue(_lRef_, _A_).
+            1. Return ? PutValue(_lRef_, _array_).
           1. Let _nestedAssignmentPattern_ be the |AssignmentPattern| that is covered by |DestructuringAssignmentTarget|.
-          1. Return ? DestructuringAssignmentEvaluation of _nestedAssignmentPattern_ with argument _A_.
+          1. Return ? DestructuringAssignmentEvaluation of _nestedAssignmentPattern_ with argument _array_.
         </emu-alg>
       </emu-clause>
 
@@ -21741,9 +21741,9 @@
 
         <emu-grammar>BindingProperty : PropertyName `:` BindingElement</emu-grammar>
         <emu-alg>
-          1. Let _P_ be ? Evaluation of |PropertyName|.
-          1. Perform ? KeyedBindingInitialization of |BindingElement| with arguments _value_, _environment_, and _P_.
-          1. Return « _P_ ».
+          1. Let _propKey_ be ? Evaluation of |PropertyName|.
+          1. Perform ? KeyedBindingInitialization of |BindingElement| with arguments _value_, _environment_, and _propKey_.
+          1. Return « _propKey_ ».
         </emu-alg>
       </emu-clause>
 
@@ -21992,14 +21992,14 @@
         </dl>
         <emu-grammar>DoWhileStatement : `do` Statement `while` `(` Expression `)` `;`</emu-grammar>
         <emu-alg>
-          1. Let _V_ be *undefined*.
+          1. Let _iterationResult_ be *undefined*.
           1. Repeat,
             1. Let _stmtResult_ be Completion(Evaluation of |Statement|).
-            1. If LoopContinues(_stmtResult_, _labelSet_) is *false*, return ? UpdateEmpty(_stmtResult_, _V_).
-            1. If _stmtResult_.[[Value]] is not ~empty~, set _V_ to _stmtResult_.[[Value]].
+            1. If LoopContinues(_stmtResult_, _labelSet_) is *false*, return ? UpdateEmpty(_stmtResult_, _iterationResult_).
+            1. If _stmtResult_.[[Value]] is not ~empty~, set _iterationResult_ to _stmtResult_.[[Value]].
             1. Let _exprRef_ be ? Evaluation of |Expression|.
             1. Let _exprValue_ be ? GetValue(_exprRef_).
-            1. If ToBoolean(_exprValue_) is *false*, return _V_.
+            1. If ToBoolean(_exprValue_) is *false*, return _iterationResult_.
         </emu-alg>
       </emu-clause>
     </emu-clause>
@@ -22035,14 +22035,14 @@
         </dl>
         <emu-grammar>WhileStatement : `while` `(` Expression `)` Statement</emu-grammar>
         <emu-alg>
-          1. Let _V_ be *undefined*.
+          1. Let _iterationResult_ be *undefined*.
           1. Repeat,
             1. Let _exprRef_ be ? Evaluation of |Expression|.
             1. Let _exprValue_ be ? GetValue(_exprRef_).
-            1. If ToBoolean(_exprValue_) is *false*, return _V_.
+            1. If ToBoolean(_exprValue_) is *false*, return _iterationResult_.
             1. Let _stmtResult_ be Completion(Evaluation of |Statement|).
-            1. If LoopContinues(_stmtResult_, _labelSet_) is *false*, return ? UpdateEmpty(_stmtResult_, _V_).
-            1. If _stmtResult_.[[Value]] is not ~empty~, set _V_ to _stmtResult_.[[Value]].
+            1. If LoopContinues(_stmtResult_, _labelSet_) is *false*, return ? UpdateEmpty(_stmtResult_, _iterationResult_).
+            1. If _stmtResult_.[[Value]] is not ~empty~, set _iterationResult_ to _stmtResult_.[[Value]].
         </emu-alg>
       </emu-clause>
     </emu-clause>
@@ -22143,16 +22143,16 @@
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Let _V_ be *undefined*.
+          1. Let _iterationResult_ be *undefined*.
           1. Perform ? CreatePerIterationEnvironment(_perIterationBindings_).
           1. Repeat,
             1. If _test_ is not ~empty~, then
               1. Let _testRef_ be ? Evaluation of _test_.
               1. Let _testValue_ be ? GetValue(_testRef_).
-              1. If ToBoolean(_testValue_) is *false*, return _V_.
+              1. If ToBoolean(_testValue_) is *false*, return _iterationResult_.
             1. Let _result_ be Completion(Evaluation of _stmt_).
-            1. If LoopContinues(_result_, _labelSet_) is *false*, return ? UpdateEmpty(_result_, _V_).
-            1. If _result_.[[Value]] is not ~empty~, set _V_ to _result_.[[Value]].
+            1. If LoopContinues(_result_, _labelSet_) is *false*, return ? UpdateEmpty(_result_, _iterationResult_).
+            1. If _result_.[[Value]] is not ~empty~, set _iterationResult_ to _result_.[[Value]].
             1. Perform ? CreatePerIterationEnvironment(_perIterationBindings_).
             1. If _increment_ is not ~empty~, then
               1. Let _incRef_ be ? Evaluation of _increment_.
@@ -22464,7 +22464,7 @@
         <emu-alg>
           1. If _iteratorKind_ is not present, set _iteratorKind_ to ~sync~.
           1. Let _oldEnv_ be the running execution context's LexicalEnvironment.
-          1. Let _V_ be *undefined*.
+          1. Let _iterationResult_ be *undefined*.
           1. Let _destructuring_ be IsDestructuring of _lhs_.
           1. If _destructuring_ is *true* and _lhsKind_ is ~assignment~, then
             1. Assert: _lhs_ is a |LeftHandSideExpression|.
@@ -22474,7 +22474,7 @@
             1. If _iteratorKind_ is ~async~, set _nextResult_ to ? Await(_nextResult_).
             1. If _nextResult_ is not an Object, throw a *TypeError* exception.
             1. Let _done_ be ? IteratorComplete(_nextResult_).
-            1. If _done_ is *true*, return _V_.
+            1. If _done_ is *true*, return _iterationResult_.
             1. Let _nextValue_ be ? IteratorValue(_nextResult_).
             1. If _lhsKind_ is either ~assignment~ or ~var-binding~, then
               1. If _destructuring_ is *true*, then
@@ -22513,12 +22513,12 @@
             1. Let _result_ be Completion(Evaluation of _stmt_).
             1. Set the running execution context's LexicalEnvironment to _oldEnv_.
             1. If LoopContinues(_result_, _labelSet_) is *false*, then
-              1. Set _status_ to Completion(UpdateEmpty(_result_, _V_)).
+              1. Set _status_ to Completion(UpdateEmpty(_result_, _iterationResult_)).
               1. If _iterationKind_ is ~enumerate~, return ? _status_.
               1. Assert: _iterationKind_ is ~iterate~.
               1. If _iteratorKind_ is ~async~, return ? AsyncIteratorClose(_iteratorRecord_, _status_).
               1. Return ? IteratorClose(_iteratorRecord_, _status_).
-            1. If _result_.[[Value]] is not ~empty~, set _V_ to _result_.[[Value]].
+            1. If _result_.[[Value]] is not ~empty~, set _iterationResult_ to _result_.[[Value]].
         </emu-alg>
       </emu-clause>
 
@@ -22622,28 +22622,28 @@
           <emu-clause id="sec-%foriniteratorprototype%.next" type="built-in function">
             <h1>%ForInIteratorPrototype%.next ( )</h1>
             <emu-alg>
-              1. Let _O_ be the *this* value.
-              1. Assert: _O_ is an Object.
-              1. Assert: _O_ has all of the internal slots of a For-In Iterator instance (<emu-xref href="#sec-properties-of-for-in-iterator-instances"></emu-xref>).
-              1. Let _object_ be _O_.[[Object]].
+              1. Let _obj_ be the *this* value.
+              1. Assert: _obj_ is an Object.
+              1. Assert: _obj_ has all of the internal slots of a For-In Iterator instance (<emu-xref href="#sec-properties-of-for-in-iterator-instances"></emu-xref>).
+              1. Let _object_ be _obj_.[[Object]].
               1. Repeat,
-                1. If _O_.[[ObjectWasVisited]] is *false*, then
+                1. If _obj_.[[ObjectWasVisited]] is *false*, then
                   1. Let _keys_ be ? <emu-meta effects="user-code">_object_.[[OwnPropertyKeys]]()</emu-meta>.
                   1. For each element _key_ of _keys_, do
                     1. If _key_ is a String, then
-                      1. Append _key_ to _O_.[[RemainingKeys]].
-                  1. Set _O_.[[ObjectWasVisited]] to *true*.
-                1. Repeat, while _O_.[[RemainingKeys]] is not empty,
-                  1. Let _r_ be the first element of _O_.[[RemainingKeys]].
-                  1. Remove the first element from _O_.[[RemainingKeys]].
-                  1. If _O_.[[VisitedKeys]] does not contain _r_, then
+                      1. Append _key_ to _obj_.[[RemainingKeys]].
+                  1. Set _obj_.[[ObjectWasVisited]] to *true*.
+                1. Repeat, while _obj_.[[RemainingKeys]] is not empty,
+                  1. Let _r_ be the first element of _obj_.[[RemainingKeys]].
+                  1. Remove the first element from _obj_.[[RemainingKeys]].
+                  1. If _obj_.[[VisitedKeys]] does not contain _r_, then
                     1. Let _desc_ be ? <emu-meta effects="user-code">_object_.[[GetOwnProperty]](_r_)</emu-meta>.
                     1. If _desc_ is not *undefined*, then
-                      1. Append _r_ to _O_.[[VisitedKeys]].
+                      1. Append _r_ to _obj_.[[VisitedKeys]].
                       1. If _desc_.[[Enumerable]] is *true*, return CreateIteratorResultObject(_r_, *false*).
                 1. Set _object_ to ? <emu-meta effects="user-code">_object_.[[GetPrototypeOf]]()</emu-meta>.
-                1. Set _O_.[[Object]] to _object_.
-                1. Set _O_.[[ObjectWasVisited]] to *false*.
+                1. Set _obj_.[[Object]] to _object_.
+                1. Set _obj_.[[ObjectWasVisited]] to *false*.
                 1. If _object_ is *null*, return CreateIteratorResultObject(*undefined*, *true*).
             </emu-alg>
           </emu-clause>
@@ -23710,18 +23710,18 @@
       <emu-alg>
         1. Let _name_ be the StringValue of |BindingIdentifier|.
         1. Let _sourceText_ be the source text matched by |FunctionDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%Function.prototype%, _sourceText_, |FormalParameters|, |FunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, _name_).
-        1. Perform MakeConstructor(_F_).
-        1. Return _F_.
+        1. Let _closure_ be OrdinaryFunctionCreate(%Function.prototype%, _sourceText_, |FormalParameters|, |FunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, _name_).
+        1. Perform MakeConstructor(_closure_).
+        1. Return _closure_.
       </emu-alg>
       <emu-grammar>FunctionDeclaration : `function` `(` FormalParameters `)` `{` FunctionBody `}`</emu-grammar>
       <emu-alg>
         1. Let _sourceText_ be the source text matched by |FunctionDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%Function.prototype%, _sourceText_, |FormalParameters|, |FunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, *"default"*).
-        1. Perform MakeConstructor(_F_).
-        1. Return _F_.
+        1. Let _closure_ be OrdinaryFunctionCreate(%Function.prototype%, _sourceText_, |FormalParameters|, |FunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, *"default"*).
+        1. Perform MakeConstructor(_closure_).
+        1. Return _closure_.
       </emu-alg>
       <emu-note>
         <p>An anonymous |FunctionDeclaration| can only occur as part of an `export default` declaration, and its function code is therefore always strict mode code.</p>
@@ -24232,11 +24232,11 @@
       <emu-grammar>GeneratorBody : FunctionBody</emu-grammar>
       <emu-alg>
         1. Perform ? FunctionDeclarationInstantiation(_functionObject_, _argumentsList_).
-        1. Let _G_ be ? OrdinaryCreateFromConstructor(_functionObject_, *"%GeneratorPrototype%"*, « [[GeneratorState]], [[GeneratorContext]], [[GeneratorBrand]] »).
-        1. Set _G_.[[GeneratorBrand]] to ~empty~.
-        1. Set _G_.[[GeneratorState]] to ~suspended-start~.
-        1. Perform GeneratorStart(_G_, |FunctionBody|).
-        1. Return ReturnCompletion(_G_).
+        1. Let _generator_ be ? OrdinaryCreateFromConstructor(_functionObject_, *"%GeneratorPrototype%"*, « [[GeneratorState]], [[GeneratorContext]], [[GeneratorBrand]] »).
+        1. Set _generator_.[[GeneratorBrand]] to ~empty~.
+        1. Set _generator_.[[GeneratorState]] to ~suspended-start~.
+        1. Perform GeneratorStart(_generator_, |FunctionBody|).
+        1. Return ReturnCompletion(_generator_).
       </emu-alg>
     </emu-clause>
 
@@ -24253,20 +24253,20 @@
       <emu-alg>
         1. Let _name_ be the StringValue of |BindingIdentifier|.
         1. Let _sourceText_ be the source text matched by |GeneratorDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%GeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |GeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, _name_).
+        1. Let _closure_ be OrdinaryFunctionCreate(%GeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |GeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, _name_).
         1. Let _prototype_ be OrdinaryObjectCreate(%GeneratorPrototype%).
-        1. Perform ! DefinePropertyOrThrow(_F_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-        1. Return _F_.
+        1. Perform ! DefinePropertyOrThrow(_closure_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
+        1. Return _closure_.
       </emu-alg>
       <emu-grammar>GeneratorDeclaration : `function` `*` `(` FormalParameters `)` `{` GeneratorBody `}`</emu-grammar>
       <emu-alg>
         1. Let _sourceText_ be the source text matched by |GeneratorDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%GeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |GeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, *"default"*).
+        1. Let _closure_ be OrdinaryFunctionCreate(%GeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |GeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, *"default"*).
         1. Let _prototype_ be OrdinaryObjectCreate(%GeneratorPrototype%).
-        1. Perform ! DefinePropertyOrThrow(_F_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-        1. Return _F_.
+        1. Perform ! DefinePropertyOrThrow(_closure_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
+        1. Return _closure_.
       </emu-alg>
       <emu-note>
         <p>An anonymous |GeneratorDeclaration| can only occur as part of an `export default` declaration, and its function code is therefore always strict mode code.</p>
@@ -24484,22 +24484,22 @@
       <emu-alg>
         1. Let _name_ be the StringValue of |BindingIdentifier|.
         1. Let _sourceText_ be the source text matched by |AsyncGeneratorDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%AsyncGeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncGeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, _name_).
+        1. Let _closure_ be OrdinaryFunctionCreate(%AsyncGeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncGeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, _name_).
         1. Let _prototype_ be OrdinaryObjectCreate(%AsyncGeneratorPrototype%).
-        1. Perform ! DefinePropertyOrThrow(_F_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-        1. Return _F_.
+        1. Perform ! DefinePropertyOrThrow(_closure_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
+        1. Return _closure_.
       </emu-alg>
       <emu-grammar>
         AsyncGeneratorDeclaration : `async` `function` `*` `(` FormalParameters `)` `{` AsyncGeneratorBody `}`
       </emu-grammar>
       <emu-alg>
         1. Let _sourceText_ be the source text matched by |AsyncGeneratorDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%AsyncGeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncGeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, *"default"*).
+        1. Let _closure_ be OrdinaryFunctionCreate(%AsyncGeneratorFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncGeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, *"default"*).
         1. Let _prototype_ be OrdinaryObjectCreate(%AsyncGeneratorPrototype%).
-        1. Perform ! DefinePropertyOrThrow(_F_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-        1. Return _F_.
+        1. Perform ! DefinePropertyOrThrow(_closure_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
+        1. Return _closure_.
       </emu-alg>
       <emu-note>
         <p>An anonymous |AsyncGeneratorDeclaration| can only occur as part of an `export default` declaration.</p>
@@ -25184,27 +25184,27 @@
           1. Let _defaultConstructor_ be a new Abstract Closure with no parameters that captures nothing and performs the following steps when called:
             1. Let _args_ be the List of arguments that was passed to this function by [[Call]] or [[Construct]].
             1. If NewTarget is *undefined*, throw a *TypeError* exception.
-            1. Let _F_ be the active function object.
-            1. If _F_.[[ConstructorKind]] is ~derived~, then
+            1. Let _constructorFunction_ be the active function object.
+            1. If _constructorFunction_.[[ConstructorKind]] is ~derived~, then
               1. NOTE: This branch behaves similarly to `constructor(...args) { super(...args); }`. The most notable distinction is that while the aforementioned ECMAScript source text observably calls the %Symbol.iterator% method on `%Array.prototype%`, this function does not.
-              1. Let _func_ be ! _F_.[[GetPrototypeOf]]().
+              1. Let _func_ be ! _constructorFunction_.[[GetPrototypeOf]]().
               1. If IsConstructor(_func_) is *false*, throw a *TypeError* exception.
               1. Let _result_ be ? Construct(_func_, _args_, NewTarget).
             1. Else,
               1. NOTE: This branch behaves similarly to `constructor() {}`.
               1. Let _result_ be ? OrdinaryCreateFromConstructor(NewTarget, *"%Object.prototype%"*).
-            1. Perform ? InitializeInstanceElements(_result_, _F_).
+            1. Perform ? InitializeInstanceElements(_result_, _constructorFunction_).
             1. Return NormalCompletion(_result_).
-          1. Let _F_ be CreateBuiltinFunction(_defaultConstructor_, 0, _className_, « [[ConstructorKind]], [[SourceText]], [[PrivateMethods]], [[Fields]] », the current Realm Record, _constructorParent_).
+          1. Let _constructorFunction_ be CreateBuiltinFunction(_defaultConstructor_, 0, _className_, « [[ConstructorKind]], [[SourceText]], [[PrivateMethods]], [[Fields]] », the current Realm Record, _constructorParent_).
         1. Else,
           1. Let _constructorInfo_ be ! DefineMethod of _constructor_ with arguments _proto_ and _constructorParent_.
-          1. Let _F_ be _constructorInfo_.[[Closure]].
-          1. Perform MakeClassConstructor(_F_).
-          1. Perform SetFunctionName(_F_, _className_).
-        1. Set _F_.[[SourceText]] to _sourceText_.
-        1. Perform MakeConstructor(_F_, *false*, _proto_).
-        1. If |ClassHeritage| is present, set _F_.[[ConstructorKind]] to ~derived~.
-        1. Perform ! DefineMethodProperty(_proto_, *"constructor"*, _F_, *false*).
+          1. Let _constructorFunction_ be _constructorInfo_.[[Closure]].
+          1. Perform MakeClassConstructor(_constructorFunction_).
+          1. Perform SetFunctionName(_constructorFunction_, _className_).
+        1. Set _constructorFunction_.[[SourceText]] to _sourceText_.
+        1. Perform MakeConstructor(_constructorFunction_, *false*, _proto_).
+        1. If |ClassHeritage| is present, set _constructorFunction_.[[ConstructorKind]] to ~derived~.
+        1. Perform ! DefineMethodProperty(_proto_, *"constructor"*, _constructorFunction_, *false*).
         1. If |ClassBody| is not present, let _elements_ be a new empty List.
         1. Else, let _elements_ be the NonConstructorElements of |ClassBody|.
         1. Let _instancePrivateMethods_ be a new empty List.
@@ -25215,7 +25215,7 @@
           1. If IsStatic of _e_ is *false*, then
             1. Let _element_ be Completion(ClassElementEvaluation of _e_ with argument _proto_).
           1. Else,
-            1. Let _element_ be Completion(ClassElementEvaluation of _e_ with argument _F_).
+            1. Let _element_ be Completion(ClassElementEvaluation of _e_ with argument _constructorFunction_).
           1. If _element_ is an abrupt completion, then
             1. Set the running execution context's LexicalEnvironment to _env_.
             1. Set the running execution context's PrivateEnvironment to _outerPrivateEnvironment_.
@@ -25241,22 +25241,22 @@
             1. Append _element_ to _staticElements_.
         1. Set the running execution context's LexicalEnvironment to _env_.
         1. If _classBinding_ is not *undefined*, then
-          1. Perform ! _classEnv_.InitializeBinding(_classBinding_, _F_).
-        1. Set _F_.[[PrivateMethods]] to _instancePrivateMethods_.
-        1. Set _F_.[[Fields]] to _instanceFields_.
+          1. Perform ! _classEnv_.InitializeBinding(_classBinding_, _constructorFunction_).
+        1. Set _constructorFunction_.[[PrivateMethods]] to _instancePrivateMethods_.
+        1. Set _constructorFunction_.[[Fields]] to _instanceFields_.
         1. For each PrivateElement _method_ of _staticPrivateMethods_, do
-          1. Perform ! PrivateMethodOrAccessorAdd(_F_, _method_).
+          1. Perform ! PrivateMethodOrAccessorAdd(_constructorFunction_, _method_).
         1. For each element _elementRecord_ of _staticElements_, do
           1. If _elementRecord_ is a ClassFieldDefinition Record, then
-            1. Let _result_ be Completion(DefineField(_F_, _elementRecord_)).
+            1. Let _result_ be Completion(DefineField(_constructorFunction_, _elementRecord_)).
           1. Else,
             1. Assert: _elementRecord_ is a ClassStaticBlockDefinition Record.
-            1. Let _result_ be Completion(Call(_elementRecord_.[[BodyFunction]], _F_)).
+            1. Let _result_ be Completion(Call(_elementRecord_.[[BodyFunction]], _constructorFunction_)).
           1. If _result_ is an abrupt completion, then
             1. Set the running execution context's PrivateEnvironment to _outerPrivateEnvironment_.
             1. Return ? _result_.
         1. Set the running execution context's PrivateEnvironment to _outerPrivateEnvironment_.
-        1. Return _F_.
+        1. Return _constructorFunction_.
       </emu-alg>
     </emu-clause>
 
@@ -25406,18 +25406,18 @@
       <emu-alg>
         1. Let _name_ be the StringValue of |BindingIdentifier|.
         1. Let _sourceText_ be the source text matched by |AsyncFunctionDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%AsyncFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncFunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, _name_).
-        1. Return _F_.
+        1. Let _closure_ be OrdinaryFunctionCreate(%AsyncFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncFunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, _name_).
+        1. Return _closure_.
       </emu-alg>
       <emu-grammar>
         AsyncFunctionDeclaration : `async` `function` `(` FormalParameters `)` `{` AsyncFunctionBody `}`
       </emu-grammar>
       <emu-alg>
         1. Let _sourceText_ be the source text matched by |AsyncFunctionDeclaration|.
-        1. Let _F_ be OrdinaryFunctionCreate(%AsyncFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncFunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
-        1. Perform SetFunctionName(_F_, *"default"*).
-        1. Return _F_.
+        1. Let _closure_ be OrdinaryFunctionCreate(%AsyncFunction.prototype%, _sourceText_, |FormalParameters|, |AsyncFunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
+        1. Perform SetFunctionName(_closure_, *"default"*).
+        1. Return _closure_.
       </emu-alg>
     </emu-clause>
 
@@ -26264,20 +26264,20 @@
           1. If _strict_ is *false*, then
             1. Let _declaredFunctionOrVarNames_ be the list-concatenation of _declaredFunctionNames_ and _declaredVarNames_.
             1. For each |FunctionDeclaration| _f_ that is directly contained in the |StatementList| of any |Block|, |CaseClause|, or |DefaultClause| _x_ such that _script_ Contains _x_ is *true*, do
-              1. Let _F_ be the StringValue of the |BindingIdentifier| of _f_.
-              1. If replacing the |FunctionDeclaration| _f_ with a |VariableStatement| that has _F_ as a |BindingIdentifier| would not produce any Early Errors for _script_, then
-                1. If HasLexicalDeclaration(_env_, _F_) is *false*, then
-                  1. Let _fnDefinable_ be ? CanDeclareGlobalVar(_env_, _F_).
+              1. Let _funcName_ be the StringValue of the |BindingIdentifier| of _f_.
+              1. If replacing the |FunctionDeclaration| _f_ with a |VariableStatement| that has _funcName_ as a |BindingIdentifier| would not produce any Early Errors for _script_, then
+                1. If HasLexicalDeclaration(_env_, _funcName_) is *false*, then
+                  1. Let _fnDefinable_ be ? CanDeclareGlobalVar(_env_, _funcName_).
                   1. If _fnDefinable_ is *true*, then
-                    1. NOTE: A var binding for _F_ is only instantiated here if it is neither a VarDeclaredName nor the name of another |FunctionDeclaration|.
-                    1. If _declaredFunctionOrVarNames_ does not contain _F_, then
-                      1. Perform ? CreateGlobalVarBinding(_env_, _F_, *false*).
-                      1. Append _F_ to _declaredFunctionOrVarNames_.
+                    1. NOTE: A var binding for _funcName_ is only instantiated here if it is neither a VarDeclaredName nor the name of another |FunctionDeclaration|.
+                    1. If _declaredFunctionOrVarNames_ does not contain _funcName_, then
+                      1. Perform ? CreateGlobalVarBinding(_env_, _funcName_, *false*).
+                      1. Append _funcName_ to _declaredFunctionOrVarNames_.
                     1. [id="step-globaldeclarationinstantiation-alt-funcdecl-eval"] When the |FunctionDeclaration| _f_ is evaluated, perform the following steps in place of the |FunctionDeclaration| Evaluation algorithm provided in <emu-xref href="#sec-function-definitions-runtime-semantics-evaluation"></emu-xref>:
                       1. Let _gEnv_ be the running execution context's VariableEnvironment.
                       1. Let _bEnv_ be the running execution context's LexicalEnvironment.
-                      1. Let _fObj_ be ! _bEnv_.GetBindingValue(_F_, *false*).
-                      1. Perform ? <emu-meta effects="user-code">_gEnv_.SetMutableBinding(_F_, _fObj_, *false*)</emu-meta>.
+                      1. Let _fObj_ be ! _bEnv_.GetBindingValue(_funcName_, *false*).
+                      1. Perform ? <emu-meta effects="user-code">_gEnv_.SetMutableBinding(_funcName_, _fObj_, *false*)</emu-meta>.
                       1. Return ~unused~.
         1. Let _lexDeclarations_ be the LexicallyScopedDeclarations of _script_.
         1. Let _privateEnv_ be *null*.
@@ -29854,11 +29854,11 @@
           1. If _direct_ is *true*, then
             1. Let _thisEnvRec_ be GetThisEnvironment().
             1. If _thisEnvRec_ is a Function Environment Record, then
-              1. Let _F_ be _thisEnvRec_.[[FunctionObject]].
+              1. Let _func_ be _thisEnvRec_.[[FunctionObject]].
               1. Set _inFunction_ to *true*.
               1. Set _inMethod_ to _thisEnvRec_.HasSuperBinding().
-              1. If _F_.[[ConstructorKind]] is ~derived~, set _inDerivedConstructor_ to *true*.
-              1. Let _classFieldInitializerName_ be _F_.[[ClassFieldInitializerName]].
+              1. If _func_.[[ConstructorKind]] is ~derived~, set _inDerivedConstructor_ to *true*.
+              1. Let _classFieldInitializerName_ be _func_.[[ClassFieldInitializerName]].
               1. If _classFieldInitializerName_ is not ~empty~, set _inClassFieldInitializer_ to *true*.
           1. Perform the following substeps in an implementation-defined order, possibly interleaving parsing and error detection:
             1. Let _script_ be ParseText(_x_, |Script|).
@@ -29991,41 +29991,41 @@
           1. [id="step-evaldeclarationinstantiation-web-compat-insertion-point", normative-optional] If _strict_ is *false* and the host is a web browser or otherwise supports <emu-xref href="#sec-block-level-function-declarations-web-legacy-compatibility-semantics" title></emu-xref>, then
             1. Let _declaredFunctionOrVarNames_ be the list-concatenation of _declaredFunctionNames_ and _declaredVarNames_.
             1. For each |FunctionDeclaration| _f_ that is directly contained in the |StatementList| of any |Block|, |CaseClause|, or |DefaultClause| _x_ such that _body_ Contains _x_ is *true*, do
-              1. Let _F_ be the StringValue of the |BindingIdentifier| of _f_.
-              1. If replacing the |FunctionDeclaration| _f_ with a |VariableStatement| that has _F_ as a |BindingIdentifier| would not produce any Early Errors for _body_, then
+              1. Let _funcName_ be the StringValue of the |BindingIdentifier| of _f_.
+              1. If replacing the |FunctionDeclaration| _f_ with a |VariableStatement| that has _funcName_ as a |BindingIdentifier| would not produce any Early Errors for _body_, then
                 1. Let _bindingExists_ be *false*.
                 1. Set _thisEnv_ to _lexEnv_.
                 1. Assert: The following loop will terminate.
                 1. Repeat, while _thisEnv_ is not _varEnv_,
                   1. If _thisEnv_ is not an Object Environment Record, then
-                    1. If ! _thisEnv_.HasBinding(_F_) is *true*, then
+                    1. If ! _thisEnv_.HasBinding(_funcName_) is *true*, then
                       1. [id="step-evaldeclarationinstantiation-web-compat-bindingexists", normative-optional] If the host is a web browser or otherwise supports <emu-xref href="#sec-variablestatements-in-catch-blocks" title></emu-xref>, then
                         1. If _thisEnv_ is not the Environment Record for a |Catch| clause, set _bindingExists_ to *true*.
                       1. Else,
                         1. Set _bindingExists_ to *true*.
                   1. Set _thisEnv_ to _thisEnv_.[[OuterEnv]].
                 1. If _bindingExists_ is *false* and _varEnv_ is a Global Environment Record, then
-                  1. If HasLexicalDeclaration(_varEnv_, _F_) is *false*, then
-                    1. Let _fnDefinable_ be ? CanDeclareGlobalVar(_varEnv_, _F_).
+                  1. If HasLexicalDeclaration(_varEnv_, _funcName_) is *false*, then
+                    1. Let _fnDefinable_ be ? CanDeclareGlobalVar(_varEnv_, _funcName_).
                   1. Else,
                     1. Let _fnDefinable_ be *false*.
                 1. Else,
                   1. Let _fnDefinable_ be *true*.
                 1. If _bindingExists_ is *false* and _fnDefinable_ is *true*, then
-                  1. If _declaredFunctionOrVarNames_ does not contain _F_, then
+                  1. If _declaredFunctionOrVarNames_ does not contain _funcName_, then
                     1. If _varEnv_ is a Global Environment Record, then
-                      1. Perform ? CreateGlobalVarBinding(_varEnv_, _F_, *true*).
+                      1. Perform ? CreateGlobalVarBinding(_varEnv_, _funcName_, *true*).
                     1. Else,
-                      1. Set _bindingExists_ to ! _varEnv_.HasBinding(_F_).
+                      1. Set _bindingExists_ to ! _varEnv_.HasBinding(_funcName_).
                       1. If _bindingExists_ is *false*, then
-                        1. Perform ! _varEnv_.CreateMutableBinding(_F_, *true*).
-                        1. Perform ! _varEnv_.InitializeBinding(_F_, *undefined*).
-                    1. Append _F_ to _declaredFunctionOrVarNames_.
+                        1. Perform ! _varEnv_.CreateMutableBinding(_funcName_, *true*).
+                        1. Perform ! _varEnv_.InitializeBinding(_funcName_, *undefined*).
+                    1. Append _funcName_ to _declaredFunctionOrVarNames_.
                   1. [id="step-evaldeclarationinstantiation-alt-funcdecl-eval"] When the |FunctionDeclaration| _f_ is evaluated, perform the following steps in place of the |FunctionDeclaration| Evaluation algorithm provided in <emu-xref href="#sec-function-definitions-runtime-semantics-evaluation"></emu-xref>:
                     1. Let _gEnv_ be the running execution context's VariableEnvironment.
                     1. Let _bEnv_ be the running execution context's LexicalEnvironment.
-                    1. Let _fObj_ be ! _bEnv_.GetBindingValue(_F_, *false*).
-                    1. Perform ? <emu-meta effects="user-code">_gEnv_.SetMutableBinding(_F_, _fObj_, *false*)</emu-meta>.
+                    1. Let _fObj_ be ! _bEnv_.GetBindingValue(_funcName_, *false*).
+                    1. Perform ? <emu-meta effects="user-code">_gEnv_.SetMutableBinding(_funcName_, _fObj_, *false*)</emu-meta>.
                     1. Return ~unused~.
           1. [id="step-evaldeclarationinstantiation-post-validation"] NOTE: No abnormal terminations occur after this algorithm step unless _varEnv_ is a Global Environment Record and the global object is a Proxy exotic object.
           1. Let _lexDeclarations_ be the LexicallyScopedDeclarations of _body_.
@@ -31380,8 +31380,8 @@
         <h1>Function.prototype [ %Symbol.hasInstance% ] ( _V_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _F_ be the *this* value.
-          1. Return ? OrdinaryHasInstance(_F_, _V_).
+          1. Let _thisValue_ be the *this* value.
+          1. Return ? OrdinaryHasInstance(_thisValue_, _V_).
         </emu-alg>
         <p>This property has the attributes { [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *false* }.</p>
         <emu-note>
@@ -35937,8 +35937,8 @@ THH:mm:ss.sss
           <dl class="header">
           </dl>
           <emu-alg>
-            1. Let _S_ be the String representation of _n_, formatted as a decimal number.
-            1. Return StringPad(_S_, _minLength_, *"0"*, ~start~).
+            1. Let _str_ be the String representation of _n_, formatted as a decimal number.
+            1. Return StringPad(_str_, _minLength_, *"0"*, ~start~).
           </emu-alg>
         </emu-clause>
       </emu-clause>
@@ -39637,26 +39637,26 @@ THH:mm:ss.sss
           1. Assert: _n_ &lt; 2<sup>32</sup> - 1.
           1. Assert: _groupNames_ has _n_ - 1 elements.
           1. NOTE: The _groupNames_ List contains elements aligned with the _indices_ List starting at _indices_[1].
-          1. Let _A_ be ! ArrayCreate(_n_).
+          1. Let _array_ be ! ArrayCreate(_n_).
           1. If _hasGroups_ is *true*, then
             1. Let _groups_ be OrdinaryObjectCreate(*null*).
           1. Else,
             1. Let _groups_ be *undefined*.
-          1. Perform ! CreateDataPropertyOrThrow(_A_, *"groups"*, _groups_).
+          1. Perform ! CreateDataPropertyOrThrow(_array_, *"groups"*, _groups_).
           1. For each integer _i_ such that 0 ≤ _i_ &lt; _n_, in ascending order, do
             1. Let _matchIndices_ be _indices_[_i_].
             1. If _matchIndices_ is not *undefined*, then
               1. Let _matchIndexPair_ be GetMatchIndexPair(_S_, _matchIndices_).
             1. Else,
               1. Let _matchIndexPair_ be *undefined*.
-            1. Perform ! CreateDataPropertyOrThrow(_A_, ! ToString(𝔽(_i_)), _matchIndexPair_).
+            1. Perform ! CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_i_)), _matchIndexPair_).
             1. If _i_ > 0, then
               1. Let _s_ be _groupNames_[_i_ - 1].
               1. If _s_ is not *undefined*, then
                 1. Assert: _groups_ is not *undefined*.
                 1. NOTE: If there are multiple groups named _s_, _groups_ may already have an _s_ property at this point. However, because _groups_ is an ordinary object whose properties are all writable data properties, the call to CreateDataPropertyOrThrow is nevertheless guaranteed to succeed.
                 1. Perform ! CreateDataPropertyOrThrow(_groups_, _s_, _matchIndexPair_).
-          1. Return _A_.
+          1. Return _array_.
         </emu-alg>
       </emu-clause>
     </emu-clause>
@@ -39714,27 +39714,27 @@ THH:mm:ss.sss
         <emu-clause id="sec-%regexpstringiteratorprototype%.next" type="built-in function">
           <h1>%RegExpStringIteratorPrototype%.next ( )</h1>
           <emu-alg>
-            1. Let _O_ be the *this* value.
-            1. If _O_ is not an Object, throw a *TypeError* exception.
-            1. If _O_ does not have all of the internal slots of a RegExp String Iterator Object Instance (see <emu-xref href="#sec-properties-of-regexp-string-iterator-instances"></emu-xref>), throw a *TypeError* exception.
-            1. If _O_.[[Done]] is *true*, then
+            1. Let _iteratorObj_ be the *this* value.
+            1. If _iteratorObj_ is not an Object, throw a *TypeError* exception.
+            1. If _iteratorObj_ does not have all of the internal slots of a RegExp String Iterator Object Instance (see <emu-xref href="#sec-properties-of-regexp-string-iterator-instances"></emu-xref>), throw a *TypeError* exception.
+            1. If _iteratorObj_.[[Done]] is *true*, then
               1. Return CreateIteratorResultObject(*undefined*, *true*).
-            1. Let _R_ be _O_.[[IteratingRegExp]].
-            1. Let _S_ be _O_.[[IteratedString]].
-            1. Let _global_ be _O_.[[Global]].
-            1. Let _fullUnicode_ be _O_.[[Unicode]].
-            1. Let _match_ be ? RegExpExec(_R_, _S_).
+            1. Let _regexp_ be _iteratorObj_.[[IteratingRegExp]].
+            1. Let _str_ be _iteratorObj_.[[IteratedString]].
+            1. Let _global_ be _iteratorObj_.[[Global]].
+            1. Let _fullUnicode_ be _iteratorObj_.[[Unicode]].
+            1. Let _match_ be ? RegExpExec(_regexp_, _str_).
             1. If _match_ is *null*, then
-              1. Set _O_.[[Done]] to *true*.
+              1. Set _iteratorObj_.[[Done]] to *true*.
               1. Return CreateIteratorResultObject(*undefined*, *true*).
             1. If _global_ is *false*, then
-              1. Set _O_.[[Done]] to *true*.
+              1. Set _iteratorObj_.[[Done]] to *true*.
               1. Return CreateIteratorResultObject(_match_, *false*).
             1. Let _matchStr_ be ? ToString(? Get(_match_, *"0"*)).
             1. If _matchStr_ is the empty String, then
-              1. Let _thisIndex_ be ℝ(? ToLength(? Get(_R_, *"lastIndex"*))).
-              1. Let _nextIndex_ be AdvanceStringIndex(_S_, _thisIndex_, _fullUnicode_).
-              1. Perform ? Set(_R_, *"lastIndex"*, 𝔽(_nextIndex_), *true*).
+              1. Let _thisIndex_ be ℝ(? ToLength(? Get(_regexp_, *"lastIndex"*))).
+              1. Let _nextIndex_ be AdvanceStringIndex(_str_, _thisIndex_, _fullUnicode_).
+              1. Perform ? Set(_regexp_, *"lastIndex"*, 𝔽(_nextIndex_), *true*).
             1. Return CreateIteratorResultObject(_match_, *false*).
           </emu-alg>
         </emu-clause>
@@ -42217,8 +42217,8 @@ THH:mm:ss.sss
             1. If _k_ > 0, set _result_ to the string-concatenation of _result_ and _sep_.
             1. Let _element_ be ! Get(_obj_, ! ToString(𝔽(_k_))).
             1. If _element_ is not *undefined*, then
-              1. Let _S_ be ! ToString(_element_).
-              1. Set _result_ to the string-concatenation of _result_ and _S_.
+              1. Let _elementStr_ be ! ToString(_element_).
+              1. Set _result_ to the string-concatenation of _result_ and _elementStr_.
             1. Set _k_ to _k_ + 1.
           1. Return _result_.
         </emu-alg>
@@ -46768,9 +46768,9 @@ THH:mm:ss.sss
           1. Assert: The surrounding agent is in the critical section for _WL_.
           1. Let _len_ be the number of elements in _WL_.[[Waiters]].
           1. Let _n_ be min(_c_, _len_).
-          1. Let _L_ be a List whose elements are the first _n_ elements of _WL_.[[Waiters]].
+          1. Let _waiters_ be a List whose elements are the first _n_ elements of _WL_.[[Waiters]].
           1. Remove the first _n_ elements of _WL_.[[Waiters]].
-          1. Return _L_.
+          1. Return _waiters_.
         </emu-alg>
       </emu-clause>
 
@@ -47488,8 +47488,8 @@ THH:mm:ss.sss
           <dd>It performs a breadth-first search of the parse tree rooted at _root_, and returns the first node that is an instance of a nonterminal corresponding to a JSON value, or ~empty~ if there is no such node.</dd>
         </dl>
         <emu-alg>
-          1. Let _F_ be the active function object.
-          1. Assert: _F_ is a `JSON.parse` built-in function object (see <emu-xref href="#sec-json.parse">JSON.parse</emu-xref>).
+          1. Let _activeFunc_ be the active function object.
+          1. Assert: _activeFunc_ is a `JSON.parse` built-in function object (see <emu-xref href="#sec-json.parse">JSON.parse</emu-xref>).
           1. Let _types_ be « |NullLiteral|, |BooleanLiteral|, |NumericLiteral|, |StringLiteral|, |ArrayLiteral|, |ObjectLiteral|, |UnaryExpression| ».
           1. Let _unaryExpression_ be ~empty~.
           1. Let _queue_ be « _root_ ».
@@ -47905,11 +47905,11 @@ THH:mm:ss.sss
           1. Let _stepBack_ be _state_.[[Indent]].
           1. Set _state_.[[Indent]] to the string-concatenation of _state_.[[Indent]] and _state_.[[Gap]].
           1. If _state_.[[PropertyList]] is not *undefined*, then
-            1. Let _K_ be _state_.[[PropertyList]].
+            1. Let _keys_ be _state_.[[PropertyList]].
           1. Else,
-            1. Let _K_ be ? EnumerableOwnProperties(_value_, ~key~).
+            1. Let _keys_ be ? EnumerableOwnProperties(_value_, ~key~).
           1. Let _partial_ be a new empty List.
-          1. For each element _P_ of _K_, do
+          1. For each element _P_ of _keys_, do
             1. Let _strP_ be ? SerializeJSONProperty(_state_, _P_, _value_).
             1. If _strP_ is not *undefined*, then
               1. Let _member_ be QuoteJSONString(_P_).
@@ -48532,8 +48532,8 @@ THH:mm:ss.sss
               1. NOTE: Once a generator enters the completed state it never leaves it and its associated execution context is never resumed. Any execution state associated with _obj_ can be discarded at this point.
               1. Perform ? IteratorCloseAll(_obj_.[[UnderlyingIterators]], NormalCompletion(~unused~)).
               1. Return CreateIteratorResultObject(*undefined*, *true*).
-            1. Let _C_ be ReturnCompletion(*undefined*).
-            1. Return ? GeneratorResumeAbrupt(_obj_, _C_, *"Iterator Helper"*).
+            1. Let _completion_ be ReturnCompletion(*undefined*).
+            1. Return ? GeneratorResumeAbrupt(_obj_, _completion_, *"Iterator Helper"*).
           </emu-alg>
         </emu-clause>
 
@@ -49748,10 +49748,10 @@ THH:mm:ss.sss
               1. Append *undefined* to _values_.
               1. Let _nextPromise_ be ? Call(_promiseResolve_, _constructor_, « _next_ »).
               1. Let _fulfilledSteps_ be a new Abstract Closure with parameters (_value_) that captures _values_, _resultCapability_, and _remainingElementsCount_ and performs the following steps when called:
-                1. Let _F_ be the active function object.
-                1. If _F_.[[AlreadyCalled]] is *true*, return *undefined*.
-                1. Set _F_.[[AlreadyCalled]] to *true*.
-                1. Let _thisIndex_ be _F_.[[Index]].
+                1. Let _activeFunc_ be the active function object.
+                1. If _activeFunc_.[[AlreadyCalled]] is *true*, return *undefined*.
+                1. Set _activeFunc_.[[AlreadyCalled]] to *true*.
+                1. Let _thisIndex_ be _activeFunc_.[[Index]].
                 1. Set _values_[_thisIndex_] to _value_.
                 1. Set _remainingElementsCount_.[[Value]] to _remainingElementsCount_.[[Value]] - 1.
                 1. If _remainingElementsCount_.[[Value]] = 0, then
@@ -49816,13 +49816,13 @@ THH:mm:ss.sss
               1. Let _nextPromise_ be ? Call(_promiseResolve_, _constructor_, « _next_ »).
               1. Let _alreadyCalled_ be the Record { [[Value]]: *false* }.
               1. Let _fulfilledSteps_ be a new Abstract Closure with parameters (_value_) that captures _values_, _resultCapability_, and _remainingElementsCount_ and performs the following steps when called:
-                1. Let _F_ be the active function object.
-                1. If _F_.[[AlreadyCalled]].[[Value]] is *true*, return *undefined*.
-                1. Set _F_.[[AlreadyCalled]].[[Value]] to *true*.
+                1. Let _activeFunc_ be the active function object.
+                1. If _activeFunc_.[[AlreadyCalled]].[[Value]] is *true*, return *undefined*.
+                1. Set _activeFunc_.[[AlreadyCalled]].[[Value]] to *true*.
                 1. Let _obj_ be OrdinaryObjectCreate(%Object.prototype%).
                 1. Perform ! CreateDataPropertyOrThrow(_obj_, *"status"*, *"fulfilled"*).
                 1. Perform ! CreateDataPropertyOrThrow(_obj_, *"value"*, _value_).
-                1. Let _thisIndex_ be _F_.[[Index]].
+                1. Let _thisIndex_ be _activeFunc_.[[Index]].
                 1. Set _values_[_thisIndex_] to _obj_.
                 1. Set _remainingElementsCount_.[[Value]] to _remainingElementsCount_.[[Value]] - 1.
                 1. If _remainingElementsCount_.[[Value]] = 0, then
@@ -49833,13 +49833,13 @@ THH:mm:ss.sss
               1. Set _onFulfilled_.[[AlreadyCalled]] to _alreadyCalled_.
               1. Set _onFulfilled_.[[Index]] to _index_.
               1. Let _rejectedSteps_ be a new Abstract Closure with parameters (_error_) that captures _values_, _resultCapability_, and _remainingElementsCount_ and performs the following steps when called:
-                1. Let _F_ be the active function object.
-                1. If _F_.[[AlreadyCalled]].[[Value]] is *true*, return *undefined*.
-                1. Set _F_.[[AlreadyCalled]].[[Value]] to *true*.
+                1. Let _activeFunc_ be the active function object.
+                1. If _activeFunc_.[[AlreadyCalled]].[[Value]] is *true*, return *undefined*.
+                1. Set _activeFunc_.[[AlreadyCalled]].[[Value]] to *true*.
                 1. Let _obj_ be OrdinaryObjectCreate(%Object.prototype%).
                 1. Perform ! CreateDataPropertyOrThrow(_obj_, *"status"*, *"rejected"*).
                 1. Perform ! CreateDataPropertyOrThrow(_obj_, *"reason"*, _error_).
-                1. Let _thisIndex_ be _F_.[[Index]].
+                1. Let _thisIndex_ be _activeFunc_.[[Index]].
                 1. Set _values_[_thisIndex_] to _obj_.
                 1. Set _remainingElementsCount_.[[Value]] to _remainingElementsCount_.[[Value]] - 1.
                 1. If _remainingElementsCount_.[[Value]] = 0, then
@@ -49904,10 +49904,10 @@ THH:mm:ss.sss
               1. Append *undefined* to _errors_.
               1. Let _nextPromise_ be ? Call(_promiseResolve_, _constructor_, « _next_ »).
               1. Let _rejectedSteps_ be a new Abstract Closure with parameters (_error_) that captures _errors_, _resultCapability_, and _remainingElementsCount_ and performs the following steps when called:
-                1. Let _F_ be the active function object.
-                1. If _F_.[[AlreadyCalled]] is *true*, return *undefined*.
-                1. Set _F_.[[AlreadyCalled]] to *true*.
-                1. Let _thisIndex_ be _F_.[[Index]].
+                1. Let _activeFunc_ be the active function object.
+                1. If _activeFunc_.[[AlreadyCalled]] is *true*, return *undefined*.
+                1. Set _activeFunc_.[[AlreadyCalled]] to *true*.
+                1. Let _thisIndex_ be _activeFunc_.[[Index]].
                 1. Set _errors_[_thisIndex_] to _error_.
                 1. Set _remainingElementsCount_.[[Value]] to _remainingElementsCount_.[[Value]] - 1.
                 1. If _remainingElementsCount_.[[Value]] = 0, then
@@ -50291,9 +50291,9 @@ THH:mm:ss.sss
         <p>The last argument (if any) specifies the body (executable code) of a generator function; any preceding arguments specify formal parameters.</p>
         <p>This function performs the following steps when called:</p>
         <emu-alg>
-          1. Let _C_ be the active function object.
+          1. Let _activeFunc_ be the active function object.
           1. If _bodyArg_ is not present, set _bodyArg_ to the empty String.
-          1. Return ? CreateDynamicFunction(_C_, NewTarget, ~generator~, _parameterArgs_, _bodyArg_).
+          1. Return ? CreateDynamicFunction(_activeFunc_, NewTarget, ~generator~, _parameterArgs_, _bodyArg_).
         </emu-alg>
         <emu-note>
           <p>See NOTE for <emu-xref href="#sec-function-p1-p2-pn-body"></emu-xref>.</p>
@@ -50393,9 +50393,9 @@ THH:mm:ss.sss
         <p>The last argument (if any) specifies the body (executable code) of an async generator function; any preceding arguments specify formal parameters.</p>
         <p>This function performs the following steps when called:</p>
         <emu-alg>
-          1. Let _C_ be the active function object.
+          1. Let _activeFunc_ be the active function object.
           1. If _bodyArg_ is not present, set _bodyArg_ to the empty String.
-          1. Return ? CreateDynamicFunction(_C_, NewTarget, ~async-generator~, _parameterArgs_, _bodyArg_).
+          1. Return ? CreateDynamicFunction(_activeFunc_, NewTarget, ~async-generator~, _parameterArgs_, _bodyArg_).
         </emu-alg>
         <emu-note>
           <p>See NOTE for <emu-xref href="#sec-function-p1-p2-pn-body"></emu-xref>.</p>
@@ -50511,8 +50511,8 @@ THH:mm:ss.sss
         <p>This method performs the following steps when called:</p>
         <emu-alg>
           1. Let _g_ be the *this* value.
-          1. Let _C_ be ReturnCompletion(_value_).
-          1. Return ? GeneratorResumeAbrupt(_g_, _C_, ~empty~).
+          1. Let _completion_ be ReturnCompletion(_value_).
+          1. Return ? GeneratorResumeAbrupt(_g_, _completion_, ~empty~).
         </emu-alg>
       </emu-clause>
 
@@ -50521,8 +50521,8 @@ THH:mm:ss.sss
         <p>This method performs the following steps when called:</p>
         <emu-alg>
           1. Let _g_ be the *this* value.
-          1. Let _C_ be ThrowCompletion(_exception_).
-          1. Return ? GeneratorResumeAbrupt(_g_, _C_, ~empty~).
+          1. Let _completion_ be ThrowCompletion(_exception_).
+          1. Return ? GeneratorResumeAbrupt(_g_, _completion_, ~empty~).
         </emu-alg>
       </emu-clause>
 
@@ -51223,9 +51223,9 @@ THH:mm:ss.sss
         <p>This function performs the following steps when called:</p>
 
         <emu-alg>
-          1. Let _C_ be the active function object.
+          1. Let _activeFunc_ be the active function object.
           1. If _bodyArg_ is not present, set _bodyArg_ to the empty String.
-          1. Return ? CreateDynamicFunction(_C_, NewTarget, ~async~, _parameterArgs_, _bodyArg_).
+          1. Return ? CreateDynamicFunction(_activeFunc_, NewTarget, ~async~, _parameterArgs_, _bodyArg_).
         </emu-alg>
 
         <emu-note>See NOTE for <emu-xref href="#sec-function-p1-p2-pn-body"></emu-xref>.</emu-note>
@@ -51592,10 +51592,10 @@ THH:mm:ss.sss
         <emu-alg>
           1. Let _proxy_ be ? ProxyCreate(_target_, _handler_).
           1. Let _revokerClosure_ be a new Abstract Closure with no parameters that captures nothing and performs the following steps when called:
-            1. Let _F_ be the active function object.
-            1. Let _p_ be _F_.[[RevocableProxy]].
+            1. Let _activeFunc_ be the active function object.
+            1. Let _p_ be _activeFunc_.[[RevocableProxy]].
             1. If _p_ is *null*, return NormalCompletion(*undefined*).
-            1. Set _F_.[[RevocableProxy]] to *null*.
+            1. Set _activeFunc_.[[RevocableProxy]] to *null*.
             1. Assert: _p_ is a Proxy exotic object.
             1. Set _p_.[[ProxyTarget]] to *null*.
             1. Set _p_.[[ProxyHandler]] to *null*.
