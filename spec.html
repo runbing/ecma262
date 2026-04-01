@@ -4788,8 +4788,8 @@
         </dl>
         <emu-alg>
           1. Let _db_ be a new Shared Data Block value consisting of _size_ bytes. If it is impossible to create such a Shared Data Block, throw a *RangeError* exception.
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _execution_ be _AR_.[[CandidateExecution]].
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
           1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
           1. Let _zero_ be « 0 ».
           1. For each index _i_ of _db_, do
@@ -4818,8 +4818,8 @@
           1. Assert: _toIndex_ + _count_ ≤ _toSize_.
           1. Repeat, while _count_ > 0,
             1. If _fromBlock_ is a Shared Data Block, then
-              1. Let _AR_ be the Agent Record of the surrounding agent.
-              1. Let _execution_ be _AR_.[[CandidateExecution]].
+              1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+              1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
               1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
               1. Let _bytes_ be a List whose sole element is a nondeterministically chosen byte value.
               1. NOTE: In implementations, _bytes_ is the result of a non-atomic read instruction on the underlying hardware. The nondeterminism is a semantic prescription of the memory model to describe observable behaviour of hardware with weak consistency.
@@ -6583,8 +6583,8 @@
       <emu-alg>
         1. If IsCallable(_C_) is *false*, return *false*.
         1. If _C_ has a [[BoundTargetFunction]] internal slot, then
-          1. Let _BC_ be _C_.[[BoundTargetFunction]].
-          1. Return ? InstanceofOperator(_O_, _BC_).
+          1. Let _boundTarget_ be _C_.[[BoundTargetFunction]].
+          1. Return ? InstanceofOperator(_O_, _boundTarget_).
         1. If _O_ is not an Object, return *false*.
         1. Let _proto_ be ? Get(_C_, *"prototype"*).
         1. If _proto_ is not an Object, throw a *TypeError* exception.
@@ -11011,10 +11011,10 @@
             <dd>It determines if the argument identifier is one of the identifiers bound by the record.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. If ! _DclRec_.HasBinding(_N_) is *true*, return *true*.
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Return ? <emu-meta effects="user-code">_ObjRec_.HasBinding(_N_)</emu-meta>.
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. If ! _declarativeRecord_.HasBinding(_N_) is *true*, return *true*.
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Return ? <emu-meta effects="user-code">_objectRecord_.HasBinding(_N_)</emu-meta>.
           </emu-alg>
         </emu-clause>
 
@@ -11033,9 +11033,9 @@
             <dd>It creates a new mutable binding for the name _N_ that is uninitialized. The binding is created in the associated DeclarativeRecord. A binding for _N_ must not already exist in the DeclarativeRecord. If _D_ is *true*, the new binding is marked as being subject to deletion.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. If ! _DclRec_.HasBinding(_N_) is *true*, throw a *TypeError* exception.
-            1. Return ! _DclRec_.CreateMutableBinding(_N_, _D_).
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. If ! _declarativeRecord_.HasBinding(_N_) is *true*, throw a *TypeError* exception.
+            1. Return ! _declarativeRecord_.CreateMutableBinding(_N_, _D_).
           </emu-alg>
         </emu-clause>
 
@@ -11054,9 +11054,9 @@
             <dd>It creates a new immutable binding for the name _N_ that is uninitialized. A binding must not already exist in this Environment Record for _N_. If _S_ is *true*, the new binding is marked as a strict binding.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. If ! _DclRec_.HasBinding(_N_) is *true*, throw a *TypeError* exception.
-            1. Return ! _DclRec_.CreateImmutableBinding(_N_, _S_).
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. If ! _declarativeRecord_.HasBinding(_N_) is *true*, throw a *TypeError* exception.
+            1. Return ! _declarativeRecord_.CreateImmutableBinding(_N_, _S_).
           </emu-alg>
         </emu-clause>
 
@@ -11075,12 +11075,12 @@
             <dd>It is used to set the bound value of the current binding of the identifier whose name is _N_ to the value _V_. An uninitialized binding for _N_ must already exist.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. If ! _DclRec_.HasBinding(_N_) is *true*, then
-              1. Return ! _DclRec_.InitializeBinding(_N_, _V_).
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. If ! _declarativeRecord_.HasBinding(_N_) is *true*, then
+              1. Return ! _declarativeRecord_.InitializeBinding(_N_, _V_).
             1. Assert: If the binding exists, it must be in the Object Environment Record.
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Return ? <emu-meta effects="user-code">_ObjRec_.InitializeBinding(_N_, _V_)</emu-meta>.
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Return ? <emu-meta effects="user-code">_objectRecord_.InitializeBinding(_N_, _V_)</emu-meta>.
           </emu-alg>
         </emu-clause>
 
@@ -11100,11 +11100,11 @@
             <dd>It attempts to change the bound value of the current binding of the identifier whose name is _N_ to the value _V_. If the binding is an immutable binding and _S_ is *true*, a *TypeError* is thrown. A property named _N_ normally already exists but if it does not or is not currently writable, error handling is determined by _S_.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. If ! _DclRec_.HasBinding(_N_) is *true*, then
-              1. Return ? _DclRec_.SetMutableBinding(_N_, _V_, _S_).
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Return ? <emu-meta effects="user-code">_ObjRec_.SetMutableBinding(_N_, _V_, _S_)</emu-meta>.
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. If ! _declarativeRecord_.HasBinding(_N_) is *true*, then
+              1. Return ? _declarativeRecord_.SetMutableBinding(_N_, _V_, _S_).
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Return ? <emu-meta effects="user-code">_objectRecord_.SetMutableBinding(_N_, _V_, _S_)</emu-meta>.
           </emu-alg>
         </emu-clause>
 
@@ -11123,11 +11123,11 @@
             <dd>It returns the value of its bound identifier whose name is _N_. If the binding is an uninitialized binding throw a *ReferenceError* exception. A property named _N_ normally already exists but if it does not or is not currently writable, error handling is determined by _S_.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. If ! _DclRec_.HasBinding(_N_) is *true*, then
-              1. Return ? _DclRec_.GetBindingValue(_N_, _S_).
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Return ? <emu-meta effects="user-code">_ObjRec_.GetBindingValue(_N_, _S_)</emu-meta>.
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. If ! _declarativeRecord_.HasBinding(_N_) is *true*, then
+              1. Return ? _declarativeRecord_.GetBindingValue(_N_, _S_).
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Return ? <emu-meta effects="user-code">_objectRecord_.GetBindingValue(_N_, _S_)</emu-meta>.
           </emu-alg>
         </emu-clause>
 
@@ -11145,14 +11145,14 @@
             <dd>It can only delete bindings that have been explicitly designated as being subject to deletion.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. If ! _DclRec_.HasBinding(_N_) is *true*, then
-              1. Return ! _DclRec_.DeleteBinding(_N_).
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Let _globalObject_ be _ObjRec_.[[BindingObject]].
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. If ! _declarativeRecord_.HasBinding(_N_) is *true*, then
+              1. Return ! _declarativeRecord_.DeleteBinding(_N_).
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Let _globalObject_ be _objectRecord_.[[BindingObject]].
             1. Let _existingProp_ be ? HasOwnProperty(_globalObject_, _N_).
             1. If _existingProp_ is *true*, then
-              1. Return ? <emu-meta effects="user-code">_ObjRec_.DeleteBinding(_N_)</emu-meta>.
+              1. Return ? <emu-meta effects="user-code">_objectRecord_.DeleteBinding(_N_)</emu-meta>.
             1. Return *true*.
           </emu-alg>
         </emu-clause>
@@ -11219,8 +11219,8 @@
             <dd>It determines if the argument identifier has a binding in _envRec_ that was created using a lexical declaration such as a |LexicalDeclaration| or a |ClassDeclaration|.</dd>
           </dl>
           <emu-alg>
-            1. Let _DclRec_ be _envRec_.[[DeclarativeRecord]].
-            1. Return ! _DclRec_.HasBinding(_N_).
+            1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
+            1. Return ! _declarativeRecord_.HasBinding(_N_).
           </emu-alg>
         </emu-clause>
 
@@ -11236,8 +11236,8 @@
             <dd>It determines if the argument identifier is the name of a property of the global object that must not be shadowed by a global lexical binding.</dd>
           </dl>
           <emu-alg>
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Let _globalObject_ be _ObjRec_.[[BindingObject]].
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Let _globalObject_ be _objectRecord_.[[BindingObject]].
             1. Let _existingProp_ be ? <emu-meta effects="user-code">_globalObject_.[[GetOwnProperty]](_N_)</emu-meta>.
             1. If _existingProp_ is *undefined*, return *false*.
             1. If _existingProp_.[[Configurable]] is *true*, return *false*.
@@ -11260,8 +11260,8 @@
             <dd>It determines if a corresponding CreateGlobalVarBinding call would succeed if called for the same argument _N_. Redundant var declarations and var declarations for pre-existing global object properties are allowed.</dd>
           </dl>
           <emu-alg>
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Let _globalObject_ be _ObjRec_.[[BindingObject]].
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Let _globalObject_ be _objectRecord_.[[BindingObject]].
             1. Let _hasProperty_ be ? HasOwnProperty(_globalObject_, _N_).
             1. If _hasProperty_ is *true*, return *true*.
             1. Return ? IsExtensible(_globalObject_).
@@ -11280,8 +11280,8 @@
             <dd>It determines if a corresponding CreateGlobalFunctionBinding call would succeed if called for the same argument _N_.</dd>
           </dl>
           <emu-alg>
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Let _globalObject_ be _ObjRec_.[[BindingObject]].
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Let _globalObject_ be _objectRecord_.[[BindingObject]].
             1. Let _existingProp_ be ? <emu-meta effects="user-code">_globalObject_.[[GetOwnProperty]](_N_)</emu-meta>.
             1. If _existingProp_ is *undefined*, return ? IsExtensible(_globalObject_).
             1. If _existingProp_.[[Configurable]] is *true*, return *true*.
@@ -11303,13 +11303,13 @@
             <dd>It creates and initializes a mutable binding in the associated Object Environment Record. If a binding already exists, it is reused and assumed to be initialized.</dd>
           </dl>
           <emu-alg>
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Let _globalObject_ be _ObjRec_.[[BindingObject]].
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Let _globalObject_ be _objectRecord_.[[BindingObject]].
             1. Let _hasProperty_ be ? HasOwnProperty(_globalObject_, _N_).
             1. Let _extensible_ be ? IsExtensible(_globalObject_).
             1. If _hasProperty_ is *false* and _extensible_ is *true*, then
-              1. Perform ? <emu-meta effects="user-code">_ObjRec_.CreateMutableBinding(_N_, _D_)</emu-meta>.
-              1. Perform ? <emu-meta effects="user-code">_ObjRec_.InitializeBinding(_N_, *undefined*)</emu-meta>.
+              1. Perform ? <emu-meta effects="user-code">_objectRecord_.CreateMutableBinding(_N_, _D_)</emu-meta>.
+              1. Perform ? <emu-meta effects="user-code">_objectRecord_.InitializeBinding(_N_, *undefined*)</emu-meta>.
             1. Return ~unused~.
           </emu-alg>
         </emu-clause>
@@ -11328,8 +11328,8 @@
             <dd>It creates and initializes a mutable binding in the associated Object Environment Record. If a binding already exists, it is replaced.</dd>
           </dl>
           <emu-alg>
-            1. Let _ObjRec_ be _envRec_.[[ObjectRecord]].
-            1. Let _globalObject_ be _ObjRec_.[[BindingObject]].
+            1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
+            1. Let _globalObject_ be _objectRecord_.[[BindingObject]].
             1. Let _existingProp_ be ? <emu-meta effects="user-code">_globalObject_.[[GetOwnProperty]](_N_)</emu-meta>.
             1. If _existingProp_ is *undefined* or _existingProp_.[[Configurable]] is *true*, then
               1. Let _desc_ be the PropertyDescriptor { [[Value]]: _V_, [[Writable]]: *true*, [[Enumerable]]: *true*, [[Configurable]]: _D_ }.
@@ -12298,8 +12298,8 @@
       <dl class="header">
       </dl>
       <emu-alg>
-        1. Let _AR_ be the Agent Record of the surrounding agent.
-        1. Return _AR_.[[Signifier]].
+        1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+        1. Return _agentRecord_.[[Signifier]].
       </emu-alg>
     </emu-clause>
 
@@ -12308,8 +12308,8 @@
       <dl class="header">
       </dl>
       <emu-alg>
-        1. Let _AR_ be the Agent Record of the surrounding agent.
-        1. Return _AR_.[[CanBlock]].
+        1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+        1. Return _agentRecord_.[[CanBlock]].
       </emu-alg>
       <emu-note>
         <p>In some environments it may not be reasonable for a given agent to suspend. For example, in a web browser environment, it may be reasonable to disallow suspending a document's main event handling thread, while still allowing workers' event handling threads to suspend.</p>
@@ -12321,9 +12321,9 @@
       <dl class="header">
       </dl>
       <emu-alg>
-        1. Let _AR_ be the Agent Record of the surrounding agent.
-        1. Let _count_ be _AR_.[[ModuleAsyncEvaluationCount]].
-        1. Set _AR_.[[ModuleAsyncEvaluationCount]] to _count_ + 1.
+        1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+        1. Let _count_ be _agentRecord_.[[ModuleAsyncEvaluationCount]].
+        1. Set _agentRecord_.[[ModuleAsyncEvaluationCount]] to _count_ + 1.
         1. Return _count_.
       </emu-alg>
       <emu-note>
@@ -13593,10 +13593,10 @@
         1. Set _func_.[[SourceText]] to _sourceText_.
         1. Set _func_.[[FormalParameters]] to _ParameterList_.
         1. Set _func_.[[ECMAScriptCode]] to _Body_.
-        1. Let _Strict_ be IsStrict(_Body_).
-        1. Set _func_.[[Strict]] to _Strict_.
+        1. Let _strict_ be IsStrict(_Body_).
+        1. Set _func_.[[Strict]] to _strict_.
         1. If _thisMode_ is ~lexical-this~, set _func_.[[ThisMode]] to ~lexical~.
-        1. Else if _Strict_ is *true*, set _func_.[[ThisMode]] to ~strict~.
+        1. Else if _strict_ is *true*, set _func_.[[ThisMode]] to ~strict~.
         1. Else, set _func_.[[ThisMode]] to ~global~.
         1. Set _func_.[[IsClassConstructor]] to *false*.
         1. Set _func_.[[Environment]] to _env_.
@@ -31301,13 +31301,13 @@
         <h1>Function.prototype.bind ( _thisArg_, ..._args_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _Target_ be the *this* value.
-          1. If IsCallable(_Target_) is *false*, throw a *TypeError* exception.
-          1. Let _boundFunc_ be ? BoundFunctionCreate(_Target_, _thisArg_, _args_).
+          1. Let _target_ be the *this* value.
+          1. If IsCallable(_target_) is *false*, throw a *TypeError* exception.
+          1. Let _boundFunc_ be ? BoundFunctionCreate(_target_, _thisArg_, _args_).
           1. Let _length_ be 0.
-          1. Let _targetHasLength_ be ? HasOwnProperty(_Target_, *"length"*).
+          1. Let _targetHasLength_ be ? HasOwnProperty(_target_, *"length"*).
           1. If _targetHasLength_ is *true*, then
-            1. Let _targetLen_ be ? Get(_Target_, *"length"*).
+            1. Let _targetLen_ be ? Get(_target_, *"length"*).
             1. If _targetLen_ is a Number, then
               1. If _targetLen_ is *+∞*<sub>𝔽</sub>, then
                 1. Set _length_ to +∞.
@@ -31319,7 +31319,7 @@
                 1. Let _argCount_ be the number of elements in _args_.
                 1. Set _length_ to max(_targetLenAsInt_ - _argCount_, 0).
           1. Perform SetFunctionLength(_boundFunc_, _length_).
-          1. Let _targetName_ be ? Get(_Target_, *"name"*).
+          1. Let _targetName_ be ? Get(_target_, *"name"*).
           1. If _targetName_ is not a String, set _targetName_ to the empty String.
           1. Perform SetFunctionName(_boundFunc_, _targetName_, *"bound"*).
           1. Return _boundFunc_.
@@ -31328,7 +31328,7 @@
           <p>Function objects created using `Function.prototype.bind` are exotic objects. They also do not have a *"prototype"* property.</p>
         </emu-note>
         <emu-note>
-          <p>If _Target_ is either an arrow function or a bound function exotic object, then the _thisArg_ passed to this method will not be used by subsequent calls to _F_.</p>
+          <p>If _target_ is either an arrow function or a bound function exotic object, then the _thisArg_ passed to this method will not be used by subsequent calls to _F_.</p>
         </emu-note>
       </emu-clause>
 
@@ -39830,9 +39830,9 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArrayCreate(_numberOfArgs_, _proto_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _numberOfArgs_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
             1. Let _itemK_ be _values_[_k_].
-            1. Perform ! CreateDataPropertyOrThrow(_array_, _Pk_, _itemK_).
+            1. Perform ! CreateDataPropertyOrThrow(_array_, _pk_, _itemK_).
             1. Set _k_ to _k_ + 1.
           1. Assert: The mathematical value of _array_'s *"length"* property is _numberOfArgs_.
           1. Return _array_.
@@ -39871,7 +39871,7 @@ THH:mm:ss.sss
               1. If _k_ ≥ 2<sup>53</sup> - 1, then
                 1. Let _error_ be ThrowCompletion(a newly created *TypeError* object).
                 1. Return ? IteratorClose(_iteratorRecord_, _error_).
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
               1. Let _next_ be ? IteratorStepValue(_iteratorRecord_).
               1. If _next_ is ~done~, then
                 1. Perform ? Set(_array_, *"length"*, 𝔽(_k_), *true*).
@@ -39881,7 +39881,7 @@ THH:mm:ss.sss
                 1. IfAbruptCloseIterator(_mappedValue_, _iteratorRecord_).
               1. Else,
                 1. Let _mappedValue_ be _next_.
-              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _Pk_, _mappedValue_)).
+              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_)).
               1. IfAbruptCloseIterator(_defineStatus_, _iteratorRecord_).
               1. Set _k_ to _k_ + 1.
           1. NOTE: _items_ is not iterable so assume it is an array-like object.
@@ -39893,13 +39893,13 @@ THH:mm:ss.sss
             1. Let _array_ be ? ArrayCreate(_len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ? Get(_arrayLike_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
             1. If _mapping_ is *true*, then
               1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
             1. Else,
               1. Let _mappedValue_ be _kValue_.
-            1. Perform ? CreateDataPropertyOrThrow(_array_, _Pk_, _mappedValue_).
+            1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_).
             1. Set _k_ to _k_ + 1.
           1. Perform ? Set(_array_, *"length"*, 𝔽(_len_), *true*).
           1. Return _array_.
@@ -39937,7 +39937,7 @@ THH:mm:ss.sss
               1. If _k_ ≥ 2<sup>53</sup> - 1, then
                 1. Let _error_ be ThrowCompletion(a newly created *TypeError* object).
                 1. Return ? AsyncIteratorClose(_iteratorRecord_, _error_).
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
               1. Let _nextResult_ be ? Call(_iteratorRecord_.[[NextMethod]], _iteratorRecord_.[[Iterator]]).
               1. Set _nextResult_ to ? Await(_nextResult_).
               1. If _nextResult_ is not an Object, throw a *TypeError* exception.
@@ -39953,7 +39953,7 @@ THH:mm:ss.sss
                 1. IfAbruptCloseAsyncIterator(_mappedValue_, _iteratorRecord_).
               1. Else,
                 1. Let _mappedValue_ be _nextValue_.
-              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _Pk_, _mappedValue_)).
+              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_)).
               1. IfAbruptCloseAsyncIterator(_defineStatus_, _iteratorRecord_).
               1. Set _k_ to _k_ + 1.
           1. Else,
@@ -39966,15 +39966,15 @@ THH:mm:ss.sss
               1. Let _array_ be ? ArrayCreate(_len_).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
-              1. Let _kValue_ be ? Get(_arrayLike_, _Pk_).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
               1. Set _kValue_ to ? Await(_kValue_).
               1. If _mapping_ is *true*, then
                 1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
                 1. Set _mappedValue_ to ? Await(_mappedValue_).
               1. Else,
                 1. Let _mappedValue_ be _kValue_.
-              1. Perform ? CreateDataPropertyOrThrow(_array_, _Pk_, _mappedValue_).
+              1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_).
               1. Set _k_ to _k_ + 1.
             1. Perform ? Set(_array_, *"length"*, 𝔽(_len_), *true*).
             1. Return _array_.
@@ -40006,8 +40006,8 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _kValue_ be _items_[_k_].
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ? CreateDataPropertyOrThrow(_array_, _Pk_, _kValue_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _kValue_).
             1. Set _k_ to _k_ + 1.
           1. Perform ? Set(_array_, *"length"*, _lenNumber_, *true*).
           1. Return _array_.
@@ -40080,10 +40080,10 @@ THH:mm:ss.sss
               1. If _nextIndex_ + _len_ > 2<sup>53</sup> - 1, throw a *TypeError* exception.
               1. Let _sourceIndex_ be 0.
               1. Repeat, while _sourceIndex_ &lt; _len_,
-                1. Let _Pk_ be ! ToString(𝔽(_sourceIndex_)).
-                1. Let _exists_ be ? HasProperty(_element_, _Pk_).
+                1. Let _pk_ be ! ToString(𝔽(_sourceIndex_)).
+                1. Let _exists_ be ? HasProperty(_element_, _pk_).
                 1. If _exists_ is *true*, then
-                  1. Let _subElement_ be ? Get(_element_, _Pk_).
+                  1. Let _subElement_ be ? Get(_element_, _pk_).
                   1. Perform ? CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_nextIndex_)), _subElement_).
                 1. Set _nextIndex_ to _nextIndex_ + 1.
                 1. Set _sourceIndex_ to _sourceIndex_ + 1.
@@ -40201,10 +40201,10 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
               1. If _testResult_ is *false*, return *false*.
             1. Set _k_ to _k_ + 1.
@@ -40237,8 +40237,8 @@ THH:mm:ss.sss
           1. Else if _relativeEnd_ &lt; 0, let _final_ be max(_len_ + _relativeEnd_, 0).
           1. Else, let _final_ be min(_relativeEnd_, _len_).
           1. Repeat, while _k_ &lt; _final_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ? Set(_obj_, _Pk_, _value_, *true*).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Perform ? Set(_obj_, _pk_, _value_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _obj_.
         </emu-alg>
@@ -40265,10 +40265,10 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Let _to_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Let _selected_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
               1. If _selected_ is *true*, then
                 1. Perform ? CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_to_)), _kValue_).
@@ -40379,9 +40379,9 @@ THH:mm:ss.sss
             1. Else,
               1. Let _indices_ be a List of the integers in the interval from 0 (inclusive) to _len_ (exclusive), in descending order.
             1. For each integer _k_ of _indices_, do
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
               1. NOTE: If _obj_ is a TypedArray, the following invocation of Get will return a normal completion.
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Let _testResult_ be ? Call(_predicate_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
               1. If ToBoolean(_testResult_) is *true*, return the Record { [[Index]]: 𝔽(_k_), [[Value]]: _kValue_ }.
             1. Return the Record { [[Index]]: *-1*<sub>𝔽</sub>, [[Value]]: *undefined* }.
@@ -40476,10 +40476,10 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Perform ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return *undefined*.
@@ -40544,10 +40544,10 @@ THH:mm:ss.sss
             1. Let _k_ be _len_ + _startIndex_.
             1. If _k_ &lt; 0, set _k_ to 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ? Get(_obj_, _Pk_).
+              1. Let _elementK_ be ? Get(_obj_, _pk_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ + 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -40609,10 +40609,10 @@ THH:mm:ss.sss
           1. Else,
             1. Let _k_ be _len_ + _startIndex_.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ? Get(_obj_, _Pk_).
+              1. Let _elementK_ be ? Get(_obj_, _pk_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ - 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -40639,12 +40639,12 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArraySpeciesCreate(_obj_, _len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Let _mappedValue_ be ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
-              1. Perform ? CreateDataPropertyOrThrow(_array_, _Pk_, _mappedValue_).
+              1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_).
             1. Set _k_ to _k_ + 1.
           1. Return _array_.
         </emu-alg>
@@ -40722,17 +40722,17 @@ THH:mm:ss.sss
           1. Else,
             1. Let _kPresent_ be *false*.
             1. Repeat, while _kPresent_ is *false* and _k_ &lt; _len_,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
-              1. Set _kPresent_ to ? HasProperty(_obj_, _Pk_).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Set _kPresent_ to ? HasProperty(_obj_, _pk_).
               1. If _kPresent_ is *true*, then
-                1. Set _accumulator_ to ? Get(_obj_, _Pk_).
+                1. Set _accumulator_ to ? Get(_obj_, _pk_).
               1. Set _k_ to _k_ + 1.
             1. If _kPresent_ is *false*, throw a *TypeError* exception.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return _accumulator_.
@@ -40763,17 +40763,17 @@ THH:mm:ss.sss
           1. Else,
             1. Let _kPresent_ be *false*.
             1. Repeat, while _kPresent_ is *false* and _k_ ≥ 0,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
-              1. Set _kPresent_ to ? HasProperty(_obj_, _Pk_).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Set _kPresent_ to ? HasProperty(_obj_, _pk_).
               1. If _kPresent_ is *true*, then
-                1. Set _accumulator_ to ? Get(_obj_, _Pk_).
+                1. Set _accumulator_ to ? Get(_obj_, _pk_).
               1. Set _k_ to _k_ - 1.
             1. If _kPresent_ is *false*, throw a *TypeError* exception.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ - 1.
           1. Return _accumulator_.
@@ -40875,10 +40875,10 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArraySpeciesCreate(_obj_, _count_).
           1. Let _resultIndex_ be 0.
           1. Repeat, while _k_ &lt; _final_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Perform ? CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_resultIndex_)), _kValue_).
             1. Set _k_ to _k_ + 1.
             1. Set _resultIndex_ to _resultIndex_ + 1.
@@ -40909,10 +40909,10 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _Pk_).
+              1. Let _kValue_ be ? Get(_obj_, _pk_).
               1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
               1. If _testResult_ is *true*, return *true*.
             1. Set _k_ to _k_ + 1.
@@ -40970,14 +40970,14 @@ THH:mm:ss.sss
             1. Let _items_ be a new empty List.
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
               1. If _holes_ is ~skip-holes~, then
-                1. Let _kRead_ be ? HasProperty(_obj_, _Pk_).
+                1. Let _kRead_ be ? HasProperty(_obj_, _pk_).
               1. Else,
                 1. Assert: _holes_ is ~read-through-holes~.
                 1. Let _kRead_ be *true*.
               1. If _kRead_ is *true*, then
-                1. Let _kValue_ be ? Get(_obj_, _Pk_).
+                1. Let _kValue_ be ? Get(_obj_, _pk_).
                 1. Append _kValue_ to _items_.
               1. Set _k_ to _k_ + 1.
             1. [id="step-array-sort"] Sort _items_ using an implementation-defined sequence of <emu-meta effects="user-code">calls to _SortCompare_</emu-meta>. If any such call returns an abrupt completion, stop before performing any further calls to _SortCompare_ and return that Completion Record.
@@ -41168,9 +41168,9 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _from_ be ! ToString(𝔽(_len_ - _k_ - 1)).
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
             1. Let _fromValue_ be ? Get(_obj_, _from_).
-            1. Perform ! CreateDataPropertyOrThrow(_array_, _Pk_, _fromValue_).
+            1. Perform ! CreateDataPropertyOrThrow(_array_, _pk_, _fromValue_).
             1. Set _k_ to _k_ + 1.
           1. Return _array_.
         </emu-alg>
@@ -41219,19 +41219,19 @@ THH:mm:ss.sss
           1. Let _writeIndex_ be 0.
           1. Let _readIndex_ be _actualStart_ + _actualSkipCount_.
           1. Repeat, while _writeIndex_ &lt; _actualStart_,
-            1. Let _Pi_ be ! ToString(𝔽(_writeIndex_)).
-            1. Let _iValue_ be ? Get(_obj_, _Pi_).
-            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _Pi_, _iValue_).
+            1. Let _pi_ be ! ToString(𝔽(_writeIndex_)).
+            1. Let _iValue_ be ? Get(_obj_, _pi_).
+            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _pi_, _iValue_).
             1. Set _writeIndex_ to _writeIndex_ + 1.
           1. For each element _item_ of _items_, do
-            1. Let _Pi_ be ! ToString(𝔽(_writeIndex_)).
-            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _Pi_, _item_).
+            1. Let _pi_ be ! ToString(𝔽(_writeIndex_)).
+            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _pi_, _item_).
             1. Set _writeIndex_ to _writeIndex_ + 1.
           1. Repeat, while _writeIndex_ &lt; _newLen_,
-            1. Let _Pi_ be ! ToString(𝔽(_writeIndex_)).
+            1. Let _pi_ be ! ToString(𝔽(_writeIndex_)).
             1. Let _from_ be ! ToString(𝔽(_readIndex_)).
             1. Let _fromValue_ be ? Get(_obj_, _from_).
-            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _Pi_, _fromValue_).
+            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _pi_, _fromValue_).
             1. Set _writeIndex_ to _writeIndex_ + 1.
             1. Set _readIndex_ to _readIndex_ + 1.
           1. Return _newArray_.
@@ -41309,10 +41309,10 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArrayCreate(_len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
             1. If _k_ = _actualIndex_, let _fromValue_ be _value_.
-            1. Else, let _fromValue_ be ? Get(_obj_, _Pk_).
-            1. Perform ! CreateDataPropertyOrThrow(_array_, _Pk_, _fromValue_).
+            1. Else, let _fromValue_ be ? Get(_obj_, _pk_).
+            1. Perform ! CreateDataPropertyOrThrow(_array_, _pk_, _fromValue_).
             1. Set _k_ to _k_ + 1.
           1. Return _array_.
         </emu-alg>
@@ -41789,14 +41789,14 @@ THH:mm:ss.sss
             1. Let _targetObj_ be ? TypedArrayCreateFromConstructor(_constructor_, « 𝔽(_len_) »).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
               1. Let _kValue_ be the first element of _values_.
               1. Remove the first element from _values_.
               1. If _mapping_ is *true*, then
                 1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
               1. Else,
                 1. Let _mappedValue_ be _kValue_.
-              1. Perform ? Set(_targetObj_, _Pk_, _mappedValue_, *true*).
+              1. Perform ? Set(_targetObj_, _pk_, _mappedValue_, *true*).
               1. Set _k_ to _k_ + 1.
             1. Assert: _values_ is now an empty List.
             1. Return _targetObj_.
@@ -41806,13 +41806,13 @@ THH:mm:ss.sss
           1. Let _targetObj_ be ? TypedArrayCreateFromConstructor(_constructor_, « 𝔽(_len_) »).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ? Get(_arrayLike_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
             1. If _mapping_ is *true*, then
               1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
             1. Else,
               1. Let _mappedValue_ be _kValue_.
-            1. Perform ? Set(_targetObj_, _Pk_, _mappedValue_, *true*).
+            1. Perform ? Set(_targetObj_, _pk_, _mappedValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _targetObj_.
         </emu-alg>
@@ -41829,8 +41829,8 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _kValue_ be _items_[_k_].
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ? Set(_newObj_, _Pk_, _kValue_, *true*).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Perform ? Set(_newObj_, _pk_, _kValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _newObj_.
         </emu-alg>
@@ -41997,8 +41997,8 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _pk_).
             1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
             1. If _testResult_ is *false*, return *false*.
             1. Set _k_ to _k_ + 1.
@@ -42031,8 +42031,8 @@ THH:mm:ss.sss
           1. Set _endIndex_ to min(_endIndex_, _len_).
           1. Let _k_ be _startIndex_.
           1. Repeat, while _k_ &lt; _endIndex_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ! Set(_obj_, _Pk_, _value_, *true*).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Perform ! Set(_obj_, _pk_, _value_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _obj_.
         </emu-alg>
@@ -42051,8 +42051,8 @@ THH:mm:ss.sss
           1. Let _captured_ be 0.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _pk_).
             1. Let _selected_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
             1. If _selected_ is *true*, then
               1. Append _kValue_ to _kept_.
@@ -42135,8 +42135,8 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _pk_).
             1. Perform ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return *undefined*.
@@ -42190,10 +42190,10 @@ THH:mm:ss.sss
             1. Let _k_ be _len_ + _n_.
             1. If _k_ &lt; 0, set _k_ to 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ! HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ! HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ! Get(_obj_, _Pk_).
+              1. Let _elementK_ be ! Get(_obj_, _pk_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ + 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -42251,10 +42251,10 @@ THH:mm:ss.sss
           1. Else,
             1. Let _k_ be _len_ + _n_.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ! HasProperty(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ! HasProperty(_obj_, _pk_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ! Get(_obj_, _Pk_).
+              1. Let _elementK_ be ! Get(_obj_, _pk_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ - 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -42289,10 +42289,10 @@ THH:mm:ss.sss
           1. Let _resultArray_ be ? TypedArraySpeciesCreate(_obj_, « 𝔽(_len_) »).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _pk_).
             1. Let _mappedValue_ be ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
-            1. Perform ? Set(_resultArray_, _Pk_, _mappedValue_, *true*).
+            1. Perform ? Set(_resultArray_, _pk_, _mappedValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _resultArray_.
         </emu-alg>
@@ -42314,12 +42314,12 @@ THH:mm:ss.sss
           1. If _initialValue_ is present, then
             1. Set _accumulator_ to _initialValue_.
           1. Else,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Set _accumulator_ to ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Set _accumulator_ to ! Get(_obj_, _pk_).
             1. Set _k_ to _k_ + 1.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _pk_).
             1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return _accumulator_.
@@ -42342,12 +42342,12 @@ THH:mm:ss.sss
           1. If _initialValue_ is present, then
             1. Set _accumulator_ to _initialValue_.
           1. Else,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Set _accumulator_ to ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Set _accumulator_ to ! Get(_obj_, _pk_).
             1. Set _k_ to _k_ - 1.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _pk_).
             1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ - 1.
           1. Return _accumulator_.
@@ -42419,8 +42419,8 @@ THH:mm:ss.sss
             1. If _srcLength_ + _targetOffset_ > _targetLength_, throw a *RangeError* exception.
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _srcLength_,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
-              1. Let _value_ be ? Get(_src_, _Pk_).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _value_ be ? Get(_src_, _pk_).
               1. Let _targetIndex_ be 𝔽(_targetOffset_ + _k_).
               1. Perform ? TypedArraySetElement(_target_, _targetIndex_, _value_).
               1. Set _k_ to _k_ + 1.
@@ -42528,8 +42528,8 @@ THH:mm:ss.sss
               1. Let _n_ be 0.
               1. Let _k_ be _startIndex_.
               1. Repeat, while _k_ &lt; _endIndex_,
-                1. Let _Pk_ be ! ToString(𝔽(_k_)).
-                1. Let _kValue_ be ! Get(_obj_, _Pk_).
+                1. Let _pk_ be ! ToString(𝔽(_k_)).
+                1. Let _kValue_ be ! Get(_obj_, _pk_).
                 1. Perform ! Set(_resultArray_, ! ToString(𝔽(_n_)), _kValue_, *true*).
                 1. Set _k_ to _k_ + 1.
                 1. Set _n_ to _n_ + 1.
@@ -42549,8 +42549,8 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _Pk_).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _pk_).
             1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
             1. If _testResult_ is *true*, return *true*.
             1. Set _k_ to _k_ + 1.
@@ -42639,9 +42639,9 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _from_ be ! ToString(𝔽(_len_ - _k_ - 1)).
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
             1. Let _fromValue_ be ! Get(_obj_, _from_).
-            1. Perform ! Set(_resultArray_, _Pk_, _fromValue_, *true*).
+            1. Perform ! Set(_resultArray_, _pk_, _fromValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _resultArray_.
         </emu-alg>
@@ -42699,10 +42699,10 @@ THH:mm:ss.sss
           1. Let _resultArray_ be ? TypedArrayCreateSameType(_obj_, _len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _Pk_ be ! ToString(𝔽(_k_)).
+            1. Let _pk_ be ! ToString(𝔽(_k_)).
             1. If _k_ = _actualIndex_, let _fromValue_ be _numericValue_.
-            1. Else, let _fromValue_ be ! Get(_obj_, _Pk_).
-            1. Perform ! Set(_resultArray_, _Pk_, _fromValue_, *true*).
+            1. Else, let _fromValue_ be ! Get(_obj_, _pk_).
+            1. Perform ! Set(_resultArray_, _pk_, _fromValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _resultArray_.
         </emu-alg>
@@ -43039,10 +43039,10 @@ THH:mm:ss.sss
             1. Perform ? AllocateTypedArrayBuffer(_obj_, _len_).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
               1. Let _kValue_ be the first element of _values_.
               1. Remove the first element from _values_.
-              1. Perform ? Set(_obj_, _Pk_, _kValue_, *true*).
+              1. Perform ? Set(_obj_, _pk_, _kValue_, *true*).
               1. Set _k_ to _k_ + 1.
             1. Assert: _values_ is now an empty List.
             1. Return ~unused~.
@@ -43063,9 +43063,9 @@ THH:mm:ss.sss
             1. Perform ? AllocateTypedArrayBuffer(_obj_, _len_).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _Pk_ be ! ToString(𝔽(_k_)).
-              1. Let _kValue_ be ? Get(_arrayLike_, _Pk_).
-              1. Perform ? Set(_obj_, _Pk_, _kValue_, *true*).
+              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
+              1. Perform ? Set(_obj_, _pk_, _kValue_, *true*).
               1. Set _k_ to _k_ + 1.
             1. Return ~unused~.
           </emu-alg>
@@ -44963,8 +44963,8 @@ THH:mm:ss.sss
           1. If IsGrowableSharedArrayBuffer(_arrayBuffer_) is *true*, then
             1. Let _bufferByteLengthBlock_ be _arrayBuffer_.[[ArrayBufferByteLengthData]].
             1. Let _rawLength_ be GetRawBytesFromSharedBlock(_bufferByteLengthBlock_, 0, ~biguint64~, *true*, _order_).
-            1. Let _AR_ be the Agent Record of the surrounding agent.
-            1. Let _isLittleEndian_ be _AR_.[[LittleEndian]].
+            1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+            1. Let _isLittleEndian_ be _agentRecord_.[[LittleEndian]].
             1. Return ℝ(RawBytesToNumeric(~biguint64~, _rawLength_, _isLittleEndian_)).
           1. Assert: IsDetachedBuffer(_arrayBuffer_) is *false*.
           1. Return _arrayBuffer_.[[ArrayBufferByteLength]].
@@ -45228,8 +45228,8 @@ THH:mm:ss.sss
         </dl>
         <emu-alg>
           1. Let _elementSize_ be the Element Size value specified in <emu-xref href="#table-the-typedarray-constructors"></emu-xref> for Element Type _type_.
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _execution_ be _AR_.[[CandidateExecution]].
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
           1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
           1. If _isTypedArray_ is *true* and IsNoTearConfiguration(_type_, _order_) is *true*, let _noTear_ be *true*; else let _noTear_ be *false*.
           1. Let _rawValue_ be a List of length _elementSize_ whose elements are nondeterministically chosen byte values.
@@ -45266,8 +45266,8 @@ THH:mm:ss.sss
             1. Let _rawValue_ be a List whose elements are bytes from _block_ at indices in the interval from _byteIndex_ (inclusive) to _byteIndex_ + _elementSize_ (exclusive).
           1. Assert: The number of elements in _rawValue_ is _elementSize_.
           1. If _isLittleEndian_ is not present, then
-            1. Let _AR_ be the Agent Record of the surrounding agent.
-            1. Set _isLittleEndian_ to _AR_.[[LittleEndian]].
+            1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+            1. Set _isLittleEndian_ to _agentRecord_.[[LittleEndian]].
           1. Return RawBytesToNumeric(_type_, _rawValue_, _isLittleEndian_).
         </emu-alg>
       </emu-clause>
@@ -45322,12 +45322,12 @@ THH:mm:ss.sss
           1. Assert: _value_ is a BigInt if IsBigIntElementType(_type_) is *true*; else, _value_ is a Number.
           1. Let _block_ be _arrayBuffer_.[[ArrayBufferData]].
           1. Let _elementSize_ be the Element Size value specified in <emu-xref href="#table-the-typedarray-constructors"></emu-xref> for Element Type _type_.
-          1. Let _AR_ be the Agent Record of the surrounding agent.
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
           1. If _isLittleEndian_ is not present, then
-            1. Set _isLittleEndian_ to _AR_.[[LittleEndian]].
+            1. Set _isLittleEndian_ to _agentRecord_.[[LittleEndian]].
           1. Let _rawBytes_ be NumericToRawBytes(_type_, _value_, _isLittleEndian_).
           1. If IsSharedArrayBuffer(_arrayBuffer_) is *true*, then
-            1. Let _execution_ be _AR_.[[CandidateExecution]].
+            1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
             1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
             1. If _isTypedArray_ is *true* and IsNoTearConfiguration(_type_, _order_) is *true*, let _noTear_ be *true*; else let _noTear_ be *false*.
             1. Append WriteSharedMemory { [[Order]]: _order_, [[NoTear]]: _noTear_, [[Block]]: _block_, [[ByteIndex]]: _byteIndex_, [[ElementSize]]: _elementSize_, [[Payload]]: _rawBytes_ } to _eventsRecord_.[[EventList]].
@@ -45355,11 +45355,11 @@ THH:mm:ss.sss
           1. Assert: _value_ is a BigInt if IsBigIntElementType(_type_) is *true*; else, _value_ is a Number.
           1. Let _block_ be _arrayBuffer_.[[ArrayBufferData]].
           1. Let _elementSize_ be the Element Size value specified in <emu-xref href="#table-the-typedarray-constructors"></emu-xref> for Element Type _type_.
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _isLittleEndian_ be _AR_.[[LittleEndian]].
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _isLittleEndian_ be _agentRecord_.[[LittleEndian]].
           1. Let _rawBytes_ be NumericToRawBytes(_type_, _value_, _isLittleEndian_).
           1. If IsSharedArrayBuffer(_arrayBuffer_) is *true*, then
-            1. Let _execution_ be _AR_.[[CandidateExecution]].
+            1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
             1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
             1. Let _rawBytesRead_ be a List of length _elementSize_ whose elements are nondeterministically chosen byte values.
             1. NOTE: In implementations, _rawBytesRead_ is the result of a load-link, of a load-exclusive, or of an operand of a read-modify-write instruction on the underlying hardware. The nondeterminism is a semantic prescription of the memory model to describe observable behaviour of hardware with weak consistency.
@@ -45707,7 +45707,7 @@ THH:mm:ss.sss
         <p>The implementation of HostGrowSharedArrayBuffer must conform to the following requirements:</p>
         <ul>
           <li>If the abstract operation does not complete normally with ~unhandled~, and _newByteLength_ &lt; the current byte length of the _buffer_ or _newByteLength_ > _buffer_.[[ArrayBufferMaxByteLength]], throw a *RangeError* exception.</li>
-          <li>Let _AR_ be the Agent Record of the surrounding agent. Let _isLittleEndian_ be _AR_.[[LittleEndian]]. If the abstract operation completes normally with ~handled~, a WriteSharedMemory or ReadModifyWriteSharedMemory event whose [[Order]] is ~seq-cst~, [[Payload]] is NumericToRawBytes(~biguint64~, _newByteLength_, _isLittleEndian_), [[Block]] is _buffer_.[[ArrayBufferByteLengthData]], [[ByteIndex]] is 0, and [[ElementSize]] is 8 is added to the surrounding agent's candidate execution such that racing calls to <emu-xref href="#sec-sharedarraybuffer.prototype.grow" title></emu-xref> are not "lost", i.e. silently do nothing.</li>
+          <li>Let _agentRecord_ be the Agent Record of the surrounding agent. Let _isLittleEndian_ be _agentRecord_.[[LittleEndian]]. If the abstract operation completes normally with ~handled~, a WriteSharedMemory or ReadModifyWriteSharedMemory event whose [[Order]] is ~seq-cst~, [[Payload]] is NumericToRawBytes(~biguint64~, _newByteLength_, _isLittleEndian_), [[Block]] is _buffer_.[[ArrayBufferByteLengthData]], [[ByteIndex]] is 0, and [[ElementSize]] is 8 is added to the surrounding agent's candidate execution such that racing calls to <emu-xref href="#sec-sharedarraybuffer.prototype.grow" title></emu-xref> are not "lost", i.e. silently do nothing.</li>
         </ul>
 
         <emu-note>
@@ -45809,8 +45809,8 @@ THH:mm:ss.sss
           1. Let _newByteLength_ be ? ToIndex(_newLength_).
           1. Let _hostHandled_ be ? HostGrowSharedArrayBuffer(_obj_, _newByteLength_).
           1. If _hostHandled_ is ~handled~, return *undefined*.
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _isLittleEndian_ be _AR_.[[LittleEndian]].
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _isLittleEndian_ be _agentRecord_.[[LittleEndian]].
           1. Let _byteLengthBlock_ be _obj_.[[ArrayBufferByteLengthData]].
           1. Let _currentByteLengthRawBytes_ be GetRawBytesFromSharedBlock(_byteLengthBlock_, 0, ~biguint64~, *true*, ~seq-cst~).
           1. Let _newByteLengthRawBytes_ be NumericToRawBytes(~biguint64~, ℤ(_newByteLength_), _isLittleEndian_).
@@ -46679,22 +46679,22 @@ THH:mm:ss.sss
       <emu-clause id="sec-entercriticalsection" type="abstract operation">
         <h1>
           EnterCriticalSection (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
           ): ~unused~
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
           1. Assert: The surrounding agent is not in the critical section for any WaiterList Record.
-          1. Wait until no agent is in the critical section for _WL_, then enter the critical section for _WL_ (without allowing any other agent to enter).
-          1. If _WL_.[[MostRecentLeaveEvent]] is not ~empty~, then
-            1. NOTE: A _WL_ whose critical section has been entered at least once has a Synchronize event set by LeaveCriticalSection.
-            1. Let _AR_ be the Agent Record of the surrounding agent.
-            1. Let _execution_ be _AR_.[[CandidateExecution]].
+          1. Wait until no agent is in the critical section for _waiterList_, then enter the critical section for _waiterList_ (without allowing any other agent to enter).
+          1. If _waiterList_.[[MostRecentLeaveEvent]] is not ~empty~, then
+            1. NOTE: A _waiterList_ whose critical section has been entered at least once has a Synchronize event set by LeaveCriticalSection.
+            1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+            1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
             1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
             1. Let _enterEvent_ be a new Synchronize event.
             1. Append _enterEvent_ to _eventsRecord_.[[EventList]].
-            1. Append (_WL_.[[MostRecentLeaveEvent]], _enterEvent_) to _eventsRecord_.[[AgentSynchronizesWith]].
+            1. Append (_waiterList_.[[MostRecentLeaveEvent]], _enterEvent_) to _eventsRecord_.[[AgentSynchronizesWith]].
           1. Return ~unused~.
         </emu-alg>
         <p>EnterCriticalSection has <dfn>contention</dfn> when an agent attempting to enter the critical section must wait for another agent to leave it. When there is no contention, FIFO order of EnterCriticalSection calls is observable. When there is contention, an implementation may choose an arbitrary order but may not cause an agent to wait indefinitely.</p>
@@ -46703,20 +46703,20 @@ THH:mm:ss.sss
       <emu-clause id="sec-leavecriticalsection" type="abstract operation">
         <h1>
           LeaveCriticalSection (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
           ): ~unused~
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: The surrounding agent is in the critical section for _WL_.
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _execution_ be _AR_.[[CandidateExecution]].
+          1. Assert: The surrounding agent is in the critical section for _waiterList_.
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
           1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
           1. Let _leaveEvent_ be a new Synchronize event.
           1. Append _leaveEvent_ to _eventsRecord_.[[EventList]].
-          1. Set _WL_.[[MostRecentLeaveEvent]] to _leaveEvent_.
-          1. Leave the critical section for _WL_.
+          1. Set _waiterList_.[[MostRecentLeaveEvent]] to _leaveEvent_.
+          1. Leave the critical section for _waiterList_.
           1. Return ~unused~.
         </emu-alg>
       </emu-clause>
@@ -46724,16 +46724,16 @@ THH:mm:ss.sss
       <emu-clause id="sec-addwaiter" type="abstract operation">
         <h1>
           AddWaiter (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
             _waiterRecord_: a Waiter Record,
           ): ~unused~
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: The surrounding agent is in the critical section for _WL_.
-          1. Assert: There is no Waiter Record in _WL_.[[Waiters]] whose [[PromiseCapability]] field is _waiterRecord_.[[PromiseCapability]] and whose [[AgentSignifier]] field is _waiterRecord_.[[AgentSignifier]].
-          1. Append _waiterRecord_ to _WL_.[[Waiters]].
+          1. Assert: The surrounding agent is in the critical section for _waiterList_.
+          1. Assert: There is no Waiter Record in _waiterList_.[[Waiters]] whose [[PromiseCapability]] field is _waiterRecord_.[[PromiseCapability]] and whose [[AgentSignifier]] field is _waiterRecord_.[[AgentSignifier]].
+          1. Append _waiterRecord_ to _waiterList_.[[Waiters]].
           1. Return ~unused~.
         </emu-alg>
       </emu-clause>
@@ -46741,16 +46741,16 @@ THH:mm:ss.sss
       <emu-clause id="sec-removewaiter" type="abstract operation">
         <h1>
           RemoveWaiter (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
             _waiterRecord_: a Waiter Record,
           ): ~unused~
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: The surrounding agent is in the critical section for _WL_.
-          1. Assert: _WL_.[[Waiters]] contains _waiterRecord_.
-          1. Remove _waiterRecord_ from _WL_.[[Waiters]].
+          1. Assert: The surrounding agent is in the critical section for _waiterList_.
+          1. Assert: _waiterList_.[[Waiters]] contains _waiterRecord_.
+          1. Remove _waiterRecord_ from _waiterList_.[[Waiters]].
           1. Return ~unused~.
         </emu-alg>
       </emu-clause>
@@ -46758,18 +46758,18 @@ THH:mm:ss.sss
       <emu-clause id="sec-removewaiters" type="abstract operation">
         <h1>
           RemoveWaiters (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
             _c_: a non-negative integer or +&infin;,
           ): a List of Waiter Records
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: The surrounding agent is in the critical section for _WL_.
-          1. Let _len_ be the number of elements in _WL_.[[Waiters]].
+          1. Assert: The surrounding agent is in the critical section for _waiterList_.
+          1. Let _len_ be the number of elements in _waiterList_.[[Waiters]].
           1. Let _n_ be min(_c_, _len_).
-          1. Let _waiters_ be a List whose elements are the first _n_ elements of _WL_.[[Waiters]].
-          1. Remove the first _n_ elements of _WL_.[[Waiters]].
+          1. Let _waiters_ be a List whose elements are the first _n_ elements of _waiterList_.[[Waiters]].
+          1. Remove the first _n_ elements of _waiterList_.[[Waiters]].
           1. Return _waiters_.
         </emu-alg>
       </emu-clause>
@@ -46777,21 +46777,21 @@ THH:mm:ss.sss
       <emu-clause id="sec-suspendthisagent" type="abstract operation" oldids="sec-suspend,sec-suspendagent">
         <h1>
           SuspendThisAgent (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
             _waiterRecord_: a Waiter Record,
           ): ~unused~
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: The surrounding agent is in the critical section for _WL_.
-          1. Assert: _WL_.[[Waiters]] contains _waiterRecord_.
+          1. Assert: The surrounding agent is in the critical section for _waiterList_.
+          1. Assert: _waiterList_.[[Waiters]] contains _waiterRecord_.
           1. Let _thisAgent_ be AgentSignifier().
           1. Assert: _waiterRecord_.[[AgentSignifier]] is _thisAgent_.
           1. Assert: _waiterRecord_.[[PromiseCapability]] is ~blocking~.
           1. Assert: AgentCanSuspend() is *true*.
-          1. Perform LeaveCriticalSection(_WL_) and suspend the surrounding agent until the time is _waiterRecord_.[[TimeoutTime]], performing the combined operation in such a way that a notification that arrives after the critical section is exited but before the suspension takes effect is not lost. The surrounding agent can only wake from suspension due to a timeout or due to another agent calling NotifyWaiter with arguments _WL_ and _thisAgent_ (i.e. via a call to `Atomics.notify`).
-          1. Perform EnterCriticalSection(_WL_).
+          1. Perform LeaveCriticalSection(_waiterList_) and suspend the surrounding agent until the time is _waiterRecord_.[[TimeoutTime]], performing the combined operation in such a way that a notification that arrives after the critical section is exited but before the suspension takes effect is not lost. The surrounding agent can only wake from suspension due to a timeout or due to another agent calling NotifyWaiter with arguments _waiterList_ and _thisAgent_ (i.e. via a call to `Atomics.notify`).
+          1. Perform EnterCriticalSection(_waiterList_).
           1. Return ~unused~.
         </emu-alg>
       </emu-clause>
@@ -46799,14 +46799,14 @@ THH:mm:ss.sss
       <emu-clause id="sec-notifywaiter" type="abstract operation">
         <h1>
           NotifyWaiter (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
             _waiterRecord_: a Waiter Record,
           ): ~unused~
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: The surrounding agent is in the critical section for _WL_.
+          1. Assert: The surrounding agent is in the critical section for _waiterList_.
           1. If _waiterRecord_.[[PromiseCapability]] is ~blocking~, then
             1. Wake the agent whose signifier is _waiterRecord_.[[AgentSignifier]] from suspension.
             1. NOTE: This causes the agent to resume execution in SuspendThisAgent.
@@ -46870,25 +46870,25 @@ THH:mm:ss.sss
           1. Else, let _t_ be max(ℝ(_q_), 0).
           1. If _mode_ is ~sync~ and AgentCanSuspend() is *false*, throw a *TypeError* exception.
           1. Let _block_ be _buffer_.[[ArrayBufferData]].
-          1. Let _WL_ be GetWaiterList(_block_, _byteIndexInBuffer_).
+          1. Let _waiterList_ be GetWaiterList(_block_, _byteIndexInBuffer_).
           1. If _mode_ is ~sync~, then
             1. Let _promiseCapability_ be ~blocking~.
             1. Let _resultObject_ be *undefined*.
           1. Else,
             1. Let _promiseCapability_ be ! NewPromiseCapability(%Promise%).
             1. Let _resultObject_ be OrdinaryObjectCreate(%Object.prototype%).
-          1. Perform EnterCriticalSection(_WL_).
+          1. Perform EnterCriticalSection(_waiterList_).
           1. Let _elementType_ be TypedArrayElementType(_typedArray_).
           1. Let _w_ be GetValueFromBuffer(_buffer_, _byteIndexInBuffer_, _elementType_, *true*, ~seq-cst~).
           1. If _v_ ≠ _w_, then
-            1. Perform LeaveCriticalSection(_WL_).
+            1. Perform LeaveCriticalSection(_waiterList_).
             1. If _mode_ is ~sync~, return *"not-equal"*.
             1. Perform ! CreateDataPropertyOrThrow(_resultObject_, *"async"*, *false*).
             1. Perform ! CreateDataPropertyOrThrow(_resultObject_, *"value"*, *"not-equal"*).
             1. Return _resultObject_.
           1. If _t_ = 0 and _mode_ is ~async~, then
             1. NOTE: There is no special handling of synchronous immediate timeouts. Asynchronous immediate timeouts have special handling in order to fail fast and avoid unnecessary Promise jobs.
-            1. Perform LeaveCriticalSection(_WL_).
+            1. Perform LeaveCriticalSection(_waiterList_).
             1. Perform ! CreateDataPropertyOrThrow(_resultObject_, *"async"*, *false*).
             1. Perform ! CreateDataPropertyOrThrow(_resultObject_, *"value"*, *"timed-out"*).
             1. Return _resultObject_.
@@ -46898,12 +46898,12 @@ THH:mm:ss.sss
           1. Let _timeoutTime_ be ℝ(_now_) + _t_ + _additionalTimeout_.
           1. NOTE: When _t_ is +∞, _timeoutTime_ is also +∞.
           1. Let _waiterRecord_ be a new Waiter Record { [[AgentSignifier]]: _thisAgent_, [[PromiseCapability]]: _promiseCapability_, [[TimeoutTime]]: _timeoutTime_, [[Result]]: *"ok"* }.
-          1. Perform AddWaiter(_WL_, _waiterRecord_).
+          1. Perform AddWaiter(_waiterList_, _waiterRecord_).
           1. If _mode_ is ~sync~, then
-            1. Perform SuspendThisAgent(_WL_, _waiterRecord_).
+            1. Perform SuspendThisAgent(_waiterList_, _waiterRecord_).
           1. Else if _timeoutTime_ is finite, then
-            1. Perform EnqueueAtomicsWaitAsyncTimeoutJob(_WL_, _waiterRecord_).
-          1. Perform LeaveCriticalSection(_WL_).
+            1. Perform EnqueueAtomicsWaitAsyncTimeoutJob(_waiterList_, _waiterRecord_).
+          1. Perform LeaveCriticalSection(_waiterList_).
           1. If _mode_ is ~sync~, return _waiterRecord_.[[Result]].
           1. Perform ! CreateDataPropertyOrThrow(_resultObject_, *"async"*, *true*).
           1. Perform ! CreateDataPropertyOrThrow(_resultObject_, *"value"*, _promiseCapability_.[[Promise]]).
@@ -46917,22 +46917,22 @@ THH:mm:ss.sss
       <emu-clause id="sec-enqueueatomicswaitasynctimeoutjob" type="abstract operation">
         <h1>
           EnqueueAtomicsWaitAsyncTimeoutJob (
-            _WL_: a WaiterList Record,
+            _waiterList_: a WaiterList Record,
             _waiterRecord_: a Waiter Record,
           ): ~unused~
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Let _timeoutJob_ be a new Job Abstract Closure with no parameters that captures _WL_ and _waiterRecord_ and performs the following steps when called:
-            1. Perform EnterCriticalSection(_WL_).
-            1. If _WL_.[[Waiters]] contains _waiterRecord_, then
+          1. Let _timeoutJob_ be a new Job Abstract Closure with no parameters that captures _waiterList_ and _waiterRecord_ and performs the following steps when called:
+            1. Perform EnterCriticalSection(_waiterList_).
+            1. If _waiterList_.[[Waiters]] contains _waiterRecord_, then
               1. Let _timeOfJobExecution_ be the time value (UTC) identifying the current time.
               1. Assert: ℝ(_timeOfJobExecution_) ≥ _waiterRecord_.[[TimeoutTime]] (ignoring potential non-monotonicity of time values).
               1. Set _waiterRecord_.[[Result]] to *"timed-out"*.
-              1. Perform RemoveWaiter(_WL_, _waiterRecord_).
-              1. Perform NotifyWaiter(_WL_, _waiterRecord_).
-            1. Perform LeaveCriticalSection(_WL_).
+              1. Perform RemoveWaiter(_waiterList_, _waiterRecord_).
+              1. Perform NotifyWaiter(_waiterList_, _waiterRecord_).
+            1. Perform LeaveCriticalSection(_waiterList_).
             1. Return ~unused~.
           1. Let _now_ be the time value (UTC) identifying the current time.
           1. Let _currentRealm_ be the current Realm Record.
@@ -46954,8 +46954,8 @@ THH:mm:ss.sss
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _execution_ be _AR_.[[CandidateExecution]].
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _execution_ be _agentRecord_.[[CandidateExecution]].
           1. Let _eventsRecord_ be the Agent Events Record of _execution_.[[EventsRecords]] whose [[AgentSignifier]] is AgentSignifier().
           1. Let _rawBytesRead_ be a List of length _elementSize_ whose elements are nondeterministically chosen byte values.
           1. NOTE: In implementations, _rawBytesRead_ is the result of a load-link, of a load-exclusive, or of an operand of a read-modify-write instruction on the underlying hardware. The nondeterminism is a semantic prescription of the memory model to describe observable behaviour of hardware with weak consistency.
@@ -47054,8 +47054,8 @@ THH:mm:ss.sss
       <emu-alg>
         1. Let _add_ be a new read-modify-write modification function with parameters (_xBytes_, _yBytes_) that captures _typedArray_ and performs the following steps atomically when called:
           1. Let _type_ be TypedArrayElementType(_typedArray_).
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _isLittleEndian_ be _AR_.[[LittleEndian]].
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _isLittleEndian_ be _agentRecord_.[[LittleEndian]].
           1. Let _x_ be RawBytesToNumeric(_type_, _xBytes_, _isLittleEndian_).
           1. Let _y_ be RawBytesToNumeric(_type_, _yBytes_, _isLittleEndian_).
           1. If _x_ is a Number, then
@@ -47096,8 +47096,8 @@ THH:mm:ss.sss
         1. Perform ? RevalidateAtomicAccess(_typedArray_, _byteIndexInBuffer_).
         1. Let _elementType_ be TypedArrayElementType(_typedArray_).
         1. Let _elementSize_ be TypedArrayElementSize(_typedArray_).
-        1. Let _AR_ be the Agent Record of the surrounding agent.
-        1. Let _isLittleEndian_ be _AR_.[[LittleEndian]].
+        1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+        1. Let _isLittleEndian_ be _agentRecord_.[[LittleEndian]].
         1. Let _expectedBytes_ be NumericToRawBytes(_elementType_, _expected_, _isLittleEndian_).
         1. Let _replacementBytes_ be NumericToRawBytes(_elementType_, _replacement_, _isLittleEndian_).
         1. If IsSharedArrayBuffer(_buffer_) is *true*, then
@@ -47125,11 +47125,11 @@ THH:mm:ss.sss
       <p>This function performs the following steps when called:</p>
       <emu-alg>
         1. Let _n_ be ? ToIntegerOrInfinity(_size_).
-        1. Let _AR_ be the Agent Record of the surrounding agent.
-        1. If _n_ = 1, return _AR_.[[IsLockFree1]].
-        1. If _n_ = 2, return _AR_.[[IsLockFree2]].
+        1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+        1. If _n_ = 1, return _agentRecord_.[[IsLockFree1]].
+        1. If _n_ = 2, return _agentRecord_.[[IsLockFree2]].
         1. If _n_ = 4, return *true*.
-        1. If _n_ = 8, return _AR_.[[IsLockFree8]].
+        1. If _n_ = 8, return _agentRecord_.[[IsLockFree8]].
         1. Return *false*.
       </emu-alg>
       <emu-note>
@@ -47182,8 +47182,8 @@ THH:mm:ss.sss
       <emu-alg>
         1. Let _subtract_ be a new read-modify-write modification function with parameters (_xBytes_, _yBytes_) that captures _typedArray_ and performs the following steps atomically when called:
           1. Let _type_ be TypedArrayElementType(_typedArray_).
-          1. Let _AR_ be the Agent Record of the surrounding agent.
-          1. Let _isLittleEndian_ be _AR_.[[LittleEndian]].
+          1. Let _agentRecord_ be the Agent Record of the surrounding agent.
+          1. Let _isLittleEndian_ be _agentRecord_.[[LittleEndian]].
           1. Let _x_ be RawBytesToNumeric(_type_, _xBytes_, _isLittleEndian_).
           1. Let _y_ be RawBytesToNumeric(_type_, _yBytes_, _isLittleEndian_).
           1. If _x_ is a Number, then
@@ -47231,12 +47231,12 @@ THH:mm:ss.sss
         1. Let _buffer_ be _typedArray_.[[ViewedArrayBuffer]].
         1. Let _block_ be _buffer_.[[ArrayBufferData]].
         1. If IsSharedArrayBuffer(_buffer_) is *false*, return *+0*<sub>𝔽</sub>.
-        1. Let _WL_ be GetWaiterList(_block_, _byteIndexInBuffer_).
-        1. Perform EnterCriticalSection(_WL_).
-        1. Let _set_ be RemoveWaiters(_WL_, _c_).
+        1. Let _waiterList_ be GetWaiterList(_block_, _byteIndexInBuffer_).
+        1. Perform EnterCriticalSection(_waiterList_).
+        1. Let _set_ be RemoveWaiters(_waiterList_, _c_).
         1. For each element _W_ of _set_, do
-          1. Perform NotifyWaiter(_WL_, _W_).
-        1. Perform LeaveCriticalSection(_WL_).
+          1. Perform NotifyWaiter(_waiterList_, _W_).
+        1. Perform LeaveCriticalSection(_waiterList_).
         1. Let _n_ be the number of elements in _set_.
         1. Return 𝔽(_n_).
       </emu-alg>
@@ -47581,15 +47581,15 @@ THH:mm:ss.sss
       <emu-alg>
         1. Let _stack_ be a new empty List.
         1. Let _indent_ be the empty String.
-        1. Let _PropertyList_ be *undefined*.
-        1. Let _ReplacerFunction_ be *undefined*.
+        1. Let _propertyList_ be *undefined*.
+        1. Let _replacerFunction_ be *undefined*.
         1. If _replacer_ is an Object, then
           1. If IsCallable(_replacer_) is *true*, then
-            1. Set _ReplacerFunction_ to _replacer_.
+            1. Set _replacerFunction_ to _replacer_.
           1. Else,
             1. Let _isArray_ be ? IsArray(_replacer_).
             1. If _isArray_ is *true*, then
-              1. Set _PropertyList_ to a new empty List.
+              1. Set _propertyList_ to a new empty List.
               1. Let _len_ be ? LengthOfArrayLike(_replacer_).
               1. Let _k_ be 0.
               1. Repeat, while _k_ &lt; _len_,
@@ -47602,8 +47602,8 @@ THH:mm:ss.sss
                   1. Set _item_ to ! ToString(_v_).
                 1. Else if _v_ is an Object, then
                   1. If _v_ has a [[StringData]] or [[NumberData]] internal slot, set _item_ to ? ToString(_v_).
-                1. If _item_ is not *undefined* and _PropertyList_ does not contain _item_, then
-                  1. Append _item_ to _PropertyList_.
+                1. If _item_ is not *undefined* and _propertyList_ does not contain _item_, then
+                  1. Append _item_ to _propertyList_.
                 1. Set _k_ to _k_ + 1.
         1. If _space_ is an Object, then
           1. If _space_ has a [[NumberData]] internal slot, then
@@ -47620,7 +47620,7 @@ THH:mm:ss.sss
           1. Let _gap_ be the empty String.
         1. Let _wrapper_ be OrdinaryObjectCreate(%Object.prototype%).
         1. Perform ! CreateDataPropertyOrThrow(_wrapper_, the empty String, _value_).
-        1. Let _state_ be the JSON Serialization Record { [[ReplacerFunction]]: _ReplacerFunction_, [[Stack]]: _stack_, [[Indent]]: _indent_, [[Gap]]: _gap_, [[PropertyList]]: _PropertyList_ }.
+        1. Let _state_ be the JSON Serialization Record { [[ReplacerFunction]]: _replacerFunction_, [[Stack]]: _stack_, [[Indent]]: _indent_, [[Gap]]: _gap_, [[PropertyList]]: _propertyList_ }.
         1. Return ? SerializeJSONProperty(_state_, the empty String, _wrapper_).
       </emu-alg>
       <p>The *"length"* property of this function is *3*<sub>𝔽</sub>.</p>
@@ -51913,7 +51913,7 @@ THH:mm:ss.sss
         ComposeWriteEventBytes (
           _execution_: a candidate execution,
           _byteIndex_: a non-negative integer,
-          _Ws_: a List of either WriteSharedMemory or ReadModifyWriteSharedMemory events,
+          _writes_: a List of either WriteSharedMemory or ReadModifyWriteSharedMemory events,
         ): a List of byte values
       </h1>
       <dl class="header">
@@ -51921,7 +51921,7 @@ THH:mm:ss.sss
       <emu-alg>
         1. Let _byteLocation_ be _byteIndex_.
         1. Let _bytesRead_ be a new empty List.
-        1. For each element _W_ of _Ws_, do
+        1. For each element _W_ of _writes_, do
           1. Assert: _W_ has _byteLocation_ in its memory range.
           1. Let _payloadIndex_ be _byteLocation_ - _W_.[[ByteIndex]].
           1. If _W_ is a WriteSharedMemory event, then
@@ -51953,9 +51953,9 @@ THH:mm:ss.sss
       <dl class="header">
       </dl>
       <emu-alg>
-        1. Let _Ws_ be reads-bytes-from(_R_) in _execution_.
-        1. Assert: _Ws_ is a List of WriteSharedMemory or ReadModifyWriteSharedMemory events with length equal to _R_.[[ElementSize]].
-        1. Return ComposeWriteEventBytes(_execution_, _R_.[[ByteIndex]], _Ws_).
+        1. Let _writes_ be reads-bytes-from(_R_) in _execution_.
+        1. Assert: _writes_ is a List of WriteSharedMemory or ReadModifyWriteSharedMemory events with length equal to _R_.[[ElementSize]].
+        1. Return ComposeWriteEventBytes(_execution_, _R_.[[ByteIndex]], _writes_).
       </emu-alg>
     </emu-clause>
   </emu-clause>
@@ -51982,10 +51982,10 @@ THH:mm:ss.sss
       <p>For a candidate execution _execution_, its <em>reads-bytes-from</em> function is a mathematical function mapping Memory events in SharedDataBlockEventSet(_execution_) to Lists of events in SharedDataBlockEventSet(_execution_) that satisfies the following conditions.</p>
       <ul>
         <li>
-          <p>For each ReadSharedMemory or ReadModifyWriteSharedMemory event _R_ in SharedDataBlockEventSet(_execution_), reads-bytes-from(_R_) in _execution_ is a List of length _R_.[[ElementSize]] whose elements are WriteSharedMemory or ReadModifyWriteSharedMemory events _Ws_ such that all of the following are true.</p>
+          <p>For each ReadSharedMemory or ReadModifyWriteSharedMemory event _R_ in SharedDataBlockEventSet(_execution_), reads-bytes-from(_R_) in _execution_ is a List of length _R_.[[ElementSize]] whose elements are WriteSharedMemory or ReadModifyWriteSharedMemory events _writes_ such that all of the following are true.</p>
           <ul>
-            <li>Each event _W_ with index _i_ in _Ws_ has _R_.[[ByteIndex]] + _i_ in its memory range.</li>
-            <li>_result_ is not in _Ws_.</li>
+            <li>Each event _W_ with index _i_ in _writes_ has _R_.[[ByteIndex]] + _i_ in its memory range.</li>
+            <li>_result_ is not in _writes_.</li>
           </ul>
         </li>
       </ul>
@@ -52097,9 +52097,9 @@ THH:mm:ss.sss
       <p>A candidate execution _execution_ has coherent reads if the following algorithm returns *true*.</p>
       <emu-alg>
         1. For each ReadSharedMemory or ReadModifyWriteSharedMemory event _R_ of SharedDataBlockEventSet(_execution_), do
-          1. Let _Ws_ be reads-bytes-from(_R_) in _execution_.
+          1. Let _writes_ be reads-bytes-from(_R_) in _execution_.
           1. Let _byteLocation_ be _R_.[[ByteIndex]].
-          1. For each element _W_ of _Ws_, do
+          1. For each element _W_ of _writes_, do
             1. If _R_ happens-before _W_ in _execution_, then
               1. Return *false*.
             1. If there exists a WriteSharedMemory or ReadModifyWriteSharedMemory event _V_ that has _byteLocation_ in its memory range such that _W_ happens-before _V_ in _execution_ and _V_ happens-before _R_ in _execution_, then
