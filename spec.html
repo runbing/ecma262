@@ -38591,7 +38591,7 @@ THH:mm:ss.sss
           </dl>
           <emu-alg>
             1. If _rer_.[[UnicodeSets]] is *true* and _rer_.[[IgnoreCase]] is *true*, then
-              1. [declared="c"] Return the CharSet containing all Unicode code points _c_ that do not have a <a href="https://www.unicode.org/reports/tr44/#Simple_case_Folding">Simple Case Folding</a> mapping (that is, scf(_c_)=_c_).
+              1. [declared="c"] Return the CharSet containing all Unicode code points _c_ that do not have a <a href="https://www.unicode.org/reports/tr44/#Simple_Case_Folding">Simple Case Folding</a> mapping (that is, scf(_c_)=_c_).
             1. If HasEitherUnicodeFlag(_rer_) is *true*, then
               1. Return the CharSet containing all code point values.
             1. Return the CharSet containing all code unit values.
@@ -38607,7 +38607,7 @@ THH:mm:ss.sss
           </h1>
           <dl class="header">
             <dt>description</dt>
-            <dd>If _rer_.[[UnicodeSets]] is *false* or _rer_.[[IgnoreCase]] is *false*, it returns _charSet_. Otherwise, it uses the <a href="https://www.unicode.org/reports/tr44/#Simple_case_Folding">Simple Case Folding</a> (<emu-eqn id="eqn-scf" aoid="scf">scf(_cp_)</emu-eqn>) definitions in the file <a href="https://unicode.org/Public/UCD/latest/ucd/CaseFolding.txt"><code>CaseFolding.txt</code></a> of the Unicode Character Database (each of which maps a single code point to another single code point) to map each CharSetElement of _charSet_ character-by-character into a canonical form and returns the resulting CharSet.</dd>
+            <dd>If _rer_.[[UnicodeSets]] is *false* or _rer_.[[IgnoreCase]] is *false*, it returns _charSet_. Otherwise, it uses the <a href="https://www.unicode.org/reports/tr44/#Simple_Case_Folding">Simple Case Folding</a> (<emu-eqn id="eqn-scf" aoid="scf">scf(_cp_)</emu-eqn>) definitions in the file <a href="https://unicode.org/Public/UCD/latest/ucd/CaseFolding.txt"><code>CaseFolding.txt</code></a> of the Unicode Character Database (each of which maps a single code point to another single code point) to map each CharSetElement of _charSet_ character-by-character into a canonical form and returns the resulting CharSet.</dd>
           </dl>
           <emu-alg>
             1. If _rer_.[[UnicodeSets]] is *false* or _rer_.[[IgnoreCase]] is *false*, return _charSet_.
