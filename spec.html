@@ -4226,28 +4226,28 @@
     <emu-clause id="sec-set-and-relation-specification-type">
       <h1>The Set and Relation Specification Types</h1>
       <p>The <em>Set</em> type is used to explain a collection of unordered elements for use in the memory model. It is distinct from the ECMAScript collection type of the same name. To disambiguate, instances of the ECMAScript collection are consistently referred to as "Set objects" within this specification. Values of the Set type are simple collections of elements, where no element appears more than once. Elements may be added to and removed from Sets. Sets may be unioned, intersected, or subtracted from each other.</p>
-      <p>The <dfn variants="Relations">Relation</dfn> type is used to explain constraints on Sets. Values of the Relation type are Sets of ordered pairs of values from its value domain. For example, a Relation on Memory events is a set of ordered pairs of Memory events. For a Relation _readEvent_ and two values _a_ and _b_ in the value domain of _readEvent_, _a_ _readEvent_ _b_ is shorthand for saying the ordered pair (_a_, _b_) is a member of _readEvent_. A Relation is the <dfn id="least-relation">least Relation</dfn> with respect to some conditions when it is the smallest Relation that satisfies those conditions.</p>
-      <p>A <dfn variants="strict partial orders">strict partial order</dfn> is a Relation value _readEvent_ that satisfies the following.</p>
+      <p>The <dfn variants="Relations">Relation</dfn> type is used to explain constraints on Sets. Values of the Relation type are Sets of ordered pairs of values from its value domain. For example, a Relation on Memory events is a set of ordered pairs of Memory events. For a Relation _relation_ and two values _a_ and _b_ in the value domain of _relation_, _a_ _relation_ _b_ is shorthand for saying the ordered pair (_a_, _b_) is a member of _relation_. A Relation is the <dfn id="least-relation">least Relation</dfn> with respect to some conditions when it is the smallest Relation that satisfies those conditions.</p>
+      <p>A <dfn variants="strict partial orders">strict partial order</dfn> is a Relation value _relation_ that satisfies the following.</p>
       <ul>
         <li>
-          <p>For all _a_, _b_, and _c_ in _readEvent_'s domain:</p>
+          <p>For all _a_, _b_, and _c_ in _relation_'s domain:</p>
           <ul>
-            <li>It is not the case that _a_ _readEvent_ _a_, and</li>
-            <li>If _a_ _readEvent_ _b_ and _b_ _readEvent_ _c_, then _a_ _readEvent_ _c_.</li>
+            <li>It is not the case that _a_ _relation_ _a_, and</li>
+            <li>If _a_ _relation_ _b_ and _b_ _relation_ _c_, then _a_ _relation_ _c_.</li>
           </ul>
         </li>
       </ul>
       <emu-note>
         <p>The two properties above are called irreflexivity and transitivity, respectively.</p>
       </emu-note>
-      <p>A <dfn variants="strict total orders">strict total order</dfn> is a Relation value _readEvent_ that satisfies the following.</p>
+      <p>A <dfn variants="strict total orders">strict total order</dfn> is a Relation value _relation_ that satisfies the following.</p>
       <ul>
         <li>
-          <p>For all _a_, _b_, and _c_ in _readEvent_'s domain:</p>
+          <p>For all _a_, _b_, and _c_ in _relation_'s domain:</p>
           <ul>
-            <li>_a_ is _b_ or _a_ _readEvent_ _b_ or _b_ _readEvent_ _a_, and</li>
-            <li>It is not the case that _a_ _readEvent_ _a_, and</li>
-            <li>If _a_ _readEvent_ _b_ and _b_ _readEvent_ _c_, then _a_ _readEvent_ _c_.</li>
+            <li>_a_ is _b_ or _a_ _relation_ _b_ or _b_ _relation_ _a_, and</li>
+            <li>It is not the case that _a_ _relation_ _a_, and</li>
+            <li>If _a_ _relation_ _b_ and _b_ _relation_ _c_, then _a_ _relation_ _c_.</li>
           </ul>
         </li>
       </ul>
@@ -10656,7 +10656,7 @@
         </emu-clause>
 
         <emu-clause id="sec-object-environment-records-createimmutablebinding-n-s">
-          <h1>CreateImmutableBinding ( _name_, _str_ )</h1>
+          <h1>CreateImmutableBinding ( _name_, _isStrict_ )</h1>
           <p>The CreateImmutableBinding concrete method of an Object Environment Record is never used within this specification.</p>
         </emu-clause>
 
@@ -11376,7 +11376,7 @@
             1. Return the value currently bound to _name_ in _envRec_.
           </emu-alg>
           <emu-note>
-            <p>_str_ will always be *true* because a |Module| is always strict mode code.</p>
+            <p>_isStrict_ will always be *true* because a |Module| is always strict mode code.</p>
           </emu-note>
         </emu-clause>
 
@@ -12436,7 +12436,7 @@
     <emu-clause id="sec-liveness">
       <h1>Liveness</h1>
 
-      <p>For some set of objects and/or symbols _str_ a <dfn>hypothetical WeakRef-oblivious</dfn> execution with respect to _str_ is an execution whereby the abstract operation WeakRefDeref of a WeakRef whose referent is an element of _str_ always returns *undefined*.</p>
+      <p>For some set of objects and/or symbols _objectSet_ a <dfn>hypothetical WeakRef-oblivious</dfn> execution with respect to _objectSet_ is an execution whereby the abstract operation WeakRefDeref of a WeakRef whose referent is an element of _objectSet_ always returns *undefined*.</p>
 
       <emu-note>
         WeakRef-obliviousness, together with liveness, capture two notions. One, that a WeakRef itself does not keep its referent alive. Two, that cycles in liveness does not imply that a value is live. To be concrete, if determining _v_'s liveness depends on determining the liveness of a WeakRef referent, _r_, _r_'s liveness cannot assume _v_'s liveness, which would be circular reasoning.
@@ -12448,14 +12448,14 @@
         Colloquially, we say that an individual object or symbol is live if every set containing it is live.
       </emu-note>
 
-      <p>At any point during evaluation, a set of objects and/or symbols _str_ is considered <dfn>live</dfn> if either of the following conditions is met:</p>
+      <p>At any point during evaluation, a set of objects and/or symbols _objectSet_ is considered <dfn>live</dfn> if either of the following conditions is met:</p>
 
       <ul>
         <li>
-          Any element in _str_ is included in any agent's [[KeptAlive]] List.
+          Any element in _objectSet_ is included in any agent's [[KeptAlive]] List.
         </li>
         <li>
-          There exists a valid future hypothetical WeakRef-oblivious execution with respect to _str_ that observes the identity of any value in _str_.
+          There exists a valid future hypothetical WeakRef-oblivious execution with respect to _objectSet_ that observes the identity of any value in _objectSet_.
         </li>
       </ul>
       <emu-note>
@@ -12476,10 +12476,10 @@
     <emu-clause id="sec-weakref-execution">
       <h1>Execution</h1>
 
-      <p>At any time, if a set of objects and/or symbols _str_ is not live, an ECMAScript implementation may perform the following steps atomically:</p>
+      <p>At any time, if a set of objects and/or symbols _objectSet_ is not live, an ECMAScript implementation may perform the following steps atomically:</p>
 
       <emu-alg>
-        1. For each element _value_ of _str_, do
+        1. For each element _value_ of _objectSet_, do
           1. For each WeakRef _ref_ such that _ref_.[[WeakRefTarget]] is _value_, do
             1. Set _ref_.[[WeakRefTarget]] to ~empty~.
           1. For each FinalizationRegistry _fg_ such that _fg_.[[Cells]] contains a Record _cell_ such that _cell_.[[WeakRefTarget]] is _value_, do
@@ -12503,7 +12503,7 @@
       </emu-note>
       <emu-note>
         <p>Implementations are not obligated to empty WeakRefs for maximal sets of non-live objects or symbols.</p>
-        <p>If an implementation chooses a non-live set _str_ in which to empty WeakRefs, this definition requires that it empties WeakRefs for all values in _str_ simultaneously. In other words, it is not conformant for an implementation to empty a WeakRef pointing to a value _v_ without emptying out other WeakRefs that, if not emptied, could result in an execution that observes the value of _v_.</p>
+        <p>If an implementation chooses a non-live set _objectSet_ in which to empty WeakRefs, this definition requires that it empties WeakRefs for all values in _objectSet_ simultaneously. In other words, it is not conformant for an implementation to empty a WeakRef pointing to a value _v_ without emptying out other WeakRefs that, if not emptied, could result in an execution that observes the value of _v_.</p>
       </emu-note>
     </emu-clause>
 
@@ -12865,7 +12865,7 @@
               1. If _desc_ has an [[Enumerable]] field, let _enumerable_ be _desc_.[[Enumerable]]; else let _enumerable_ be _current_.[[Enumerable]].
               1. Replace the property named _propertyKey_ of object _obj_ with a data property whose [[Configurable]] and [[Enumerable]] attributes are set to _configurable_ and _enumerable_, respectively, and whose [[Value]] and [[Writable]] attributes are set to the value of the corresponding field in _desc_ if _desc_ has that field, or to the attribute's <emu-xref href="#table-object-property-attributes">default value</emu-xref> otherwise.
             1. Else,
-              1. For each field name _func_ of _desc_, set the attribute named _func_ of the property named _propertyKey_ of object _obj_ to the value of _desc_'s _func_ field.
+              1. For each field name _fieldName_ of _desc_, set the attribute named _fieldName_ of the property named _propertyKey_ of object _obj_ to the value of _desc_'s _fieldName_ field.
           1. Return *true*.
         </emu-alg>
       </emu-clause>
@@ -40423,10 +40423,10 @@ THH:mm:ss.sss
             1. Let _targetIndex_ be _start_.
             1. Let _sourceIndex_ be *+0*<sub>𝔽</sub>.
             1. Repeat, while ℝ(_sourceIndex_) &lt; _sourceLen_,
-              1. Let _prop_ be ! ToString(_sourceIndex_).
-              1. Let _exists_ be ? HasProperty(_source_, _prop_).
+              1. Let _pk_ be ! ToString(_sourceIndex_).
+              1. Let _exists_ be ? HasProperty(_source_, _pk_).
               1. If _exists_ is *true*, then
-                1. Let _element_ be ? Get(_source_, _prop_).
+                1. Let _element_ be ? Get(_source_, _pk_).
                 1. If _mapperFunction_ is present, then
                   1. Set _element_ to ? Call(_mapperFunction_, _thisArg_, « _element_, _sourceIndex_, _source_ »).
                 1. Let _shouldFlatten_ be *false*.
@@ -40997,7 +40997,7 @@ THH:mm:ss.sss
             </li>
           </ul>
           <p>Here the notation <emu-eqn>old[_j_]</emu-eqn> is used to refer to <emu-eqn>_items_[_j_]</emu-eqn> before step <emu-xref href="#step-array-sort"></emu-xref> is executed, and the notation <emu-eqn>new[_j_]</emu-eqn> to refer to <emu-eqn>_items_[_j_]</emu-eqn> after step <emu-xref href="#step-array-sort"></emu-xref> has been executed.</p>
-          <p>An Abstract Closure or function _comparator_ is a <dfn id="consistent-comparator">consistent comparator</dfn> for a set of values _str_ if all of the requirements below are met for all values _a_, _b_, and _c_ (possibly the same value) in the set _str_: The notation <emu-eqn>_a_ &lt;<sub>C</sub> _b_</emu-eqn> means <emu-eqn>ℝ(_comparator_(_a_, _b_)) &lt; 0</emu-eqn>; <emu-eqn>_a_ =<sub>C</sub> _b_</emu-eqn> means <emu-eqn>ℝ(_comparator_(_a_, _b_)) = 0</emu-eqn>; and <emu-eqn>_a_ ><sub>C</sub> _b_</emu-eqn> means <emu-eqn>ℝ(_comparator_(_a_, _b_)) > 0</emu-eqn>.</p>
+          <p>An Abstract Closure or function _comparator_ is a <dfn id="consistent-comparator">consistent comparator</dfn> for a set of values _values_ if all of the requirements below are met for all values _a_, _b_, and _c_ (possibly the same value) in the set _values_: The notation <emu-eqn>_a_ &lt;<sub>C</sub> _b_</emu-eqn> means <emu-eqn>ℝ(_comparator_(_a_, _b_)) &lt; 0</emu-eqn>; <emu-eqn>_a_ =<sub>C</sub> _b_</emu-eqn> means <emu-eqn>ℝ(_comparator_(_a_, _b_)) = 0</emu-eqn>; and <emu-eqn>_a_ ><sub>C</sub> _b_</emu-eqn> means <emu-eqn>ℝ(_comparator_(_a_, _b_)) > 0</emu-eqn>.</p>
           <ul>
             <li>
               Calling _comparator_(_a_, _b_) always returns the same value _v_ when given a specific pair of values _a_ and _b_ as its two arguments. Furthermore, _v_ is a Number, and _v_ is not *NaN*. Note that this implies that exactly one of _a_ &lt;<sub>C</sub> _b_, _a_ =<sub>C</sub> _b_, and _a_ ><sub>C</sub> _b_ will be true for a given pair of _a_ and _b_.
@@ -41022,7 +41022,7 @@ THH:mm:ss.sss
             </li>
           </ul>
           <emu-note>
-            <p>The above conditions are necessary and sufficient to ensure that _comparator_ divides the set _str_ into equivalence classes and that these equivalence classes are totally ordered.</p>
+            <p>The above conditions are necessary and sufficient to ensure that _comparator_ divides the set _values_ into equivalence classes and that these equivalence classes are totally ordered.</p>
           </emu-note>
         </emu-clause>
 
@@ -47233,11 +47233,11 @@ THH:mm:ss.sss
         1. If IsSharedArrayBuffer(_buffer_) is *false*, return *+0*<sub>𝔽</sub>.
         1. Let _waiterList_ be GetWaiterList(_block_, _byteIndexInBuffer_).
         1. Perform EnterCriticalSection(_waiterList_).
-        1. Let _set_ be RemoveWaiters(_waiterList_, _c_).
-        1. For each element _newValue_ of _set_, do
-          1. Perform NotifyWaiter(_waiterList_, _newValue_).
+        1. Let _waiters_ be RemoveWaiters(_waiterList_, _c_).
+        1. For each element _waiterRecord_ of _waiters_, do
+          1. Perform NotifyWaiter(_waiterList_, _waiterRecord_).
         1. Perform LeaveCriticalSection(_waiterList_).
-        1. Let _n_ be the number of elements in _set_.
+        1. Let _n_ be the number of elements in _waiters_.
         1. Return 𝔽(_n_).
       </emu-alg>
     </emu-clause>
@@ -51873,8 +51873,8 @@ THH:mm:ss.sss
       <emu-alg>
         1. Let _events_ be an empty Set.
         1. For each Agent Events Record _aer_ of _execution_.[[EventsRecords]], do
-          1. For each Memory event _outerEnv_ of _aer_.[[EventList]], do
-            1. Add _outerEnv_ to _events_.
+          1. For each Memory event _event_ of _aer_.[[EventList]], do
+            1. Add _event_ to _events_.
         1. Return _events_.
       </emu-alg>
     </emu-clause>
@@ -51889,8 +51889,8 @@ THH:mm:ss.sss
       </dl>
       <emu-alg>
         1. Let _events_ be an empty Set.
-        1. For each Memory event _outerEnv_ of EventSet(_execution_), do
-          1. If _outerEnv_ is a Shared Data Block event, add _outerEnv_ to _events_.
+        1. For each Memory event _event_ of EventSet(_execution_), do
+          1. If _event_ is a Shared Data Block event, add _event_ to _events_.
         1. Return _events_.
       </emu-alg>
     </emu-clause>
@@ -51921,15 +51921,15 @@ THH:mm:ss.sss
       <emu-alg>
         1. Let _byteLocation_ be _byteIndex_.
         1. Let _bytesRead_ be a new empty List.
-        1. For each element _newValue_ of _writes_, do
-          1. Assert: _newValue_ has _byteLocation_ in its memory range.
-          1. Let _payloadIndex_ be _byteLocation_ - _newValue_.[[ByteIndex]].
-          1. If _newValue_ is a WriteSharedMemory event, then
-            1. Let _byte_ be _newValue_.[[Payload]][_payloadIndex_].
+        1. For each element _writeEvent_ of _writes_, do
+          1. Assert: _writeEvent_ has _byteLocation_ in its memory range.
+          1. Let _payloadIndex_ be _byteLocation_ - _writeEvent_.[[ByteIndex]].
+          1. If _writeEvent_ is a WriteSharedMemory event, then
+            1. Let _byte_ be _writeEvent_.[[Payload]][_payloadIndex_].
           1. Else,
-            1. Assert: _newValue_ is a ReadModifyWriteSharedMemory event.
-            1. Let _bytes_ be ValueOfReadEvent(_execution_, _newValue_).
-            1. Let _bytesModified_ be _newValue_.[[ModifyOp]](_bytes_, _newValue_.[[Payload]]).
+            1. Assert: _writeEvent_ is a ReadModifyWriteSharedMemory event.
+            1. Let _bytes_ be ValueOfReadEvent(_execution_, _writeEvent_).
+            1. Let _bytesModified_ be _writeEvent_.[[ModifyOp]](_bytes_, _writeEvent_.[[Payload]]).
             1. Let _byte_ be _bytesModified_[_payloadIndex_].
           1. Append _byte_ to _bytesRead_.
           1. Set _byteLocation_ to _byteLocation_ + 1.
@@ -51969,7 +51969,7 @@ THH:mm:ss.sss
       <h1>is-agent-order-before</h1>
       <p>For a candidate execution _execution_, its <dfn>is-agent-order-before</dfn> Relation is the least Relation on Memory events that satisfies the following.</p>
       <ul>
-        <li>For events _outerEnv_ and _desc_, _outerEnv_ is-agent-order-before _desc_ in _execution_ if there is some Agent Events Record _aer_ in _execution_.[[EventsRecords]] such that _aer_.[[EventList]] contains both _outerEnv_ and _desc_ and _outerEnv_ is before _desc_ in List order of _aer_.[[EventList]].</li>
+        <li>For events _eventA_ and _eventB_, _eventA_ is-agent-order-before _eventB_ in _execution_ if there is some Agent Events Record _aer_ in _execution_.[[EventsRecords]] such that _aer_.[[EventList]] contains both _eventA_ and _eventB_ and _eventA_ is before _eventB_ in List order of _aer_.[[EventList]].</li>
       </ul>
 
       <emu-note>
@@ -51984,7 +51984,7 @@ THH:mm:ss.sss
         <li>
           <p>For each ReadSharedMemory or ReadModifyWriteSharedMemory event _readEvent_ in SharedDataBlockEventSet(_execution_), reads-bytes-from(_readEvent_) in _execution_ is a List of length _readEvent_.[[ElementSize]] whose elements are WriteSharedMemory or ReadModifyWriteSharedMemory events _writes_ such that all of the following are true.</p>
           <ul>
-            <li>Each event _newValue_ with index _i_ in _writes_ has _readEvent_.[[ByteIndex]] + _i_ in its memory range.</li>
+            <li>Each event _writeEvent_ with index _i_ in _writes_ has _readEvent_.[[ByteIndex]] + _i_ in its memory range.</li>
             <li>_result_ is not in _writes_.</li>
           </ul>
         </li>
@@ -51996,7 +51996,7 @@ THH:mm:ss.sss
       <h1>reads-from</h1>
       <p>For a candidate execution _execution_, its <dfn>reads-from</dfn> Relation is the least Relation on Memory events that satisfies the following.</p>
       <ul>
-        <li>For events _readEvent_ and _newValue_, _readEvent_ reads-from _newValue_ in _execution_ if SharedDataBlockEventSet(_execution_) contains both _readEvent_ and _newValue_, and reads-bytes-from(_readEvent_) in _execution_ contains _newValue_.</li>
+        <li>For events _readEvent_ and _writeEvent_, _readEvent_ reads-from _writeEvent_ in _execution_ if SharedDataBlockEventSet(_execution_) contains both _readEvent_ and _writeEvent_, and reads-bytes-from(_readEvent_) in _execution_ contains _writeEvent_.</li>
       </ul>
     </emu-clause>
 
@@ -52004,12 +52004,12 @@ THH:mm:ss.sss
       <h1>host-synchronizes-with</h1>
       <p>For a candidate execution _execution_, its <dfn>host-synchronizes-with</dfn> Relation is a host-provided strict partial order on host-specific Memory events that satisfies at least the following.</p>
       <ul>
-        <li>If _outerEnv_ host-synchronizes-with _desc_ in _execution_, HostEventSet(_execution_) contains _outerEnv_ and _desc_.</li>
+        <li>If _eventA_ host-synchronizes-with _eventB_ in _execution_, HostEventSet(_execution_) contains _eventA_ and _eventB_.</li>
         <li>There is no cycle in the union of host-synchronizes-with and is-agent-order-before in _execution_.</li>
       </ul>
 
       <emu-note>
-        <p>For two host-specific events _outerEnv_ and _desc_ in a candidate execution _execution_, _outerEnv_ host-synchronizes-with _desc_ in _execution_ implies _outerEnv_ happens-before _desc_ in _execution_.</p>
+        <p>For two host-specific events _eventA_ and _eventB_ in a candidate execution _execution_, _eventA_ host-synchronizes-with _eventB_ in _execution_ implies _eventA_ happens-before _eventB_ in _execution_.</p>
       </emu-note>
       <emu-note>
         <p>This Relation allows the host to provide additional synchronization mechanisms, such as `postMessage` between HTML workers.</p>
@@ -52021,15 +52021,15 @@ THH:mm:ss.sss
       <p>For a candidate execution _execution_, its <dfn>synchronizes-with</dfn> Relation is the least Relation on Memory events that satisfies the following.</p>
       <ul>
         <li>
-          For events _readEvent_ and _newValue_, _newValue_ synchronizes-with _readEvent_ in _execution_ if _readEvent_ reads-from _newValue_ in _execution_, _readEvent_.[[Order]] is ~seq-cst~, _newValue_.[[Order]] is ~seq-cst~, and _readEvent_ and _newValue_ have equal memory ranges.
+          For events _readEvent_ and _writeEvent_, _writeEvent_ synchronizes-with _readEvent_ in _execution_ if _readEvent_ reads-from _writeEvent_ in _execution_, _readEvent_.[[Order]] is ~seq-cst~, _writeEvent_.[[Order]] is ~seq-cst~, and _readEvent_ and _writeEvent_ have equal memory ranges.
         </li>
         <li>
           For each element _eventsRecord_ of _execution_.[[EventsRecords]], the following is true.
           <ul>
-            <li>For events _set_ and _sw_, _set_ synchronizes-with _sw_ in _execution_ if _eventsRecord_.[[AgentSynchronizesWith]] contains (_set_, _sw_).</li>
+            <li>For events _eventA_ and _eventB_, _eventA_ synchronizes-with _eventB_ in _execution_ if _eventsRecord_.[[AgentSynchronizesWith]] contains (_eventA_, _eventB_).</li>
           </ul>
         </li>
-        <li>For events _outerEnv_ and _desc_, _outerEnv_ synchronizes-with _desc_ in _execution_ if _execution_.[[HostSynchronizesWith]] contains (_outerEnv_, _desc_).</li>
+        <li>For events _eventA_ and _eventB_, _eventA_ synchronizes-with _eventB_ in _execution_ if _execution_.[[HostSynchronizesWith]] contains (_eventA_, _eventB_).</li>
       </ul>
 
       <emu-note>
@@ -52045,7 +52045,7 @@ THH:mm:ss.sss
       </emu-note>
 
       <emu-note>
-        <p>For Shared Data Block events _readEvent_ and _newValue_ in a candidate execution _execution_ such that _newValue_ synchronizes-with _readEvent_, _readEvent_ may reads-from other writes than _newValue_.</p>
+        <p>For Shared Data Block events _readEvent_ and _writeEvent_ in a candidate execution _execution_ such that _writeEvent_ synchronizes-with _readEvent_, _readEvent_ may reads-from other writes than _writeEvent_.</p>
       </emu-note>
     </emu-clause>
 
@@ -52055,12 +52055,12 @@ THH:mm:ss.sss
 
       <ul>
         <li>
-          <p>For events _outerEnv_ and _desc_, _outerEnv_ happens-before _desc_ in _execution_ if any of the following conditions are true.</p>
+          <p>For events _eventA_ and _eventB_, _eventA_ happens-before _eventB_ in _execution_ if any of the following conditions are true.</p>
           <ul>
-            <li>_outerEnv_ is-agent-order-before _desc_ in _execution_.</li>
-            <li>_outerEnv_ synchronizes-with _desc_ in _execution_.</li>
-            <li>SharedDataBlockEventSet(_execution_) contains both _outerEnv_ and _desc_, _outerEnv_.[[Order]] is ~init~, and _outerEnv_ and _desc_ have overlapping memory ranges.</li>
-            <li>There is an event _func_ such that _outerEnv_ happens-before _func_ and _func_ happens-before _desc_ in _execution_.</li>
+            <li>_eventA_ is-agent-order-before _eventB_ in _execution_.</li>
+            <li>_eventA_ synchronizes-with _eventB_ in _execution_.</li>
+            <li>SharedDataBlockEventSet(_execution_) contains both _eventA_ and _eventB_, _eventA_.[[Order]] is ~init~, and _eventA_ and _eventB_ have overlapping memory ranges.</li>
+            <li>There is an event _eventC_ such that _eventA_ happens-before _eventC_ and _eventC_ happens-before _eventB_ in _execution_.</li>
           </ul>
         </li>
       </ul>
@@ -52099,10 +52099,10 @@ THH:mm:ss.sss
         1. For each ReadSharedMemory or ReadModifyWriteSharedMemory event _readEvent_ of SharedDataBlockEventSet(_execution_), do
           1. Let _writes_ be reads-bytes-from(_readEvent_) in _execution_.
           1. Let _byteLocation_ be _readEvent_.[[ByteIndex]].
-          1. For each element _newValue_ of _writes_, do
-            1. If _readEvent_ happens-before _newValue_ in _execution_, then
+          1. For each element _writeEvent_ of _writes_, do
+            1. If _readEvent_ happens-before _writeEvent_ in _execution_, then
               1. Return *false*.
-            1. If there exists a WriteSharedMemory or ReadModifyWriteSharedMemory event _value_ that has _byteLocation_ in its memory range such that _newValue_ happens-before _value_ in _execution_ and _value_ happens-before _readEvent_ in _execution_, then
+            1. If there exists a WriteSharedMemory or ReadModifyWriteSharedMemory event _value_ that has _byteLocation_ in its memory range such that _writeEvent_ happens-before _value_ in _execution_ and _value_ happens-before _readEvent_ in _execution_, then
               1. Return *false*.
             1. Set _byteLocation_ to _byteLocation_ + 1.
         1. Return *true*.
@@ -52116,8 +52116,8 @@ THH:mm:ss.sss
         1. For each ReadSharedMemory or ReadModifyWriteSharedMemory event _readEvent_ of SharedDataBlockEventSet(_execution_), do
           1. If _readEvent_.[[NoTear]] is *true*, then
             1. Assert: The remainder of dividing _readEvent_.[[ByteIndex]] by _readEvent_.[[ElementSize]] is 0.
-            1. For each Memory event _newValue_ such that _readEvent_ reads-from _newValue_ in _execution_ and _newValue_.[[NoTear]] is *true*, do
-              1. If _readEvent_ and _newValue_ have equal memory ranges and there exists a Memory event _value_ such that _value_ and _newValue_ have equal memory ranges, _value_.[[NoTear]] is *true*, _newValue_ and _value_ are not the same Shared Data Block event, and _readEvent_ reads-from _value_ in _execution_, then
+            1. For each Memory event _writeEvent_ such that _readEvent_ reads-from _writeEvent_ in _execution_ and _writeEvent_.[[NoTear]] is *true*, do
+              1. If _readEvent_ and _writeEvent_ have equal memory ranges and there exists a Memory event _value_ such that _value_ and _writeEvent_ have equal memory ranges, _value_.[[NoTear]] is *true*, _writeEvent_ and _value_ are not the same Shared Data Block event, and _readEvent_ reads-from _value_ in _execution_, then
                 1. Return *false*.
         1. Return *true*.
       </emu-alg>
@@ -52132,20 +52132,20 @@ THH:mm:ss.sss
       <h1>Sequentially Consistent Atomics</h1>
       <p>For a candidate execution _execution_, <dfn>is-memory-order-before</dfn> is a strict total order of all Memory events in EventSet(_execution_) that satisfies the following.</p>
       <ul>
-        <li>For events _outerEnv_ and _desc_, _outerEnv_ is-memory-order-before _desc_ in _execution_ if _outerEnv_ happens-before _desc_ in _execution_.</li>
+        <li>For events _eventA_ and _eventB_, _eventA_ is-memory-order-before _eventB_ in _execution_ if _eventA_ happens-before _eventB_ in _execution_.</li>
         <li>
-          <p>For events _readEvent_ and _newValue_ such that _readEvent_ reads-from _newValue_ in _execution_, there is no WriteSharedMemory or ReadModifyWriteSharedMemory event _value_ in SharedDataBlockEventSet(_execution_) such that _value_.[[Order]] is ~seq-cst~, _newValue_ is-memory-order-before _value_ in _execution_, _value_ is-memory-order-before _readEvent_ in _execution_, and any of the following conditions are true.</p>
+          <p>For events _readEvent_ and _writeEvent_ such that _readEvent_ reads-from _writeEvent_ in _execution_, there is no WriteSharedMemory or ReadModifyWriteSharedMemory event _value_ in SharedDataBlockEventSet(_execution_) such that _value_.[[Order]] is ~seq-cst~, _writeEvent_ is-memory-order-before _value_ in _execution_, _value_ is-memory-order-before _readEvent_ in _execution_, and any of the following conditions are true.</p>
           <ul>
-            <li>_newValue_ synchronizes-with _readEvent_ in _execution_, and _value_ and _readEvent_ have equal memory ranges.</li>
-            <li>_newValue_ happens-before _readEvent_ and _value_ happens-before _readEvent_ in _execution_, _newValue_.[[Order]] is ~seq-cst~, and _newValue_ and _value_ have equal memory ranges.</li>
-            <li>_newValue_ happens-before _readEvent_ and _newValue_ happens-before _value_ in _execution_, _readEvent_.[[Order]] is ~seq-cst~, and _value_ and _readEvent_ have equal memory ranges.</li>
+            <li>_writeEvent_ synchronizes-with _readEvent_ in _execution_, and _value_ and _readEvent_ have equal memory ranges.</li>
+            <li>_writeEvent_ happens-before _readEvent_ and _value_ happens-before _readEvent_ in _execution_, _writeEvent_.[[Order]] is ~seq-cst~, and _writeEvent_ and _value_ have equal memory ranges.</li>
+            <li>_writeEvent_ happens-before _readEvent_ and _writeEvent_ happens-before _value_ in _execution_, _readEvent_.[[Order]] is ~seq-cst~, and _value_ and _readEvent_ have equal memory ranges.</li>
           </ul>
           <emu-note>
             <p>This clause additionally constrains ~seq-cst~ events on equal memory ranges.</p>
           </emu-note>
         </li>
         <li>
-          <p>For each WriteSharedMemory or ReadModifyWriteSharedMemory event _newValue_ in SharedDataBlockEventSet(_execution_), if _newValue_.[[Order]] is ~seq-cst~, then it is not the case that there is an infinite number of ReadSharedMemory or ReadModifyWriteSharedMemory events in SharedDataBlockEventSet(_execution_) with equal memory range that is memory-order before _newValue_.</p>
+          <p>For each WriteSharedMemory or ReadModifyWriteSharedMemory event _writeEvent_ in SharedDataBlockEventSet(_execution_), if _writeEvent_.[[Order]] is ~seq-cst~, then it is not the case that there is an infinite number of ReadSharedMemory or ReadModifyWriteSharedMemory events in SharedDataBlockEventSet(_execution_) with equal memory range that is memory-order before _writeEvent_.</p>
           <emu-note>
             <p>This clause together with the forward progress guarantee on agents ensure the liveness condition that ~seq-cst~ <emu-xref href="#sec-memory-model-fundamentals">writes</emu-xref> become visible to ~seq-cst~ <emu-xref href="#sec-memory-model-fundamentals">reads</emu-xref> with equal memory range in finite time.</p>
           </emu-note>
@@ -52175,13 +52175,13 @@ THH:mm:ss.sss
 
   <emu-clause id="sec-races">
     <h1>Races</h1>
-    <p>For an execution _execution_ and events _outerEnv_ and _desc_ that are contained in SharedDataBlockEventSet(_execution_), _outerEnv_ and _desc_ are in a <em>race</em> if the following algorithm returns *true*.</p>
+    <p>For an execution _execution_ and events _eventA_ and _eventB_ that are contained in SharedDataBlockEventSet(_execution_), _eventA_ and _eventB_ are in a <em>race</em> if the following algorithm returns *true*.</p>
     <emu-alg>
-      1. If _outerEnv_ and _desc_ are not the same Shared Data Block event, then
-        1. If it is not the case that both _outerEnv_ happens-before _desc_ in _execution_ and _desc_ happens-before _outerEnv_ in _execution_, then
-          1. If _outerEnv_ and _desc_ are both WriteSharedMemory or ReadModifyWriteSharedMemory events and _outerEnv_ and _desc_ do not have disjoint memory ranges, then
+      1. If _eventA_ and _eventB_ are not the same Shared Data Block event, then
+        1. If it is not the case that both _eventA_ happens-before _eventB_ in _execution_ and _eventB_ happens-before _eventA_ in _execution_, then
+          1. If _eventA_ and _eventB_ are both WriteSharedMemory or ReadModifyWriteSharedMemory events and _eventA_ and _eventB_ do not have disjoint memory ranges, then
             1. Return *true*.
-          1. If _outerEnv_ reads-from _desc_ in _execution_ or _desc_ reads-from _outerEnv_ in _execution_, then
+          1. If _eventA_ reads-from _eventB_ in _execution_ or _eventB_ reads-from _eventA_ in _execution_, then
             1. Return *true*.
       1. Return *false*.
     </emu-alg>
@@ -52189,12 +52189,12 @@ THH:mm:ss.sss
 
   <emu-clause id="sec-data-races">
     <h1>Data Races</h1>
-    <p>For an execution _execution_ and events _outerEnv_ and _desc_ that are contained in SharedDataBlockEventSet(_execution_), _outerEnv_ and _desc_ are in a <dfn>data race</dfn> if the following algorithm returns *true*.</p>
+    <p>For an execution _execution_ and events _eventA_ and _eventB_ that are contained in SharedDataBlockEventSet(_execution_), _eventA_ and _eventB_ are in a <dfn>data race</dfn> if the following algorithm returns *true*.</p>
     <emu-alg>
-      1. If _outerEnv_ and _desc_ are in a <emu-xref href="#sec-races">race</emu-xref> in _execution_, then
-        1. If _outerEnv_.[[Order]] is not ~seq-cst~ or _desc_.[[Order]] is not ~seq-cst~, then
+      1. If _eventA_ and _eventB_ are in a <emu-xref href="#sec-races">race</emu-xref> in _execution_, then
+        1. If _eventA_.[[Order]] is not ~seq-cst~ or _eventB_.[[Order]] is not ~seq-cst~, then
           1. Return *true*.
-        1. If _outerEnv_ and _desc_ have overlapping memory ranges, then
+        1. If _eventA_ and _eventB_ have overlapping memory ranges, then
           1. Return *true*.
       1. Return *false*.
     </emu-alg>
