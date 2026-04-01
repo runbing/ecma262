@@ -13593,10 +13593,10 @@
         1. Set _func_.[[SourceText]] to _sourceText_.
         1. Set _func_.[[FormalParameters]] to _parameterList_.
         1. Set _func_.[[ECMAScriptCode]] to _body_.
-        1. Let _strict_ be IsStrict(_body_).
-        1. Set _func_.[[Strict]] to _strict_.
+        1. Let _isStrict_ be IsStrict(_body_).
+        1. Set _func_.[[Strict]] to _isStrict_.
         1. If _thisMode_ is ~lexical-this~, set _func_.[[ThisMode]] to ~lexical~.
-        1. Else if _strict_ is *true*, set _func_.[[ThisMode]] to ~strict~.
+        1. Else if _isStrict_ is *true*, set _func_.[[ThisMode]] to ~strict~.
         1. Else, set _func_.[[ThisMode]] to ~global~.
         1. Set _func_.[[IsClassConstructor]] to *false*.
         1. Set _func_.[[Environment]] to _env_.
