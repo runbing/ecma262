@@ -4556,17 +4556,17 @@
       <emu-clause id="sec-initializereferencedbinding" type="abstract operation">
         <h1>
           InitializeReferencedBinding (
-            _value_: a Reference Record,
+            _referenceRecord_: a Reference Record,
             _value_: an ECMAScript language value,
           ): either a normal completion containing ~unused~ or an abrupt completion
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: IsUnresolvableReference(_value_) is *false*.
-          1. Let _base_ be _value_.[[Base]].
+          1. Assert: IsUnresolvableReference(_referenceRecord_) is *false*.
+          1. Let _base_ be _referenceRecord_.[[Base]].
           1. Assert: _base_ is an Environment Record.
-          1. Return ? _base_.InitializeBinding(_value_.[[ReferencedName]], _value_).
+          1. Return ? _base_.InitializeBinding(_referenceRecord_.[[ReferencedName]], _value_).
         </emu-alg>
       </emu-clause>
 
@@ -15196,7 +15196,7 @@
       <emu-clause id="sec-module-namespace-exotic-objects-setprototypeof-v" type="internal method">
         <h1>
           [[SetPrototypeOf]] (
-            _obj_: an Object or *null*,
+            _proto_: an Object or *null*,
           ): a normal completion containing a Boolean
         </h1>
         <dl class="header">
@@ -15204,7 +15204,7 @@
           <dd>a module namespace exotic object _obj_</dd>
         </dl>
         <emu-alg>
-          1. Return ! SetImmutablePrototype(_obj_, _obj_).
+          1. Return ! SetImmutablePrototype(_obj_, _proto_).
         </emu-alg>
       </emu-clause>
 
@@ -15411,7 +15411,7 @@
       <emu-clause id="sec-immutable-prototype-exotic-objects-setprototypeof-v" type="internal method">
         <h1>
           [[SetPrototypeOf]] (
-            _obj_: an Object or *null*,
+            _proto_: an Object or *null*,
           ): either a normal completion containing a Boolean or a throw completion
         </h1>
         <dl class="header">
@@ -15419,7 +15419,7 @@
           <dd>an immutable prototype exotic object _obj_</dd>
         </dl>
         <emu-alg>
-          1. Return ? SetImmutablePrototype(_obj_, _obj_).
+          1. Return ? SetImmutablePrototype(_obj_, _proto_).
         </emu-alg>
       </emu-clause>
 
@@ -15608,7 +15608,7 @@
     <emu-clause id="sec-proxy-object-internal-methods-and-internal-slots-setprototypeof-v" type="internal method">
       <h1>
         [[SetPrototypeOf]] (
-          _obj_: an Object or *null*,
+          _proto_: an Object or *null*,
         ): either a normal completion containing a Boolean or a throw completion
       </h1>
       <dl class="header">
@@ -15622,13 +15622,13 @@
         1. Assert: _handler_ is an Object.
         1. Let _trap_ be ? GetMethod(_handler_, *"setPrototypeOf"*).
         1. If _trap_ is *undefined*, then
-          1. Return ? <emu-meta effects="user-code">_target_.[[SetPrototypeOf]](_obj_)</emu-meta>.
-        1. Let _booleanTrapResult_ be ToBoolean(? Call(_trap_, _handler_, « _target_, _obj_ »)).
+          1. Return ? <emu-meta effects="user-code">_target_.[[SetPrototypeOf]](_proto_)</emu-meta>.
+        1. Let _booleanTrapResult_ be ToBoolean(? Call(_trap_, _handler_, « _target_, _proto_ »)).
         1. If _booleanTrapResult_ is *false*, return *false*.
         1. Let _extensibleTarget_ be ? IsExtensible(_target_).
         1. If _extensibleTarget_ is *true*, return *true*.
         1. Let _targetProto_ be ? <emu-meta effects="user-code">_target_.[[GetPrototypeOf]]()</emu-meta>.
-        1. If SameValue(_obj_, _targetProto_) is *false*, throw a *TypeError* exception.
+        1. If SameValue(_proto_, _targetProto_) is *false*, throw a *TypeError* exception.
         1. Return *true*.
       </emu-alg>
       <emu-note>
