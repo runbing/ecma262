@@ -12637,7 +12637,7 @@
     <emu-clause id="sec-ordinary-object-internal-methods-and-internal-slots-setprototypeof-v" type="internal method">
       <h1>
         [[SetPrototypeOf]] (
-          _obj_: an Object or *null*,
+          _proto_: an Object or *null*,
         ): a normal completion containing a Boolean
       </h1>
       <dl class="header">
@@ -12645,24 +12645,24 @@
         <dd>an ordinary object _obj_</dd>
       </dl>
       <emu-alg>
-        1. Return OrdinarySetPrototypeOf(_obj_, _obj_).
+        1. Return OrdinarySetPrototypeOf(_obj_, _proto_).
       </emu-alg>
 
       <emu-clause id="sec-ordinarysetprototypeof" type="abstract operation">
         <h1>
           OrdinarySetPrototypeOf (
             _obj_: an Object,
-            _obj_: an Object or *null*,
+            _proto_: an Object or *null*,
           ): a Boolean
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
           1. Let _current_ be _obj_.[[Prototype]].
-          1. If SameValue(_obj_, _current_) is *true*, return *true*.
+          1. If SameValue(_proto_, _current_) is *true*, return *true*.
           1. Let _extensible_ be _obj_.[[Extensible]].
           1. If _extensible_ is *false*, return *false*.
-          1. Let _p_ be _obj_.
+          1. Let _p_ be _proto_.
           1. Let _done_ be *false*.
           1. [id="step-ordinarysetprototypeof-loop"] Repeat, while _done_ is *false*,
             1. If _p_ is *null*, then
@@ -12672,7 +12672,7 @@
             1. Else,
               1. If _p_.[[GetPrototypeOf]] is not the ordinary object internal method defined in <emu-xref href="#sec-ordinary-object-internal-methods-and-internal-slots-getprototypeof"></emu-xref>, set _done_ to *true*.
               1. Else, set _p_ to _p_.[[Prototype]].
-          1. Set _obj_.[[Prototype]] to _obj_.
+          1. Set _obj_.[[Prototype]] to _proto_.
           1. Return *true*.
         </emu-alg>
         <emu-note>
