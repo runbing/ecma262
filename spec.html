@@ -52970,14 +52970,14 @@ THH:mm:ss.sss
         <p>CompileAtom rules for the |Atom| productions except for <emu-grammar>Atom :: PatternCharacter</emu-grammar> are also used for the |ExtendedAtom| productions, but with |ExtendedAtom| substituted for |Atom|. The following rules, with parameter _direction_, are also added:</p>
         <emu-grammar>ExtendedAtom :: `\` [lookahead == `c`]</emu-grammar>
         <emu-alg>
-          1. Let _resultArray_ be the CharSet containing the single character `\\` U+005C (REVERSE SOLIDUS).
-          1. Return CharacterSetMatcher(_rer_, _resultArray_, *false*, _direction_).
+          1. Let _charSet_ be the CharSet containing the single character `\\` U+005C (REVERSE SOLIDUS).
+          1. Return CharacterSetMatcher(_rer_, _charSet_, *false*, _direction_).
         </emu-alg>
         <emu-grammar>ExtendedAtom :: ExtendedPatternCharacter</emu-grammar>
         <emu-alg>
           1. Let _ch_ be the character represented by |ExtendedPatternCharacter|.
-          1. Let _resultArray_ be a one-element CharSet containing the character _ch_.
-          1. Return CharacterSetMatcher(_rer_, _resultArray_, *false*, _direction_).
+          1. Let _charSet_ be a one-element CharSet containing the character _ch_.
+          1. Return CharacterSetMatcher(_rer_, _charSet_, *false*, _direction_).
         </emu-alg>
       </emu-annex>
 
@@ -52988,19 +52988,19 @@ THH:mm:ss.sss
         <p>The following two rules replace the corresponding rules of CompileToCharSet.</p>
         <emu-grammar>NonemptyClassRanges :: ClassAtom `-` ClassAtom ClassContents</emu-grammar>
         <emu-alg>
-          1. Let _resultArray_ be CompileToCharSet of the first |ClassAtom| with argument _rer_.
-          1. Let _B_ be CompileToCharSet of the second |ClassAtom| with argument _rer_.
-          1. Let _C_ be CompileToCharSet of |ClassContents| with argument _rer_.
-          1. Let _D_ be CharacterRangeOrUnion(_rer_, _resultArray_, _B_).
-          1. Return the union of _D_ and _C_.
+          1. Let _charSet_ be CompileToCharSet of the first |ClassAtom| with argument _rer_.
+          1. Let _otherSet_ be CompileToCharSet of the second |ClassAtom| with argument _rer_.
+          1. Let _remainingSet_ be CompileToCharSet of |ClassContents| with argument _rer_.
+          1. Let _rangeSet_ be CharacterRangeOrUnion(_rer_, _charSet_, _otherSet_).
+          1. Return the union of _rangeSet_ and _remainingSet_.
         </emu-alg>
         <emu-grammar>NonemptyClassRangesNoDash :: ClassAtomNoDash `-` ClassAtom ClassContents</emu-grammar>
         <emu-alg>
-          1. Let _resultArray_ be CompileToCharSet of |ClassAtomNoDash| with argument _rer_.
-          1. Let _B_ be CompileToCharSet of |ClassAtom| with argument _rer_.
-          1. Let _C_ be CompileToCharSet of |ClassContents| with argument _rer_.
-          1. Let _D_ be CharacterRangeOrUnion(_rer_, _resultArray_, _B_).
-          1. Return the union of _D_ and _C_.
+          1. Let _charSet_ be CompileToCharSet of |ClassAtomNoDash| with argument _rer_.
+          1. Let _otherSet_ be CompileToCharSet of |ClassAtom| with argument _rer_.
+          1. Let _remainingSet_ be CompileToCharSet of |ClassContents| with argument _rer_.
+          1. Let _rangeSet_ be CharacterRangeOrUnion(_rer_, _charSet_, _otherSet_).
+          1. Return the union of _rangeSet_ and _remainingSet_.
         </emu-alg>
 
         <p>In addition, the following rules are added to CompileToCharSet.</p>
@@ -53021,18 +53021,18 @@ THH:mm:ss.sss
           <h1>
             CharacterRangeOrUnion (
               _rer_: a RegExp Record,
-              _resultArray_: a CharSet,
-              _B_: a CharSet,
+              _charSet_: a CharSet,
+              _otherSet_: a CharSet,
             ): a CharSet
           </h1>
           <dl class="header">
           </dl>
           <emu-alg>
             1. If HasEitherUnicodeFlag(_rer_) is *false*, then
-              1. If _resultArray_ does not contain exactly one character or _B_ does not contain exactly one character, then
-                1. Let _C_ be the CharSet containing the single character `-` U+002D (HYPHEN-MINUS).
-                1. Return the union of CharSets _resultArray_, _B_ and _C_.
-            1. Return CharacterRange(_resultArray_, _B_).
+              1. If _charSet_ does not contain exactly one character or _otherSet_ does not contain exactly one character, then
+                1. Let _remainingSet_ be the CharSet containing the single character `-` U+002D (HYPHEN-MINUS).
+                1. Return the union of CharSets _charSet_, _otherSet_ and _remainingSet_.
+            1. Return CharacterRange(_charSet_, _otherSet_).
           </emu-alg>
         </emu-annex>
       </emu-annex>
@@ -53118,11 +53118,11 @@ THH:mm:ss.sss
           1. Let _unescapedSet_ be the string-concatenation of the ASCII word characters and *"@\*+-./"*.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _C_ be the code unit at index _k_ within _string_.
-            1. If _unescapedSet_ contains _C_, then
-              1. Let _set_ be _C_.
+            1. Let _codeUnit_ be the code unit at index _k_ within _string_.
+            1. If _unescapedSet_ contains _codeUnit_, then
+              1. Let _set_ be _codeUnit_.
             1. Else,
-              1. Let _n_ be the numeric value of _C_.
+              1. Let _n_ be the numeric value of _codeUnit_.
               1. If _n_ &lt; 256, then
                 1. Let _hex_ be the String representation of _n_, formatted as an uppercase hexadecimal number.
                 1. Let _set_ be the string-concatenation of *"%"* and StringPad(_hex_, 2, *"0"*, ~start~).
@@ -53149,8 +53149,8 @@ THH:mm:ss.sss
           1. Let _result_ be the empty String.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _C_ be the code unit at index _k_ within _string_.
-            1. If _C_ is the code unit 0x0025 (PERCENT SIGN), then
+            1. Let _codeUnit_ be the code unit at index _k_ within _string_.
+            1. If _codeUnit_ is the code unit 0x0025 (PERCENT SIGN), then
               1. Let _hexDigits_ be the empty String.
               1. Let _optionalAdvance_ be 0.
               1. If _k_ + 5 &lt; _len_ and the code unit at index _k_ + 1 within _string_ is the code unit 0x0075 (LATIN SMALL LETTER U), then
@@ -53162,9 +53162,9 @@ THH:mm:ss.sss
               1. Let _parseResult_ be ParseText(_hexDigits_, |HexDigits[~Sep]|).
               1. If _parseResult_ is a Parse Node, then
                 1. Let _n_ be the MV of _parseResult_.
-                1. Set _C_ to the code unit whose numeric value is _n_.
+                1. Set _codeUnit_ to the code unit whose numeric value is _n_.
                 1. Set _k_ to _k_ + _optionalAdvance_.
-            1. Set _result_ to the string-concatenation of _result_ and _C_.
+            1. Set _result_ to the string-concatenation of _result_ and _codeUnit_.
             1. Set _k_ to _k_ + 1.
           1. Return _result_.
         </emu-alg>
@@ -53221,8 +53221,8 @@ THH:mm:ss.sss
             1. Let _set_ be ? ToString(_string_).
             1. Let _p1_ be the string-concatenation of *"&lt;"* and _tag_.
             1. If _attribute_ is not the empty String, then
-              1. Let _V_ be ? ToString(_value_).
-              1. Let _escapedV_ be the String value that is the same as _V_ except that each occurrence of the code unit 0x0022 (QUOTATION MARK) in _V_ has been replaced with the six code unit sequence *"&amp;quot;"*.
+              1. Let _value_ be ? ToString(_value_).
+              1. Let _escapedV_ be the String value that is the same as _value_ except that each occurrence of the code unit 0x0022 (QUOTATION MARK) in _value_ has been replaced with the six code unit sequence *"&amp;quot;"*.
               1. Set _p1_ to the string-concatenation of:
                 * _p1_
                 * the code unit 0x0020 (SPACE)
@@ -53423,12 +53423,12 @@ THH:mm:ss.sss
           1. Perform ? RequireInternalSlot(_obj_, [[RegExpMatcher]]).
           1. If _pattern_ is an Object and _pattern_ has a [[RegExpMatcher]] internal slot, then
             1. If _flags_ is not *undefined*, throw a *TypeError* exception.
-            1. Let _P_ be _pattern_.[[OriginalSource]].
-            1. Let _F_ be _pattern_.[[OriginalFlags]].
+            1. Let _pattern_ be _pattern_.[[OriginalSource]].
+            1. Let _flags_ be _pattern_.[[OriginalFlags]].
           1. Else,
-            1. Let _P_ be _pattern_.
-            1. Let _F_ be _flags_.
-          1. Return ? RegExpInitialize(_obj_, _P_, _F_).
+            1. Let _pattern_ be _pattern_.
+            1. Let _flags_ be _flags_.
+          1. Return ? RegExpInitialize(_obj_, _pattern_, _flags_).
         </emu-alg>
         <emu-note>
           <p>This method completely reinitializes the *this* value RegExp with a new pattern and flags. An implementation may interpret use of this method as an assertion that the resulting RegExp object will be used multiple times and hence is a candidate for extra optimization.</p>
