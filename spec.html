@@ -13157,17 +13157,17 @@
     <emu-clause id="sec-requireinternalslot" type="abstract operation">
       <h1>
         RequireInternalSlot (
-          _value_: an ECMAScript language value,
+          _obj_: an ECMAScript language value,
           _internalSlot_: an internal slot name,
         ): either a normal completion containing ~unused~ or a throw completion
       </h1>
       <dl class="header">
         <dt>description</dt>
-        <dd>It throws an exception unless _value_ is an Object and has the given internal slot.</dd>
+        <dd>It throws an exception unless _obj_ is an Object and has the given internal slot.</dd>
       </dl>
       <emu-alg>
-        1. If _value_ is not an Object, throw a *TypeError* exception.
-        1. If _value_ does not have an _internalSlot_ internal slot, throw a *TypeError* exception.
+        1. If _obj_ is not an Object, throw a *TypeError* exception.
+        1. If _obj_ does not have an _internalSlot_ internal slot, throw a *TypeError* exception.
         1. Return ~unused~.
       </emu-alg>
     </emu-clause>
