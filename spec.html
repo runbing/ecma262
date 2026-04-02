@@ -15386,14 +15386,14 @@
         <emu-alg>
           1. Assert: _module_.[[Namespace]] is ~empty~.
           1. Let _internalSlotsList_ be the internal slots listed in <emu-xref href="#table-internal-slots-of-module-namespace-exotic-objects"></emu-xref>.
-          1. Let _module_ be MakeBasicObject(_internalSlotsList_).
-          1. Set _module_'s essential internal methods to the definitions specified in <emu-xref href="#sec-module-namespace-exotic-objects"></emu-xref>.
-          1. Set _module_.[[Module]] to _module_.
+          1. Let _moduleNamespace_ be MakeBasicObject(_internalSlotsList_).
+          1. Set _moduleNamespace_'s essential internal methods to the definitions specified in <emu-xref href="#sec-module-namespace-exotic-objects"></emu-xref>.
+          1. Set _moduleNamespace_.[[Module]] to _module_.
           1. Let _sortedExports_ be a List whose elements are the elements of _exports_, sorted according to lexicographic code unit order.
-          1. Set _module_.[[Exports]] to _sortedExports_.
-          1. Create own properties of _module_ corresponding to the definitions in <emu-xref href="#sec-module-namespace-objects"></emu-xref>.
-          1. Set _module_.[[Namespace]] to _module_.
-          1. Return _module_.
+          1. Set _moduleNamespace_.[[Exports]] to _sortedExports_.
+          1. Create own properties of _moduleNamespace_ corresponding to the definitions in <emu-xref href="#sec-module-namespace-objects"></emu-xref>.
+          1. Set _module_.[[Namespace]] to _moduleNamespace_.
+          1. Return _moduleNamespace_.
         </emu-alg>
       </emu-clause>
     </emu-clause>
