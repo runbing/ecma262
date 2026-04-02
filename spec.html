@@ -11480,7 +11480,7 @@
         <h1>
           NewObjectEnvironment (
             _obj_: an Object,
-            _newValue_: a Boolean,
+            _isWithEnvironment_: a Boolean,
             _outerEnv_: an Environment Record or *null*,
           ): an Object Environment Record
         </h1>
@@ -11489,7 +11489,7 @@
         <emu-alg>
           1. Let _env_ be a new Object Environment Record.
           1. Set _env_.[[BindingObject]] to _obj_.
-          1. Set _env_.[[IsWithEnvironment]] to _newValue_.
+          1. Set _env_.[[IsWithEnvironment]] to _isWithEnvironment_.
           1. Set _env_.[[OuterEnv]] to _outerEnv_.
           1. Return _env_.
         </emu-alg>
