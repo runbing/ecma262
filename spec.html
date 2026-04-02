@@ -6650,26 +6650,26 @@
     <emu-clause id="sec-getfunctionrealm" type="abstract operation">
       <h1>
         GetFunctionRealm (
-          _obj_: a function object,
+          _func_: a function object,
         ): either a normal completion containing a Realm Record or a throw completion
       </h1>
       <dl class="header">
       </dl>
       <emu-alg>
-        1. If _obj_ has a [[Realm]] internal slot, then
-          1. Return _obj_.[[Realm]].
-        1. If _obj_ is a bound function exotic object, then
-          1. Let _boundTargetFunction_ be _obj_.[[BoundTargetFunction]].
+        1. If _func_ has a [[Realm]] internal slot, then
+          1. Return _func_.[[Realm]].
+        1. If _func_ is a bound function exotic object, then
+          1. Let _boundTargetFunction_ be _func_.[[BoundTargetFunction]].
           1. Return ? GetFunctionRealm(_boundTargetFunction_).
-        1. If _obj_ is a Proxy exotic object, then
-          1. Perform ? ValidateNonRevokedProxy(_obj_).
-          1. Let _proxyTarget_ be _obj_.[[ProxyTarget]].
+        1. If _func_ is a Proxy exotic object, then
+          1. Perform ? ValidateNonRevokedProxy(_func_).
+          1. Let _proxyTarget_ be _func_.[[ProxyTarget]].
           1. Assert: _proxyTarget_ is a function object.
           1. Return ? GetFunctionRealm(_proxyTarget_).
         1. [id="step-getfunctionrealm-default-return"] Return the current Realm Record.
       </emu-alg>
       <emu-note>
-        <p>Step <emu-xref href="#step-getfunctionrealm-default-return"></emu-xref> will only be reached if _obj_ is a non-standard function exotic object that does not have a [[Realm]] internal slot.</p>
+        <p>Step <emu-xref href="#step-getfunctionrealm-default-return"></emu-xref> will only be reached if _func_ is a non-standard function exotic object that does not have a [[Realm]] internal slot.</p>
       </emu-note>
     </emu-clause>
 
@@ -11498,7 +11498,7 @@
       <emu-clause id="sec-newfunctionenvironment" type="abstract operation">
         <h1>
           NewFunctionEnvironment (
-            _obj_: an ECMAScript function object,
+            _func_: an ECMAScript function object,
             _newTarget_: an Object or *undefined*,
           ): a Function Environment Record
         </h1>
@@ -11506,11 +11506,11 @@
         </dl>
         <emu-alg>
           1. Let _env_ be a new Function Environment Record containing no bindings.
-          1. Set _env_.[[FunctionObject]] to _obj_.
-          1. If _obj_.[[ThisMode]] is ~lexical~, set _env_.[[ThisBindingStatus]] to ~lexical~.
+          1. Set _env_.[[FunctionObject]] to _func_.
+          1. If _func_.[[ThisMode]] is ~lexical~, set _env_.[[ThisBindingStatus]] to ~lexical~.
           1. Else, set _env_.[[ThisBindingStatus]] to ~uninitialized~.
           1. Set _env_.[[NewTarget]] to _newTarget_.
-          1. Set _env_.[[OuterEnv]] to _obj_.[[Environment]].
+          1. Set _env_.[[OuterEnv]] to _func_.[[Environment]].
           1. Return _env_.
         </emu-alg>
       </emu-clause>
@@ -13395,7 +13395,7 @@
       <emu-clause id="sec-prepareforordinarycall" type="abstract operation">
         <h1>
           PrepareForOrdinaryCall (
-            _obj_: an ECMAScript function object,
+            _func_: an ECMAScript function object,
             _newTarget_: an Object or *undefined*,
           ): an execution context
         </h1>
@@ -13404,14 +13404,14 @@
         <emu-alg>
           1. Let _callerContext_ be the running execution context.
           1. Let _calleeContext_ be a new ECMAScript code execution context.
-          1. Set the Function of _calleeContext_ to _obj_.
-          1. Let _calleeRealm_ be _obj_.[[Realm]].
+          1. Set the Function of _calleeContext_ to _func_.
+          1. Let _calleeRealm_ be _func_.[[Realm]].
           1. Set the Realm of _calleeContext_ to _calleeRealm_.
-          1. Set the ScriptOrModule of _calleeContext_ to _obj_.[[ScriptOrModule]].
-          1. Let _localEnv_ be NewFunctionEnvironment(_obj_, _newTarget_).
+          1. Set the ScriptOrModule of _calleeContext_ to _func_.[[ScriptOrModule]].
+          1. Let _localEnv_ be NewFunctionEnvironment(_func_, _newTarget_).
           1. Set the LexicalEnvironment of _calleeContext_ to _localEnv_.
           1. Set the VariableEnvironment of _calleeContext_ to _localEnv_.
-          1. Set the PrivateEnvironment of _calleeContext_ to _obj_.[[PrivateEnvironment]].
+          1. Set the PrivateEnvironment of _calleeContext_ to _func_.[[PrivateEnvironment]].
           1. If _callerContext_ is not already suspended, suspend _callerContext_.
           1. Push _calleeContext_ onto the execution context stack; _calleeContext_ is now the running execution context.
           1. NOTE: Any exception objects produced after this point are associated with _calleeRealm_.
@@ -13422,7 +13422,7 @@
       <emu-clause id="sec-ordinarycallbindthis" type="abstract operation">
         <h1>
           OrdinaryCallBindThis (
-            _obj_: an ECMAScript function object,
+            _func_: an ECMAScript function object,
             _calleeContext_: an execution context,
             _thisArgument_: an ECMAScript language value,
           ): ~unused~
@@ -13430,9 +13430,9 @@
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Let _thisMode_ be _obj_.[[ThisMode]].
+          1. Let _thisMode_ be _func_.[[ThisMode]].
           1. If _thisMode_ is ~lexical~, return ~unused~.
-          1. Let _calleeRealm_ be _obj_.[[Realm]].
+          1. Let _calleeRealm_ be _func_.[[Realm]].
           1. Let _localEnv_ be the LexicalEnvironment of _calleeContext_.
           1. If _thisMode_ is ~strict~, then
             1. Let _thisValue_ be _thisArgument_.
@@ -13454,7 +13454,7 @@
       <emu-clause id="sec-runtime-semantics-evaluatebody" type="sdo">
         <h1>
           Runtime Semantics: EvaluateBody (
-            _functionObject_: an ECMAScript function object,
+            _func_: an ECMAScript function object,
             _argumentsList_: a List of ECMAScript language values,
           ): a return completion or a throw completion
         </h1>
@@ -13462,33 +13462,33 @@
         </dl>
         <emu-grammar>FunctionBody : FunctionStatementList</emu-grammar>
         <emu-alg>
-          1. Return ? EvaluateFunctionBody of |FunctionBody| with arguments _functionObject_ and _argumentsList_.
+          1. Return ? EvaluateFunctionBody of |FunctionBody| with arguments _func_ and _argumentsList_.
         </emu-alg>
         <emu-grammar>ConciseBody : ExpressionBody</emu-grammar>
         <emu-alg>
-          1. Return ? EvaluateConciseBody of |ConciseBody| with arguments _functionObject_ and _argumentsList_.
+          1. Return ? EvaluateConciseBody of |ConciseBody| with arguments _func_ and _argumentsList_.
         </emu-alg>
         <emu-grammar>GeneratorBody : FunctionBody</emu-grammar>
         <emu-alg>
-          1. Return ? EvaluateGeneratorBody of |GeneratorBody| with arguments _functionObject_ and _argumentsList_.
+          1. Return ? EvaluateGeneratorBody of |GeneratorBody| with arguments _func_ and _argumentsList_.
         </emu-alg>
         <emu-grammar>
           AsyncGeneratorBody : FunctionBody
         </emu-grammar>
         <emu-alg>
-          1. Return ? EvaluateAsyncGeneratorBody of |AsyncGeneratorBody| with arguments _functionObject_ and _argumentsList_.
+          1. Return ? EvaluateAsyncGeneratorBody of |AsyncGeneratorBody| with arguments _func_ and _argumentsList_.
         </emu-alg>
         <emu-grammar>
           AsyncFunctionBody : FunctionBody
         </emu-grammar>
         <emu-alg>
-          1. Return ? EvaluateAsyncFunctionBody of |AsyncFunctionBody| with arguments _functionObject_ and _argumentsList_.
+          1. Return ? EvaluateAsyncFunctionBody of |AsyncFunctionBody| with arguments _func_ and _argumentsList_.
         </emu-alg>
         <emu-grammar>
           AsyncConciseBody : ExpressionBody
         </emu-grammar>
         <emu-alg>
-          1. Return ? EvaluateAsyncConciseBody of |AsyncConciseBody| with arguments _functionObject_ and _argumentsList_.
+          1. Return ? EvaluateAsyncConciseBody of |AsyncConciseBody| with arguments _func_ and _argumentsList_.
         </emu-alg>
         <emu-grammar>
           Initializer :
@@ -13496,9 +13496,9 @@
         </emu-grammar>
         <emu-alg>
           1. Assert: _argumentsList_ is empty.
-          1. Assert: _functionObject_.[[ClassFieldInitializerName]] is not ~empty~.
+          1. Assert: _func_.[[ClassFieldInitializerName]] is not ~empty~.
           1. If IsAnonymousFunctionDefinition(|AssignmentExpression|) is *true*, then
-            1. Let _value_ be ? NamedEvaluation of |Initializer| with argument _functionObject_.[[ClassFieldInitializerName]].
+            1. Let _value_ be ? NamedEvaluation of |Initializer| with argument _func_.[[ClassFieldInitializerName]].
           1. Else,
             1. Let _rhs_ be ? Evaluation of |AssignmentExpression|.
             1. Let _value_ be ? GetValue(_rhs_).
@@ -13512,21 +13512,21 @@
         </emu-grammar>
         <emu-alg>
           1. Assert: _argumentsList_ is empty.
-          1. Return ? EvaluateClassStaticBlockBody of |ClassStaticBlockBody| with argument _functionObject_.
+          1. Return ? EvaluateClassStaticBlockBody of |ClassStaticBlockBody| with argument _func_.
         </emu-alg>
       </emu-clause>
 
       <emu-clause id="sec-ordinarycallevaluatebody" type="abstract operation">
         <h1>
           OrdinaryCallEvaluateBody (
-            _obj_: an ECMAScript function object,
+            _func_: an ECMAScript function object,
             _argumentsList_: a List of ECMAScript language values,
           ): a return completion or a throw completion
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Return ? EvaluateBody of _obj_.[[ECMAScriptCode]] with arguments _obj_ and _argumentsList_.
+          1. Return ? EvaluateBody of _func_.[[ECMAScriptCode]] with arguments _func_ and _argumentsList_.
         </emu-alg>
       </emu-clause>
     </emu-clause>
@@ -13676,14 +13676,14 @@
     <emu-clause id="sec-makeclassconstructor" type="abstract operation">
       <h1>
         MakeClassConstructor (
-          _obj_: an ECMAScript function object,
+          _func_: an ECMAScript function object,
         ): ~unused~
       </h1>
       <dl class="header">
       </dl>
       <emu-alg>
-        1. Assert: _obj_.[[IsClassConstructor]] is *false*.
-        1. Set _obj_.[[IsClassConstructor]] to *true*.
+        1. Assert: _func_.[[IsClassConstructor]] is *false*.
+        1. Set _func_.[[IsClassConstructor]] to *true*.
         1. Return ~unused~.
       </emu-alg>
     </emu-clause>
@@ -13691,17 +13691,17 @@
     <emu-clause id="sec-makemethod" type="abstract operation">
       <h1>
         MakeMethod (
-          _obj_: an ECMAScript function object,
+          _func_: an ECMAScript function object,
           _homeObject_: an Object,
         ): ~unused~
       </h1>
       <dl class="header">
         <dt>description</dt>
-        <dd>It configures _obj_ as a method.</dd>
+        <dd>It configures _func_ as a method.</dd>
       </dl>
       <emu-alg>
         1. Assert: _homeObject_ is an ordinary object.
-        1. Set _obj_.[[HomeObject]] to _homeObject_.
+        1. Set _func_.[[HomeObject]] to _homeObject_.
         1. Return ~unused~.
       </emu-alg>
     </emu-clause>
@@ -13730,31 +13730,31 @@
     <emu-clause id="sec-setfunctionname" type="abstract operation">
       <h1>
         SetFunctionName (
-          _obj_: a function object,
+          _func_: a function object,
           _name_: a property key or Private Name,
           optional _prefix_: a String,
         ): ~unused~
       </h1>
       <dl class="header">
         <dt>description</dt>
-        <dd>It adds a *"name"* property to _obj_.</dd>
+        <dd>It adds a *"name"* property to _func_.</dd>
       </dl>
       <emu-alg>
-        1. Assert: _obj_ is an extensible object that does not have a *"name"* own property.
+        1. Assert: _func_ is an extensible object that does not have a *"name"* own property.
         1. If _name_ is a Symbol, then
           1. Let _description_ be _name_.[[Description]].
           1. If _description_ is *undefined*, set _name_ to the empty String.
           1. Else, set _name_ to the string-concatenation of *"["*, _description_, and *"]"*.
         1. Else if _name_ is a Private Name, then
           1. Set _name_ to _name_.[[Description]].
-        1. If _obj_ has an [[InitialName]] internal slot, then
-          1. Set _obj_.[[InitialName]] to _name_.
+        1. If _func_ has an [[InitialName]] internal slot, then
+          1. Set _func_.[[InitialName]] to _name_.
         1. If _prefix_ is present, then
           1. Set _name_ to the string-concatenation of _prefix_, the code unit 0x0020 (SPACE), and _name_.
-          1. If _obj_ has an [[InitialName]] internal slot, then
+          1. If _func_ has an [[InitialName]] internal slot, then
             1. NOTE: The choice in the following step is made independently each time this Abstract Operation is invoked.
-            1. Optionally, set _obj_.[[InitialName]] to _name_.
-        1. Perform ! DefinePropertyOrThrow(_obj_, *"name"*, PropertyDescriptor { [[Value]]: _name_, [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
+            1. Optionally, set _func_.[[InitialName]] to _name_.
+        1. Perform ! DefinePropertyOrThrow(_func_, *"name"*, PropertyDescriptor { [[Value]]: _name_, [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
         1. Return ~unused~.
       </emu-alg>
     </emu-clause>
@@ -13762,17 +13762,17 @@
     <emu-clause id="sec-setfunctionlength" type="abstract operation">
       <h1>
         SetFunctionLength (
-          _obj_: a function object,
+          _func_: a function object,
           _length_: a non-negative integer or +&infin;,
         ): ~unused~
       </h1>
       <dl class="header">
         <dt>description</dt>
-        <dd>It adds a *"length"* property to _obj_.</dd>
+        <dd>It adds a *"length"* property to _func_.</dd>
       </dl>
       <emu-alg>
-        1. Assert: _obj_ is an extensible object that does not have a *"length"* own property.
-        1. Perform ! DefinePropertyOrThrow(_obj_, *"length"*, PropertyDescriptor { [[Value]]: 𝔽(_length_), [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
+        1. Assert: _func_ is an extensible object that does not have a *"length"* own property.
+        1. Perform ! DefinePropertyOrThrow(_func_, *"length"*, PropertyDescriptor { [[Value]]: 𝔽(_length_), [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *true* }).
         1. Return ~unused~.
       </emu-alg>
     </emu-clause>
@@ -13975,7 +13975,7 @@
     <emu-clause id="sec-builtincallorconstruct" type="abstract operation">
       <h1>
         BuiltinCallOrConstruct (
-          _obj_: a built-in function object,
+          _func_: a built-in function object,
           _thisArgument_: an ECMAScript language value or ~uninitialized~,
           _argumentsList_: a List of ECMAScript language values,
           _newTarget_: a constructor or *undefined*,
@@ -13987,23 +13987,23 @@
         1. Let _callerContext_ be the running execution context.
         1. If _callerContext_ is not already suspended, suspend _callerContext_.
         1. Let _calleeContext_ be a new execution context.
-        1. Set the Function of _calleeContext_ to _obj_.
-        1. Let _calleeRealm_ be _obj_.[[Realm]].
+        1. Set the Function of _calleeContext_ to _func_.
+        1. Let _calleeRealm_ be _func_.[[Realm]].
         1. Set the Realm of _calleeContext_ to _calleeRealm_.
         1. Set the ScriptOrModule of _calleeContext_ to *null*.
         1. Perform any necessary implementation-defined initialization of _calleeContext_.
         1. Push _calleeContext_ onto the execution context stack; _calleeContext_ is now the running execution context.
-        1. If _obj_.[[Async]] is *true*, then
+        1. If _func_.[[Async]] is *true*, then
           1. Let _promiseCapability_ be ! NewPromiseCapability(%Promise%).
-          1. Let _resultsClosure_ be a new Abstract Closure with no parameters that captures _obj_, _thisArgument_, _argumentsList_, and _newTarget_ and performs the following steps when called:
-            1. Let _result_ be the Completion Record that is <emu-meta effects="user-code">the result of evaluating</emu-meta> _obj_ in a manner that conforms to the specification of _obj_. If _thisArgument_ is ~uninitialized~, the *this* value is uninitialized; else _thisArgument_ provides the *this* value. _argumentsList_ provides the named parameters. _newTarget_ provides the NewTarget value.
-            1. NOTE: If _obj_ is defined in this document, “the specification of _obj_” is the behaviour specified for it via algorithm steps or other means.
+          1. Let _resultsClosure_ be a new Abstract Closure with no parameters that captures _func_, _thisArgument_, _argumentsList_, and _newTarget_ and performs the following steps when called:
+            1. Let _result_ be the Completion Record that is <emu-meta effects="user-code">the result of evaluating</emu-meta> _func_ in a manner that conforms to the specification of _func_. If _thisArgument_ is ~uninitialized~, the *this* value is uninitialized; else _thisArgument_ provides the *this* value. _argumentsList_ provides the named parameters. _newTarget_ provides the NewTarget value.
+            1. NOTE: If _func_ is defined in this document, “the specification of _func_” is the behaviour specified for it via algorithm steps or other means.
             1. Return Completion(_result_).
           1. Perform AsyncFunctionStart(_promiseCapability_, _resultsClosure_).
           1. Remove _calleeContext_ from the execution context stack and restore _callerContext_ as the running execution context.
           1. Return _promiseCapability_.[[Promise]].
-        1. [id="step-call-builtin-function-result"] Let _result_ be the Completion Record that is <emu-meta effects="user-code">the result of evaluating</emu-meta> _obj_ in a manner that conforms to the specification of _obj_. If _thisArgument_ is ~uninitialized~, the *this* value is uninitialized; else _thisArgument_ provides the *this* value. _argumentsList_ provides the named parameters. _newTarget_ provides the NewTarget value.
-        1. NOTE: If _obj_ is defined in this document, “the specification of _obj_” is the behaviour specified for it via algorithm steps or other means.
+        1. [id="step-call-builtin-function-result"] Let _result_ be the Completion Record that is <emu-meta effects="user-code">the result of evaluating</emu-meta> _func_ in a manner that conforms to the specification of _func_. If _thisArgument_ is ~uninitialized~, the *this* value is uninitialized; else _thisArgument_ provides the *this* value. _argumentsList_ provides the named parameters. _newTarget_ provides the NewTarget value.
+        1. NOTE: If _func_ is defined in this document, “the specification of _func_” is the behaviour specified for it via algorithm steps or other means.
         1. Remove _calleeContext_ from the execution context stack and restore _callerContext_ as the running execution context.
         1. Return ? _result_.
       </emu-alg>
