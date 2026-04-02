@@ -11368,10 +11368,10 @@
             1. Assert: _strict_ is *true*.
             1. Assert: _envRec_ has a binding for _name_.
             1. If the binding for _name_ is an indirect binding, then
-              1. Let _module_ and _n2_ be the indirection values provided when this binding for _name_ was created.
+              1. Let _module_ and _targetName_ be the indirection values provided when this binding for _name_ was created.
               1. Let _targetEnv_ be _module_.[[Environment]].
               1. If _targetEnv_ is ~empty~, throw a *ReferenceError* exception.
-              1. Return ? <emu-meta effects="user-code">_targetEnv_.GetBindingValue(_n2_, *true*)</emu-meta>.
+              1. Return ? <emu-meta effects="user-code">_targetEnv_.GetBindingValue(_targetName_, *true*)</emu-meta>.
             1. If the binding for _name_ in _envRec_ is an uninitialized binding, throw a *ReferenceError* exception.
             1. Return the value currently bound to _name_ in _envRec_.
           </emu-alg>
@@ -11419,17 +11419,17 @@
               _envRec_: a Module Environment Record,
               _name_: a String,
               _targetModule_: a Module Record,
-              _n2_: a String,
+              _targetName_: a String,
             ): ~unused~
           </h1>
           <dl class="header">
             <dt>description</dt>
-            <dd>It creates a new initialized immutable indirect binding for the name _name_. A binding must not already exist in _envRec_ for _name_. _n2_ is the name of a binding that exists in _targetModule_'s Module Environment Record. Accesses to the value of the new binding will indirectly access the bound value of the target binding.</dd>
+            <dd>It creates a new initialized immutable indirect binding for the name _name_. A binding must not already exist in _envRec_ for _name_. _targetName_ is the name of a binding that exists in _targetModule_'s Module Environment Record. Accesses to the value of the new binding will indirectly access the bound value of the target binding.</dd>
           </dl>
           <emu-alg>
             1. Assert: _envRec_ does not already have a binding for _name_.
-            1. Assert: When _targetModule_.[[Environment]] is instantiated, it will have a direct binding for _n2_.
-            1. Create an immutable indirect binding in _envRec_ for _name_ that references _targetModule_ and _n2_ as its target binding and record that the binding is initialized.
+            1. Assert: When _targetModule_.[[Environment]] is instantiated, it will have a direct binding for _targetName_.
+            1. Create an immutable indirect binding in _envRec_ for _name_ that references _targetModule_ and _targetName_ as its target binding and record that the binding is initialized.
             1. Return ~unused~.
           </emu-alg>
         </emu-clause>
