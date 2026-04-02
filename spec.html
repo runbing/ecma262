@@ -47759,14 +47759,14 @@ THH:mm:ss.sss
         </dl>
         <emu-alg>
           1. Let _product_ be the String value consisting solely of the code unit 0x0022 (QUOTATION MARK).
-          1. For each code point _constructor_ of StringToCodePoints(_value_), do
-            1. If _constructor_ is listed in the “Code Point” column of <emu-xref href="#table-json-single-character-escapes"></emu-xref>, then
-              1. Set _product_ to the string-concatenation of _product_ and the escape sequence for _constructor_ as specified in the “Escape Sequence” column of the corresponding row.
-            1. Else if _constructor_ has a numeric value less than 0x0020 (SPACE) or _constructor_ has the same numeric value as a leading surrogate or trailing surrogate, then
-              1. Let _unit_ be the code unit whose numeric value is the numeric value of _constructor_.
+          1. For each code point _cp_ of StringToCodePoints(_value_), do
+            1. If _cp_ is listed in the “Code Point” column of <emu-xref href="#table-json-single-character-escapes"></emu-xref>, then
+              1. Set _product_ to the string-concatenation of _product_ and the escape sequence for _cp_ as specified in the “Escape Sequence” column of the corresponding row.
+            1. Else if _cp_ has a numeric value less than 0x0020 (SPACE) or _cp_ has the same numeric value as a leading surrogate or trailing surrogate, then
+              1. Let _unit_ be the code unit whose numeric value is the numeric value of _cp_.
               1. Set _product_ to the string-concatenation of _product_ and UnicodeEscape(_unit_).
             1. Else,
-              1. Set _product_ to the string-concatenation of _product_ and UTF16EncodeCodePoint(_constructor_).
+              1. Set _product_ to the string-concatenation of _product_ and UTF16EncodeCodePoint(_cp_).
           1. Set _product_ to the string-concatenation of _product_ and the code unit 0x0022 (QUOTATION MARK).
           1. Return _product_.
         </emu-alg>
