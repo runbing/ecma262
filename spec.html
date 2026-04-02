@@ -39678,7 +39678,7 @@ THH:mm:ss.sss
       <emu-clause id="sec-createregexpstringiterator" type="abstract operation">
         <h1>
           CreateRegExpStringIterator (
-            _obj_: an Object,
+            _regexp_: an Object,
             _str_: a String,
             _global_: a Boolean,
             _fullUnicode_: a Boolean,
@@ -39688,7 +39688,7 @@ THH:mm:ss.sss
         </dl>
         <emu-alg>
           1. Let _iterator_ be OrdinaryObjectCreate(%RegExpStringIteratorPrototype%, « [[IteratingRegExp]], [[IteratedString]], [[Global]], [[Unicode]], [[Done]] »).
-          1. Set _iterator_.[[IteratingRegExp]] to _obj_.
+          1. Set _iterator_.[[IteratingRegExp]] to _regexp_.
           1. Set _iterator_.[[IteratedString]] to _str_.
           1. Set _iterator_.[[Global]] to _global_.
           1. Set _iterator_.[[Unicode]] to _fullUnicode_.
