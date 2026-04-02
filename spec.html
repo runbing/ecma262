@@ -7341,8 +7341,8 @@
       </dl>
       <emu-alg>
         1. Let _closure_ be a new Abstract Closure with no parameters that captures _list_ and performs the following steps when called:
-          1. For each element _outerEnv_ of _list_, do
-            1. Perform ? GeneratorYield(CreateIteratorResultObject(_outerEnv_, *false*)).
+          1. For each element _e_ of _list_, do
+            1. Perform ? GeneratorYield(CreateIteratorResultObject(_e_, *false*)).
           1. Return NormalCompletion(*undefined*).
         1. Let _iterator_ be CreateIteratorFromClosure(_closure_, ~empty~, %Iterator.prototype%).
         1. Return the Iterator Record { [[Iterator]]: _iterator_, [[NextMethod]]: %GeneratorPrototype.next%, [[Done]]: *false* }.
