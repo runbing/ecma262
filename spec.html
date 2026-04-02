@@ -18773,15 +18773,15 @@
         </emu-alg>
         <emu-grammar>PropertyDefinition : PropertyName `:` AssignmentExpression</emu-grammar>
         <emu-alg>
-          1. Let _propKey_ be ? Evaluation of |PropertyName|.
+          1. Let _propertyKey_ be ? Evaluation of |PropertyName|.
           1. If this |PropertyDefinition| is contained within a |Script| that is being evaluated for ParseJSON (see step <emu-xref href="#step-json-parse-eval"></emu-xref> of ParseJSON), then
             1. Let _isProtoSetter_ be *false*.
-          1. Else if _propKey_ is *"__proto__"* and IsComputedPropertyKey of |PropertyName| is *false*, then
+          1. Else if _propertyKey_ is *"__proto__"* and IsComputedPropertyKey of |PropertyName| is *false*, then
             1. Let _isProtoSetter_ be *true*.
           1. Else,
             1. Let _isProtoSetter_ be *false*.
           1. If IsAnonymousFunctionDefinition(|AssignmentExpression|) is *true* and _isProtoSetter_ is *false*, then
-            1. Let _propValue_ be ? NamedEvaluation of |AssignmentExpression| with argument _propKey_.
+            1. Let _propValue_ be ? NamedEvaluation of |AssignmentExpression| with argument _propertyKey_.
           1. Else,
             1. Let _exprValueRef_ be ? Evaluation of |AssignmentExpression|.
             1. Let _propValue_ be ? GetValue(_exprValueRef_).
@@ -18790,7 +18790,7 @@
               1. Perform ! <emu-meta effects="user-code">_object_.[[SetPrototypeOf]](_propValue_)</emu-meta>.
             1. Return ~unused~.
           1. Assert: _object_ is an ordinary, extensible object with no non-configurable properties.
-          1. Perform ! CreateDataPropertyOrThrow(_object_, _propKey_, _propValue_).
+          1. Perform ! CreateDataPropertyOrThrow(_object_, _propertyKey_, _propValue_).
           1. Return ~unused~.
         </emu-alg>
         <emu-grammar>PropertyDefinition : MethodDefinition</emu-grammar>
@@ -19015,11 +19015,11 @@
           1. Let _rawObj_ be ! ArrayCreate(_count_).
           1. Let _index_ be 0.
           1. Repeat, while _index_ &lt; _count_,
-            1. Let _prop_ be ! ToString(𝔽(_index_)).
+            1. Let _propertyKey_ be ! ToString(𝔽(_index_)).
             1. Let _cookedValue_ be _cookedStrings_[_index_].
-            1. Perform ! DefinePropertyOrThrow(_template_, _prop_, PropertyDescriptor { [[Value]]: _cookedValue_, [[Writable]]: *false*, [[Enumerable]]: *true*, [[Configurable]]: *false* }).
+            1. Perform ! DefinePropertyOrThrow(_template_, _propertyKey_, PropertyDescriptor { [[Value]]: _cookedValue_, [[Writable]]: *false*, [[Enumerable]]: *true*, [[Configurable]]: *false* }).
             1. Let _rawValue_ be the String value _rawStrings_[_index_].
-            1. Perform ! DefinePropertyOrThrow(_rawObj_, _prop_, PropertyDescriptor { [[Value]]: _rawValue_, [[Writable]]: *false*, [[Enumerable]]: *true*, [[Configurable]]: *false* }).
+            1. Perform ! DefinePropertyOrThrow(_rawObj_, _propertyKey_, PropertyDescriptor { [[Value]]: _rawValue_, [[Writable]]: *false*, [[Enumerable]]: *true*, [[Configurable]]: *false* }).
             1. Set _index_ to _index_ + 1.
           1. Perform ! SetIntegrityLevel(_rawObj_, ~frozen~).
           1. Perform ! DefinePropertyOrThrow(_template_, *"raw"*, PropertyDescriptor { [[Value]]: _rawObj_, [[Writable]]: *false*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
@@ -21741,9 +21741,9 @@
 
         <emu-grammar>BindingProperty : PropertyName `:` BindingElement</emu-grammar>
         <emu-alg>
-          1. Let _propKey_ be ? Evaluation of |PropertyName|.
-          1. Perform ? KeyedBindingInitialization of |BindingElement| with arguments _value_, _environment_, and _propKey_.
-          1. Return « _propKey_ ».
+          1. Let _propertyKey_ be ? Evaluation of |PropertyName|.
+          1. Perform ? KeyedBindingInitialization of |BindingElement| with arguments _value_, _environment_, and _propertyKey_.
+          1. Return « _propertyKey_ ».
         </emu-alg>
       </emu-clause>
 
@@ -24028,7 +24028,7 @@
       </dl>
       <emu-grammar>MethodDefinition : ClassElementName `(` UniqueFormalParameters `)` `{` FunctionBody `}`</emu-grammar>
       <emu-alg>
-        1. Let _propKey_ be ? Evaluation of |ClassElementName|.
+        1. Let _propertyKey_ be ? Evaluation of |ClassElementName|.
         1. Let _env_ be the running execution context's LexicalEnvironment.
         1. Let _privateEnv_ be the running execution context's PrivateEnvironment.
         1. If _functionPrototype_ is present, then
@@ -24038,7 +24038,7 @@
         1. Let _sourceText_ be the source text matched by |MethodDefinition|.
         1. Let _closure_ be OrdinaryFunctionCreate(_prototype_, _sourceText_, |UniqueFormalParameters|, |FunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
         1. Perform MakeMethod(_closure_, _object_).
-        1. Return the Record { [[Key]]: _propKey_, [[Closure]]: _closure_ }.
+        1. Return the Record { [[Key]]: _propertyKey_, [[Closure]]: _closure_ }.
       </emu-alg>
     </emu-clause>
 
@@ -24059,75 +24059,75 @@
       </emu-alg>
       <emu-grammar>MethodDefinition : `get` ClassElementName `(` `)` `{` FunctionBody `}`</emu-grammar>
       <emu-alg>
-        1. Let _propKey_ be ? Evaluation of |ClassElementName|.
+        1. Let _propertyKey_ be ? Evaluation of |ClassElementName|.
         1. Let _env_ be the running execution context's LexicalEnvironment.
         1. Let _privateEnv_ be the running execution context's PrivateEnvironment.
         1. Let _sourceText_ be the source text matched by |MethodDefinition|.
         1. Let _formalParameterList_ be an instance of the production <emu-grammar>FormalParameters : [empty]</emu-grammar>.
         1. Let _closure_ be OrdinaryFunctionCreate(%Function.prototype%, _sourceText_, _formalParameterList_, |FunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
         1. Perform MakeMethod(_closure_, _object_).
-        1. Perform SetFunctionName(_closure_, _propKey_, *"get"*).
-        1. If _propKey_ is a Private Name, then
-          1. Return PrivateElement { [[Key]]: _propKey_, [[Kind]]: ~accessor~, [[Get]]: _closure_, [[Set]]: *undefined* }.
+        1. Perform SetFunctionName(_closure_, _propertyKey_, *"get"*).
+        1. If _propertyKey_ is a Private Name, then
+          1. Return PrivateElement { [[Key]]: _propertyKey_, [[Kind]]: ~accessor~, [[Get]]: _closure_, [[Set]]: *undefined* }.
         1. Let _desc_ be the PropertyDescriptor { [[Get]]: _closure_, [[Enumerable]]: _enumerable_, [[Configurable]]: *true* }.
-        1. Perform ? DefinePropertyOrThrow(_object_, _propKey_, _desc_).
+        1. Perform ? DefinePropertyOrThrow(_object_, _propertyKey_, _desc_).
         1. Return ~unused~.
       </emu-alg>
       <emu-grammar>MethodDefinition : `set` ClassElementName `(` PropertySetParameterList `)` `{` FunctionBody `}`</emu-grammar>
       <emu-alg>
-        1. Let _propKey_ be ? Evaluation of |ClassElementName|.
+        1. Let _propertyKey_ be ? Evaluation of |ClassElementName|.
         1. Let _env_ be the running execution context's LexicalEnvironment.
         1. Let _privateEnv_ be the running execution context's PrivateEnvironment.
         1. Let _sourceText_ be the source text matched by |MethodDefinition|.
         1. Let _closure_ be OrdinaryFunctionCreate(%Function.prototype%, _sourceText_, |PropertySetParameterList|, |FunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
         1. Perform MakeMethod(_closure_, _object_).
-        1. Perform SetFunctionName(_closure_, _propKey_, *"set"*).
-        1. If _propKey_ is a Private Name, then
-          1. Return PrivateElement { [[Key]]: _propKey_, [[Kind]]: ~accessor~, [[Get]]: *undefined*, [[Set]]: _closure_ }.
+        1. Perform SetFunctionName(_closure_, _propertyKey_, *"set"*).
+        1. If _propertyKey_ is a Private Name, then
+          1. Return PrivateElement { [[Key]]: _propertyKey_, [[Kind]]: ~accessor~, [[Get]]: *undefined*, [[Set]]: _closure_ }.
         1. Let _desc_ be the PropertyDescriptor { [[Set]]: _closure_, [[Enumerable]]: _enumerable_, [[Configurable]]: *true* }.
-        1. Perform ? DefinePropertyOrThrow(_object_, _propKey_, _desc_).
+        1. Perform ? DefinePropertyOrThrow(_object_, _propertyKey_, _desc_).
         1. Return ~unused~.
       </emu-alg>
       <emu-grammar>GeneratorMethod : `*` ClassElementName `(` UniqueFormalParameters `)` `{` GeneratorBody `}`</emu-grammar>
       <emu-alg>
-        1. Let _propKey_ be ? Evaluation of |ClassElementName|.
+        1. Let _propertyKey_ be ? Evaluation of |ClassElementName|.
         1. Let _env_ be the running execution context's LexicalEnvironment.
         1. Let _privateEnv_ be the running execution context's PrivateEnvironment.
         1. Let _sourceText_ be the source text matched by |GeneratorMethod|.
         1. Let _closure_ be OrdinaryFunctionCreate(%GeneratorFunction.prototype%, _sourceText_, |UniqueFormalParameters|, |GeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
         1. Perform MakeMethod(_closure_, _object_).
-        1. Perform SetFunctionName(_closure_, _propKey_).
+        1. Perform SetFunctionName(_closure_, _propertyKey_).
         1. Let _prototype_ be OrdinaryObjectCreate(%GeneratorPrototype%).
         1. Perform ! DefinePropertyOrThrow(_closure_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-        1. Return ? DefineMethodProperty(_object_, _propKey_, _closure_, _enumerable_).
+        1. Return ? DefineMethodProperty(_object_, _propertyKey_, _closure_, _enumerable_).
       </emu-alg>
       <emu-grammar>
         AsyncGeneratorMethod : `async` `*` ClassElementName `(` UniqueFormalParameters `)` `{` AsyncGeneratorBody `}`
       </emu-grammar>
       <emu-alg>
-        1. Let _propKey_ be ? Evaluation of |ClassElementName|.
+        1. Let _propertyKey_ be ? Evaluation of |ClassElementName|.
         1. Let _env_ be the running execution context's LexicalEnvironment.
         1. Let _privateEnv_ be the running execution context's PrivateEnvironment.
         1. Let _sourceText_ be the source text matched by |AsyncGeneratorMethod|.
         1. Let _closure_ be OrdinaryFunctionCreate(%AsyncGeneratorFunction.prototype%, _sourceText_, |UniqueFormalParameters|, |AsyncGeneratorBody|, ~non-lexical-this~, _env_, _privateEnv_).
         1. Perform MakeMethod(_closure_, _object_).
-        1. Perform SetFunctionName(_closure_, _propKey_).
+        1. Perform SetFunctionName(_closure_, _propertyKey_).
         1. Let _prototype_ be OrdinaryObjectCreate(%AsyncGeneratorPrototype%).
         1. Perform ! DefinePropertyOrThrow(_closure_, *"prototype"*, PropertyDescriptor { [[Value]]: _prototype_, [[Writable]]: *true*, [[Enumerable]]: *false*, [[Configurable]]: *false* }).
-        1. Return ? DefineMethodProperty(_object_, _propKey_, _closure_, _enumerable_).
+        1. Return ? DefineMethodProperty(_object_, _propertyKey_, _closure_, _enumerable_).
       </emu-alg>
       <emu-grammar>
         AsyncMethod : `async` ClassElementName `(` UniqueFormalParameters `)` `{` AsyncFunctionBody `}`
       </emu-grammar>
       <emu-alg>
-        1. Let _propKey_ be ? Evaluation of |ClassElementName|.
+        1. Let _propertyKey_ be ? Evaluation of |ClassElementName|.
         1. Let _env_ be the LexicalEnvironment of the running execution context.
         1. Let _privateEnv_ be the running execution context's PrivateEnvironment.
         1. Let _sourceText_ be the source text matched by |AsyncMethod|.
         1. Let _closure_ be OrdinaryFunctionCreate(%AsyncFunction.prototype%, _sourceText_, |UniqueFormalParameters|, |AsyncFunctionBody|, ~non-lexical-this~, _env_, _privateEnv_).
         1. Perform MakeMethod(_closure_, _object_).
-        1. Perform SetFunctionName(_closure_, _propKey_).
-        1. Return ? DefineMethodProperty(_object_, _propKey_, _closure_, _enumerable_).
+        1. Perform SetFunctionName(_closure_, _propertyKey_).
+        1. Return ? DefineMethodProperty(_object_, _propertyKey_, _closure_, _enumerable_).
       </emu-alg>
     </emu-clause>
   </emu-clause>
@@ -39830,9 +39830,9 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArrayCreate(_numberOfArgs_, _proto_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _numberOfArgs_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
             1. Let _itemK_ be _values_[_k_].
-            1. Perform ! CreateDataPropertyOrThrow(_array_, _pk_, _itemK_).
+            1. Perform ! CreateDataPropertyOrThrow(_array_, _propertyKey_, _itemK_).
             1. Set _k_ to _k_ + 1.
           1. Assert: The mathematical value of _array_'s *"length"* property is _numberOfArgs_.
           1. Return _array_.
@@ -39871,7 +39871,7 @@ THH:mm:ss.sss
               1. If _k_ ≥ 2<sup>53</sup> - 1, then
                 1. Let _error_ be ThrowCompletion(a newly created *TypeError* object).
                 1. Return ? IteratorClose(_iteratorRecord_, _error_).
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
               1. Let _next_ be ? IteratorStepValue(_iteratorRecord_).
               1. If _next_ is ~done~, then
                 1. Perform ? Set(_array_, *"length"*, 𝔽(_k_), *true*).
@@ -39881,7 +39881,7 @@ THH:mm:ss.sss
                 1. IfAbruptCloseIterator(_mappedValue_, _iteratorRecord_).
               1. Else,
                 1. Let _mappedValue_ be _next_.
-              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_)).
+              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _propertyKey_, _mappedValue_)).
               1. IfAbruptCloseIterator(_defineStatus_, _iteratorRecord_).
               1. Set _k_ to _k_ + 1.
           1. NOTE: _items_ is not iterable so assume it is an array-like object.
@@ -39893,13 +39893,13 @@ THH:mm:ss.sss
             1. Let _array_ be ? ArrayCreate(_len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ? Get(_arrayLike_, _propertyKey_).
             1. If _mapping_ is *true*, then
               1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
             1. Else,
               1. Let _mappedValue_ be _kValue_.
-            1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_).
+            1. Perform ? CreateDataPropertyOrThrow(_array_, _propertyKey_, _mappedValue_).
             1. Set _k_ to _k_ + 1.
           1. Perform ? Set(_array_, *"length"*, 𝔽(_len_), *true*).
           1. Return _array_.
@@ -39937,7 +39937,7 @@ THH:mm:ss.sss
               1. If _k_ ≥ 2<sup>53</sup> - 1, then
                 1. Let _error_ be ThrowCompletion(a newly created *TypeError* object).
                 1. Return ? AsyncIteratorClose(_iteratorRecord_, _error_).
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
               1. Let _nextResult_ be ? Call(_iteratorRecord_.[[NextMethod]], _iteratorRecord_.[[Iterator]]).
               1. Set _nextResult_ to ? Await(_nextResult_).
               1. If _nextResult_ is not an Object, throw a *TypeError* exception.
@@ -39953,7 +39953,7 @@ THH:mm:ss.sss
                 1. IfAbruptCloseAsyncIterator(_mappedValue_, _iteratorRecord_).
               1. Else,
                 1. Let _mappedValue_ be _nextValue_.
-              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_)).
+              1. Let _defineStatus_ be Completion(CreateDataPropertyOrThrow(_array_, _propertyKey_, _mappedValue_)).
               1. IfAbruptCloseAsyncIterator(_defineStatus_, _iteratorRecord_).
               1. Set _k_ to _k_ + 1.
           1. Else,
@@ -39966,15 +39966,15 @@ THH:mm:ss.sss
               1. Let _array_ be ? ArrayCreate(_len_).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
-              1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+              1. Let _kValue_ be ? Get(_arrayLike_, _propertyKey_).
               1. Set _kValue_ to ? Await(_kValue_).
               1. If _mapping_ is *true*, then
                 1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
                 1. Set _mappedValue_ to ? Await(_mappedValue_).
               1. Else,
                 1. Let _mappedValue_ be _kValue_.
-              1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_).
+              1. Perform ? CreateDataPropertyOrThrow(_array_, _propertyKey_, _mappedValue_).
               1. Set _k_ to _k_ + 1.
             1. Perform ? Set(_array_, *"length"*, 𝔽(_len_), *true*).
             1. Return _array_.
@@ -40006,8 +40006,8 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _kValue_ be _items_[_k_].
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _kValue_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Perform ? CreateDataPropertyOrThrow(_array_, _propertyKey_, _kValue_).
             1. Set _k_ to _k_ + 1.
           1. Perform ? Set(_array_, *"length"*, _lenNumber_, *true*).
           1. Return _array_.
@@ -40080,10 +40080,10 @@ THH:mm:ss.sss
               1. If _nextIndex_ + _len_ > 2<sup>53</sup> - 1, throw a *TypeError* exception.
               1. Let _sourceIndex_ be 0.
               1. Repeat, while _sourceIndex_ &lt; _len_,
-                1. Let _pk_ be ! ToString(𝔽(_sourceIndex_)).
-                1. Let _exists_ be ? HasProperty(_item_, _pk_).
+                1. Let _propertyKey_ be ! ToString(𝔽(_sourceIndex_)).
+                1. Let _exists_ be ? HasProperty(_item_, _propertyKey_).
                 1. If _exists_ is *true*, then
-                  1. Let _subElement_ be ? Get(_item_, _pk_).
+                  1. Let _subElement_ be ? Get(_item_, _propertyKey_).
                   1. Perform ? CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_nextIndex_)), _subElement_).
                 1. Set _nextIndex_ to _nextIndex_ + 1.
                 1. Set _sourceIndex_ to _sourceIndex_ + 1.
@@ -40201,10 +40201,10 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
               1. If _testResult_ is *false*, return *false*.
             1. Set _k_ to _k_ + 1.
@@ -40237,8 +40237,8 @@ THH:mm:ss.sss
           1. Else if _relativeEnd_ &lt; 0, let _final_ be max(_len_ + _relativeEnd_, 0).
           1. Else, let _final_ be min(_relativeEnd_, _len_).
           1. Repeat, while _k_ &lt; _final_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ? Set(_obj_, _pk_, _value_, *true*).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Perform ? Set(_obj_, _propertyKey_, _value_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _obj_.
         </emu-alg>
@@ -40265,10 +40265,10 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Let _to_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Let _selected_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
               1. If _selected_ is *true*, then
                 1. Perform ? CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_to_)), _kValue_).
@@ -40379,9 +40379,9 @@ THH:mm:ss.sss
             1. Else,
               1. Let _indices_ be a List of the integers in the interval from 0 (inclusive) to _len_ (exclusive), in descending order.
             1. For each integer _k_ of _indices_, do
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
               1. NOTE: If _obj_ is a TypedArray, the following invocation of Get will return a normal completion.
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Let _testResult_ be ? Call(_predicate_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
               1. If ToBoolean(_testResult_) is *true*, return the Record { [[Index]]: 𝔽(_k_), [[Value]]: _kValue_ }.
             1. Return the Record { [[Index]]: *-1*<sub>𝔽</sub>, [[Value]]: *undefined* }.
@@ -40423,10 +40423,10 @@ THH:mm:ss.sss
             1. Let _targetIndex_ be _start_.
             1. Let _sourceIndex_ be *+0*<sub>𝔽</sub>.
             1. Repeat, while ℝ(_sourceIndex_) &lt; _sourceLen_,
-              1. Let _pk_ be ! ToString(_sourceIndex_).
-              1. Let _exists_ be ? HasProperty(_source_, _pk_).
+              1. Let _propertyKey_ be ! ToString(_sourceIndex_).
+              1. Let _exists_ be ? HasProperty(_source_, _propertyKey_).
               1. If _exists_ is *true*, then
-                1. Let _element_ be ? Get(_source_, _pk_).
+                1. Let _element_ be ? Get(_source_, _propertyKey_).
                 1. If _mapperFunction_ is present, then
                   1. Set _element_ to ? Call(_mapperFunction_, _thisArg_, « _element_, _sourceIndex_, _source_ »).
                 1. Let _shouldFlatten_ be *false*.
@@ -40476,10 +40476,10 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Perform ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return *undefined*.
@@ -40544,10 +40544,10 @@ THH:mm:ss.sss
             1. Let _k_ be _len_ + _startIndex_.
             1. If _k_ &lt; 0, set _k_ to 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ? Get(_obj_, _pk_).
+              1. Let _elementK_ be ? Get(_obj_, _propertyKey_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ + 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -40609,10 +40609,10 @@ THH:mm:ss.sss
           1. Else,
             1. Let _k_ be _len_ + _startIndex_.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ? Get(_obj_, _pk_).
+              1. Let _elementK_ be ? Get(_obj_, _propertyKey_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ - 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -40639,12 +40639,12 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArraySpeciesCreate(_obj_, _len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Let _mappedValue_ be ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
-              1. Perform ? CreateDataPropertyOrThrow(_array_, _pk_, _mappedValue_).
+              1. Perform ? CreateDataPropertyOrThrow(_array_, _propertyKey_, _mappedValue_).
             1. Set _k_ to _k_ + 1.
           1. Return _array_.
         </emu-alg>
@@ -40722,17 +40722,17 @@ THH:mm:ss.sss
           1. Else,
             1. Let _kPresent_ be *false*.
             1. Repeat, while _kPresent_ is *false* and _k_ &lt; _len_,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
-              1. Set _kPresent_ to ? HasProperty(_obj_, _pk_).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+              1. Set _kPresent_ to ? HasProperty(_obj_, _propertyKey_).
               1. If _kPresent_ is *true*, then
-                1. Set _accumulator_ to ? Get(_obj_, _pk_).
+                1. Set _accumulator_ to ? Get(_obj_, _propertyKey_).
               1. Set _k_ to _k_ + 1.
             1. If _kPresent_ is *false*, throw a *TypeError* exception.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return _accumulator_.
@@ -40763,17 +40763,17 @@ THH:mm:ss.sss
           1. Else,
             1. Let _kPresent_ be *false*.
             1. Repeat, while _kPresent_ is *false* and _k_ ≥ 0,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
-              1. Set _kPresent_ to ? HasProperty(_obj_, _pk_).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+              1. Set _kPresent_ to ? HasProperty(_obj_, _propertyKey_).
               1. If _kPresent_ is *true*, then
-                1. Set _accumulator_ to ? Get(_obj_, _pk_).
+                1. Set _accumulator_ to ? Get(_obj_, _propertyKey_).
               1. Set _k_ to _k_ - 1.
             1. If _kPresent_ is *false*, throw a *TypeError* exception.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ - 1.
           1. Return _accumulator_.
@@ -40875,10 +40875,10 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArraySpeciesCreate(_obj_, _count_).
           1. Let _resultIndex_ be 0.
           1. Repeat, while _k_ &lt; _final_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Perform ? CreateDataPropertyOrThrow(_array_, ! ToString(𝔽(_resultIndex_)), _kValue_).
             1. Set _k_ to _k_ + 1.
             1. Set _resultIndex_ to _resultIndex_ + 1.
@@ -40909,10 +40909,10 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ? HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ? HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _kValue_ be ? Get(_obj_, _pk_).
+              1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
               1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
               1. If _testResult_ is *true*, return *true*.
             1. Set _k_ to _k_ + 1.
@@ -40970,14 +40970,14 @@ THH:mm:ss.sss
             1. Let _items_ be a new empty List.
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
               1. If _holes_ is ~skip-holes~, then
-                1. Let _kRead_ be ? HasProperty(_obj_, _pk_).
+                1. Let _kRead_ be ? HasProperty(_obj_, _propertyKey_).
               1. Else,
                 1. Assert: _holes_ is ~read-through-holes~.
                 1. Let _kRead_ be *true*.
               1. If _kRead_ is *true*, then
-                1. Let _kValue_ be ? Get(_obj_, _pk_).
+                1. Let _kValue_ be ? Get(_obj_, _propertyKey_).
                 1. Append _kValue_ to _items_.
               1. Set _k_ to _k_ + 1.
             1. [id="step-array-sort"] Sort _items_ using an implementation-defined sequence of <emu-meta effects="user-code">calls to _sortCompare_</emu-meta>. If any such call returns an abrupt completion, stop before performing any further calls to _sortCompare_ and return that Completion Record.
@@ -41168,9 +41168,9 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _from_ be ! ToString(𝔽(_len_ - _k_ - 1)).
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
             1. Let _fromValue_ be ? Get(_obj_, _from_).
-            1. Perform ! CreateDataPropertyOrThrow(_array_, _pk_, _fromValue_).
+            1. Perform ! CreateDataPropertyOrThrow(_array_, _propertyKey_, _fromValue_).
             1. Set _k_ to _k_ + 1.
           1. Return _array_.
         </emu-alg>
@@ -41309,10 +41309,10 @@ THH:mm:ss.sss
           1. Let _array_ be ? ArrayCreate(_len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
             1. If _k_ = _actualIndex_, let _fromValue_ be _value_.
-            1. Else, let _fromValue_ be ? Get(_obj_, _pk_).
-            1. Perform ! CreateDataPropertyOrThrow(_array_, _pk_, _fromValue_).
+            1. Else, let _fromValue_ be ? Get(_obj_, _propertyKey_).
+            1. Perform ! CreateDataPropertyOrThrow(_array_, _propertyKey_, _fromValue_).
             1. Set _k_ to _k_ + 1.
           1. Return _array_.
         </emu-alg>
@@ -41789,14 +41789,14 @@ THH:mm:ss.sss
             1. Let _targetObj_ be ? TypedArrayCreateFromConstructor(_constructor_, « 𝔽(_len_) »).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
               1. Let _kValue_ be the first element of _values_.
               1. Remove the first element from _values_.
               1. If _mapping_ is *true*, then
                 1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
               1. Else,
                 1. Let _mappedValue_ be _kValue_.
-              1. Perform ? Set(_targetObj_, _pk_, _mappedValue_, *true*).
+              1. Perform ? Set(_targetObj_, _propertyKey_, _mappedValue_, *true*).
               1. Set _k_ to _k_ + 1.
             1. Assert: _values_ is now an empty List.
             1. Return _targetObj_.
@@ -41806,13 +41806,13 @@ THH:mm:ss.sss
           1. Let _targetObj_ be ? TypedArrayCreateFromConstructor(_constructor_, « 𝔽(_len_) »).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ? Get(_arrayLike_, _propertyKey_).
             1. If _mapping_ is *true*, then
               1. Let _mappedValue_ be ? Call(_mapper_, _thisArg_, « _kValue_, 𝔽(_k_) »).
             1. Else,
               1. Let _mappedValue_ be _kValue_.
-            1. Perform ? Set(_targetObj_, _pk_, _mappedValue_, *true*).
+            1. Perform ? Set(_targetObj_, _propertyKey_, _mappedValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _targetObj_.
         </emu-alg>
@@ -41829,8 +41829,8 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _kValue_ be _items_[_k_].
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ? Set(_newObj_, _pk_, _kValue_, *true*).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Perform ? Set(_newObj_, _propertyKey_, _kValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _newObj_.
         </emu-alg>
@@ -41997,8 +41997,8 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
             1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
             1. If _testResult_ is *false*, return *false*.
             1. Set _k_ to _k_ + 1.
@@ -42031,8 +42031,8 @@ THH:mm:ss.sss
           1. Set _endIndex_ to min(_endIndex_, _len_).
           1. Let _k_ be _startIndex_.
           1. Repeat, while _k_ &lt; _endIndex_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Perform ! Set(_obj_, _pk_, _value_, *true*).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Perform ! Set(_obj_, _propertyKey_, _value_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _obj_.
         </emu-alg>
@@ -42051,8 +42051,8 @@ THH:mm:ss.sss
           1. Let _captured_ be 0.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
             1. Let _selected_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
             1. If _selected_ is *true*, then
               1. Append _kValue_ to _kept_.
@@ -42135,8 +42135,8 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
             1. Perform ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return *undefined*.
@@ -42190,10 +42190,10 @@ THH:mm:ss.sss
             1. Let _k_ be _len_ + _n_.
             1. If _k_ &lt; 0, set _k_ to 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ! HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ! HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ! Get(_obj_, _pk_).
+              1. Let _elementK_ be ! Get(_obj_, _propertyKey_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ + 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -42251,10 +42251,10 @@ THH:mm:ss.sss
           1. Else,
             1. Let _k_ be _len_ + _n_.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kPresent_ be ! HasProperty(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kPresent_ be ! HasProperty(_obj_, _propertyKey_).
             1. If _kPresent_ is *true*, then
-              1. Let _elementK_ be ! Get(_obj_, _pk_).
+              1. Let _elementK_ be ! Get(_obj_, _propertyKey_).
               1. If IsStrictlyEqual(_searchElement_, _elementK_) is *true*, return 𝔽(_k_).
             1. Set _k_ to _k_ - 1.
           1. Return *-1*<sub>𝔽</sub>.
@@ -42289,10 +42289,10 @@ THH:mm:ss.sss
           1. Let _resultArray_ be ? TypedArraySpeciesCreate(_obj_, « 𝔽(_len_) »).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
             1. Let _mappedValue_ be ? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »).
-            1. Perform ? Set(_resultArray_, _pk_, _mappedValue_, *true*).
+            1. Perform ? Set(_resultArray_, _propertyKey_, _mappedValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _resultArray_.
         </emu-alg>
@@ -42314,12 +42314,12 @@ THH:mm:ss.sss
           1. If _initialValue_ is present, then
             1. Set _accumulator_ to _initialValue_.
           1. Else,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Set _accumulator_ to ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Set _accumulator_ to ! Get(_obj_, _propertyKey_).
             1. Set _k_ to _k_ + 1.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
             1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ + 1.
           1. Return _accumulator_.
@@ -42342,12 +42342,12 @@ THH:mm:ss.sss
           1. If _initialValue_ is present, then
             1. Set _accumulator_ to _initialValue_.
           1. Else,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Set _accumulator_ to ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Set _accumulator_ to ! Get(_obj_, _propertyKey_).
             1. Set _k_ to _k_ - 1.
           1. Repeat, while _k_ ≥ 0,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
             1. Set _accumulator_ to ? Call(_callback_, *undefined*, « _accumulator_, _kValue_, 𝔽(_k_), _obj_ »).
             1. Set _k_ to _k_ - 1.
           1. Return _accumulator_.
@@ -42419,8 +42419,8 @@ THH:mm:ss.sss
             1. If _srcLength_ + _targetOffset_ > _targetLength_, throw a *RangeError* exception.
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _srcLength_,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
-              1. Let _value_ be ? Get(_src_, _pk_).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+              1. Let _value_ be ? Get(_src_, _propertyKey_).
               1. Let _targetIndex_ be 𝔽(_targetOffset_ + _k_).
               1. Perform ? TypedArraySetElement(_target_, _targetIndex_, _value_).
               1. Set _k_ to _k_ + 1.
@@ -42528,8 +42528,8 @@ THH:mm:ss.sss
               1. Let _n_ be 0.
               1. Let _k_ be _startIndex_.
               1. Repeat, while _k_ &lt; _endIndex_,
-                1. Let _pk_ be ! ToString(𝔽(_k_)).
-                1. Let _kValue_ be ! Get(_obj_, _pk_).
+                1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+                1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
                 1. Perform ! Set(_resultArray_, ! ToString(𝔽(_n_)), _kValue_, *true*).
                 1. Set _k_ to _k_ + 1.
                 1. Set _n_ to _n_ + 1.
@@ -42549,8 +42549,8 @@ THH:mm:ss.sss
           1. If IsCallable(_callback_) is *false*, throw a *TypeError* exception.
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
-            1. Let _kValue_ be ! Get(_obj_, _pk_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+            1. Let _kValue_ be ! Get(_obj_, _propertyKey_).
             1. Let _testResult_ be ToBoolean(? Call(_callback_, _thisArg_, « _kValue_, 𝔽(_k_), _obj_ »)).
             1. If _testResult_ is *true*, return *true*.
             1. Set _k_ to _k_ + 1.
@@ -42639,9 +42639,9 @@ THH:mm:ss.sss
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
             1. Let _from_ be ! ToString(𝔽(_len_ - _k_ - 1)).
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
             1. Let _fromValue_ be ! Get(_obj_, _from_).
-            1. Perform ! Set(_resultArray_, _pk_, _fromValue_, *true*).
+            1. Perform ! Set(_resultArray_, _propertyKey_, _fromValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _resultArray_.
         </emu-alg>
@@ -42699,10 +42699,10 @@ THH:mm:ss.sss
           1. Let _resultArray_ be ? TypedArrayCreateSameType(_obj_, _len_).
           1. Let _k_ be 0.
           1. Repeat, while _k_ &lt; _len_,
-            1. Let _pk_ be ! ToString(𝔽(_k_)).
+            1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
             1. If _k_ = _actualIndex_, let _fromValue_ be _numericValue_.
-            1. Else, let _fromValue_ be ! Get(_obj_, _pk_).
-            1. Perform ! Set(_resultArray_, _pk_, _fromValue_, *true*).
+            1. Else, let _fromValue_ be ! Get(_obj_, _propertyKey_).
+            1. Perform ! Set(_resultArray_, _propertyKey_, _fromValue_, *true*).
             1. Set _k_ to _k_ + 1.
           1. Return _resultArray_.
         </emu-alg>
@@ -43039,10 +43039,10 @@ THH:mm:ss.sss
             1. Perform ? AllocateTypedArrayBuffer(_obj_, _len_).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
               1. Let _kValue_ be the first element of _values_.
               1. Remove the first element from _values_.
-              1. Perform ? Set(_obj_, _pk_, _kValue_, *true*).
+              1. Perform ? Set(_obj_, _propertyKey_, _kValue_, *true*).
               1. Set _k_ to _k_ + 1.
             1. Assert: _values_ is now an empty List.
             1. Return ~unused~.
@@ -43063,9 +43063,9 @@ THH:mm:ss.sss
             1. Perform ? AllocateTypedArrayBuffer(_obj_, _len_).
             1. Let _k_ be 0.
             1. Repeat, while _k_ &lt; _len_,
-              1. Let _pk_ be ! ToString(𝔽(_k_)).
-              1. Let _kValue_ be ? Get(_arrayLike_, _pk_).
-              1. Perform ? Set(_obj_, _pk_, _kValue_, *true*).
+              1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+              1. Let _kValue_ be ? Get(_arrayLike_, _propertyKey_).
+              1. Perform ? Set(_obj_, _propertyKey_, _kValue_, *true*).
               1. Set _k_ to _k_ + 1.
             1. Return ~unused~.
           </emu-alg>
@@ -47456,13 +47456,13 @@ THH:mm:ss.sss
               1. Let _len_ be ? LengthOfArrayLike(_val_).
               1. Let _index_ be 0.
               1. Repeat, while _index_ &lt; _len_,
-                1. Let _prop_ be ! ToString(𝔽(_index_)).
+                1. Let _propertyKey_ be ! ToString(𝔽(_index_)).
                 1. If _index_ &lt; _elementRecordsLen_, let _elementRecord_ be _elementRecords_[_index_]; else let _elementRecord_ be ~empty~.
-                1. Let _newElement_ be ? InternalizeJSONProperty(_val_, _prop_, _reviver_, _elementRecord_).
+                1. Let _newElement_ be ? InternalizeJSONProperty(_val_, _propertyKey_, _reviver_, _elementRecord_).
                 1. If _newElement_ is *undefined*, then
-                  1. Perform ? <emu-meta effects="user-code">_val_.[[Delete]](_prop_)</emu-meta>.
+                  1. Perform ? <emu-meta effects="user-code">_val_.[[Delete]](_propertyKey_)</emu-meta>.
                 1. Else,
-                  1. Perform ? CreateDataProperty(_val_, _prop_, _newElement_).
+                  1. Perform ? CreateDataProperty(_val_, _propertyKey_, _newElement_).
                 1. Set _index_ to _index_ + 1.
             1. Else,
               1. Let _keys_ be ? EnumerableOwnProperties(_val_, ~key~).
@@ -47593,8 +47593,8 @@ THH:mm:ss.sss
               1. Let _len_ be ? LengthOfArrayLike(_replacer_).
               1. Let _k_ be 0.
               1. Repeat, while _k_ &lt; _len_,
-                1. Let _prop_ be ! ToString(𝔽(_k_)).
-                1. Let _v_ be ? Get(_replacer_, _prop_).
+                1. Let _propertyKey_ be ! ToString(𝔽(_k_)).
+                1. Let _v_ be ? Get(_replacer_, _propertyKey_).
                 1. Let _item_ be *undefined*.
                 1. If _v_ is a String, then
                   1. Set _item_ to _v_.
