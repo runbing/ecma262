@@ -35797,17 +35797,17 @@ THH:mm:ss.sss
       </emu-clause>
 
       <emu-clause id="sec-string.prototype.match" type="built-in function">
-        <h1>String.prototype.match ( _regexp_ )</h1>
+        <h1>String.prototype.match ( _regexpOrPattern_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
           1. Let _thisValue_ be the *this* value.
           1. Perform ? RequireObjectCoercible(_thisValue_).
-          1. If _regexp_ is an Object, then
-            1. Let _matcher_ be ? GetMethod(_regexp_, %Symbol.match%).
+          1. If _regexpOrPattern_ is an Object, then
+            1. Let _matcher_ be ? GetMethod(_regexpOrPattern_, %Symbol.match%).
             1. If _matcher_ is not *undefined*, then
-              1. Return ? Call(_matcher_, _regexp_, « _thisValue_ »).
+              1. Return ? Call(_matcher_, _regexpOrPattern_, « _thisValue_ »).
           1. Let _str_ be ? ToString(_thisValue_).
-          1. Set _regexp_ to ? RegExpCreate(_regexp_, *undefined*).
+          1. Let _regexp_ be ? RegExpCreate(_regexpOrPattern_, *undefined*).
           1. Return ? Invoke(_regexp_, %Symbol.match%, « _str_ »).
         </emu-alg>
         <emu-note>
@@ -35816,24 +35816,24 @@ THH:mm:ss.sss
       </emu-clause>
 
       <emu-clause id="sec-string.prototype.matchall" type="built-in function">
-        <h1>String.prototype.matchAll ( _regexp_ )</h1>
-        <p>This method performs a regular expression match of the String representing the *this* value against _regexp_ and returns an iterator that yields match results. Each match result is an Array containing the matched portion of the String as the first element, followed by the portions matched by any capturing groups. If the regular expression never matches, the returned iterator does not yield any match results.</p>
+        <h1>String.prototype.matchAll ( _regexpOrPattern_ )</h1>
+        <p>This method performs a regular expression match of the String representing the *this* value against _regexpOrPattern_ and returns an iterator that yields match results. Each match result is an Array containing the matched portion of the String as the first element, followed by the portions matched by any capturing groups. If the regular expression never matches, the returned iterator does not yield any match results.</p>
         <p>It performs the following steps when called:</p>
 
         <emu-alg>
           1. Let _thisValue_ be the *this* value.
           1. Perform ? RequireObjectCoercible(_thisValue_).
-          1. If _regexp_ is an Object, then
-            1. Let _isRegExp_ be ? IsRegExp(_regexp_).
+          1. If _regexpOrPattern_ is an Object, then
+            1. Let _isRegExp_ be ? IsRegExp(_regexpOrPattern_).
             1. If _isRegExp_ is *true*, then
-              1. Let _flags_ be ? Get(_regexp_, *"flags"*).
+              1. Let _flags_ be ? Get(_regexpOrPattern_, *"flags"*).
               1. Perform ? RequireObjectCoercible(_flags_).
               1. If ? ToString(_flags_) does not contain *"g"*, throw a *TypeError* exception.
-            1. Let _matcher_ be ? GetMethod(_regexp_, %Symbol.matchAll%).
+            1. Let _matcher_ be ? GetMethod(_regexpOrPattern_, %Symbol.matchAll%).
             1. If _matcher_ is not *undefined*, then
-              1. Return ? Call(_matcher_, _regexp_, « _thisValue_ »).
+              1. Return ? Call(_matcher_, _regexpOrPattern_, « _thisValue_ »).
           1. Let _str_ be ? ToString(_thisValue_).
-          1. Set _regexp_ to ? RegExpCreate(_regexp_, *"g"*).
+          1. Let _regexp_ be ? RegExpCreate(_regexpOrPattern_, *"g"*).
           1. Return ? Invoke(_regexp_, %Symbol.matchAll%, « _str_ »).
         </emu-alg>
         <emu-note>This method is intentionally generic, it does not require that its *this* value be a String object. Therefore, it can be transferred to other kinds of objects for use as a method.</emu-note>
@@ -36123,17 +36123,17 @@ THH:mm:ss.sss
       </emu-clause>
 
       <emu-clause id="sec-string.prototype.search" type="built-in function">
-        <h1>String.prototype.search ( _regexp_ )</h1>
+        <h1>String.prototype.search ( _regexpOrPattern_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
           1. Let _thisValue_ be the *this* value.
           1. Perform ? RequireObjectCoercible(_thisValue_).
-          1. If _regexp_ is an Object, then
-            1. Let _searcher_ be ? GetMethod(_regexp_, %Symbol.search%).
+          1. If _regexpOrPattern_ is an Object, then
+            1. Let _searcher_ be ? GetMethod(_regexpOrPattern_, %Symbol.search%).
             1. If _searcher_ is not *undefined*, then
-              1. Return ? Call(_searcher_, _regexp_, « _thisValue_ »).
+              1. Return ? Call(_searcher_, _regexpOrPattern_, « _thisValue_ »).
           1. Let _string_ be ? ToString(_thisValue_).
-          1. Set _regexp_ to ? RegExpCreate(_regexp_, *undefined*).
+          1. Let _regexp_ be ? RegExpCreate(_regexpOrPattern_, *undefined*).
           1. Return ? Invoke(_regexp_, %Symbol.search%, « _string_ »).
         </emu-alg>
         <emu-note>
