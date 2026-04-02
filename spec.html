@@ -6572,26 +6572,26 @@
     <emu-clause id="sec-ordinaryhasinstance" type="abstract operation">
       <h1>
         OrdinaryHasInstance (
-          _value_: an ECMAScript language value,
-          _value_: an ECMAScript language value,
+          _constructor_: an ECMAScript language value,
+          _instance_: an ECMAScript language value,
         ): either a normal completion containing a Boolean or a throw completion
       </h1>
       <dl class="header">
         <dt>description</dt>
-        <dd>It implements the default algorithm for determining if _value_ inherits from the instance object inheritance path provided by _value_.</dd>
+        <dd>It implements the default algorithm for determining if _instance_ inherits from the instance object inheritance path provided by _constructor_.</dd>
       </dl>
       <emu-alg>
-        1. If IsCallable(_value_) is *false*, return *false*.
-        1. If _value_ has a [[BoundTargetFunction]] internal slot, then
-          1. Let _boundTarget_ be _value_.[[BoundTargetFunction]].
-          1. Return ? InstanceofOperator(_value_, _boundTarget_).
-        1. If _value_ is not an Object, return *false*.
-        1. Let _proto_ be ? Get(_value_, *"prototype"*).
-        1. If _proto_ is not an Object, throw a *TypeError* exception.
+        1. If IsCallable(_constructor_) is *false*, return *false*.
+        1. If _constructor_ has a [[BoundTargetFunction]] internal slot, then
+          1. Let _boundConstructor_ be _constructor_.[[BoundTargetFunction]].
+          1. Return ? InstanceofOperator(_instance_, _boundConstructor_).
+        1. If _instance_ is not an Object, return *false*.
+        1. Let _P_ be ? Get(_constructor_, *"prototype"*).
+        1. If _P_ is not an Object, throw a *TypeError* exception.
         1. Repeat,
-          1. Set _value_ to ? <emu-meta effects="user-code">_value_.[[GetPrototypeOf]]()</emu-meta>.
-          1. If _value_ is *null*, return *false*.
-          1. If SameValue(_proto_, _value_) is *true*, return *true*.
+          1. Set _instance_ to ? <emu-meta effects="user-code">_instance_.[[GetPrototypeOf]]()</emu-meta>.
+          1. If _instance_ is *null*, return *false*.
+          1. If SameValue(_P_, _instance_) is *true*, return *true*.
       </emu-alg>
     </emu-clause>
 
@@ -15427,14 +15427,14 @@
         <h1>
           SetImmutablePrototype (
             _obj_: an Object,
-            _obj_: an Object or *null*,
+            _proto_: an Object or *null*,
           ): either a normal completion containing a Boolean or a throw completion
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
           1. Let _current_ be ? <emu-meta effects="user-code">_obj_.[[GetPrototypeOf]]()</emu-meta>.
-          1. If SameValue(_obj_, _current_) is *true*, return *true*.
+          1. If SameValue(_proto_, _current_) is *true*, return *true*.
           1. Return *false*.
         </emu-alg>
       </emu-clause>
