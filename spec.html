@@ -4423,14 +4423,14 @@
       <emu-clause id="sec-ispropertyreference" type="abstract operation" oldids="ao-ispropertyreference">
         <h1>
           IsPropertyReference (
-            _value_: a Reference Record,
+            _referenceRecord_: a Reference Record,
           ): a Boolean
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. If _value_.[[Base]] is ~unresolvable~, return *false*.
-          1. If _value_.[[Base]] is an Environment Record, return *false*.
+          1. If _referenceRecord_.[[Base]] is ~unresolvable~, return *false*.
+          1. If _referenceRecord_.[[Base]] is an Environment Record, return *false*.
           1. Return *true*.
         </emu-alg>
       </emu-clause>
@@ -4438,13 +4438,13 @@
       <emu-clause id="sec-isunresolvablereference" type="abstract operation" oldids="ao-isunresolvablereference">
         <h1>
           IsUnresolvableReference (
-            _value_: a Reference Record,
+            _referenceRecord_: a Reference Record,
           ): a Boolean
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. If _value_.[[Base]] is ~unresolvable~, return *true*.
+          1. If _referenceRecord_.[[Base]] is ~unresolvable~, return *true*.
           1. Return *false*.
         </emu-alg>
       </emu-clause>
@@ -4452,13 +4452,13 @@
       <emu-clause id="sec-issuperreference" type="abstract operation" oldids="ao-issuperreference">
         <h1>
           IsSuperReference (
-            _value_: a Reference Record,
+            _referenceRecord_: a Reference Record,
           ): a Boolean
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. If _value_.[[ThisValue]] is ~empty~, return *false*.
+          1. If _referenceRecord_.[[ThisValue]] is ~empty~, return *false*.
           1. Return *true*.
         </emu-alg>
       </emu-clause>
@@ -4466,13 +4466,13 @@
       <emu-clause id="sec-isprivatereference" type="abstract operation">
         <h1>
           IsPrivateReference (
-            _value_: a Reference Record,
+            _referenceRecord_: a Reference Record,
           ): a Boolean
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. If _value_.[[ReferencedName]] is a Private Name, return *true*.
+          1. If _referenceRecord_.[[ReferencedName]] is a Private Name, return *true*.
           1. Return *false*.
         </emu-alg>
       </emu-clause>
@@ -4480,24 +4480,24 @@
       <emu-clause id="sec-getvalue" type="abstract operation">
         <h1>
           GetValue (
-            _value_: a Reference Record or an ECMAScript language value,
+            _referenceRecord_: a Reference Record or an ECMAScript language value,
           ): either a normal completion containing an ECMAScript language value or an abrupt completion
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. If _value_ is not a Reference Record, return _value_.
-          1. If IsUnresolvableReference(_value_) is *true*, throw a *ReferenceError* exception.
-          1. If IsPropertyReference(_value_) is *true*, then
-            1. [id="step-getvalue-toobject"] Let _baseObj_ be ? ToObject(_value_.[[Base]]).
-            1. If IsPrivateReference(_value_) is *true*, then
-              1. Return ? PrivateGet(_baseObj_, _value_.[[ReferencedName]]).
-            1. If _value_.[[ReferencedName]] is not a property key, then
-              1. Set _value_.[[ReferencedName]] to ? ToPropertyKey(_value_.[[ReferencedName]]).
-            1. Return ? <emu-meta effects="user-code">_baseObj_.[[Get]](_value_.[[ReferencedName]], GetThisValue(_value_))</emu-meta>.
-          1. Let _base_ be _value_.[[Base]].
+          1. If _referenceRecord_ is not a Reference Record, return _referenceRecord_.
+          1. If IsUnresolvableReference(_referenceRecord_) is *true*, throw a *ReferenceError* exception.
+          1. If IsPropertyReference(_referenceRecord_) is *true*, then
+            1. [id="step-getvalue-toobject"] Let _baseObj_ be ? ToObject(_referenceRecord_.[[Base]]).
+            1. If IsPrivateReference(_referenceRecord_) is *true*, then
+              1. Return ? PrivateGet(_baseObj_, _referenceRecord_.[[ReferencedName]]).
+            1. If _referenceRecord_.[[ReferencedName]] is not a property key, then
+              1. Set _referenceRecord_.[[ReferencedName]] to ? ToPropertyKey(_referenceRecord_.[[ReferencedName]]).
+            1. Return ? <emu-meta effects="user-code">_baseObj_.[[Get]](_referenceRecord_.[[ReferencedName]], GetThisValue(_referenceRecord_))</emu-meta>.
+          1. Let _base_ be _referenceRecord_.[[Base]].
           1. Assert: _base_ is an Environment Record.
-          1. Return ? <emu-meta effects="user-code">_base_.GetBindingValue(_value_.[[ReferencedName]], _value_.[[Strict]])</emu-meta> (see <emu-xref href="#sec-environment-records"></emu-xref>).
+          1. Return ? <emu-meta effects="user-code">_base_.GetBindingValue(_referenceRecord_.[[ReferencedName]], _referenceRecord_.[[Strict]])</emu-meta> (see <emu-xref href="#sec-environment-records"></emu-xref>).
         </emu-alg>
         <emu-note>
           <p>The object that may be created in step <emu-xref href="#step-getvalue-toobject"></emu-xref> is not accessible outside of the above abstract operation and the ordinary object [[Get]] internal method. An implementation might choose to avoid the actual creation of the object.</p>
@@ -4507,31 +4507,31 @@
       <emu-clause id="sec-putvalue" type="abstract operation">
         <h1>
           PutValue (
-            _value_: a Reference Record or an ECMAScript language value,
-            _value_: an ECMAScript language value,
+            _referenceRecord_: a Reference Record or an ECMAScript language value,
+            _referenceRecord_: an ECMAScript language value,
           ): either a normal completion containing ~unused~ or an abrupt completion
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. If _value_ is not a Reference Record, throw a *ReferenceError* exception.
-          1. If IsUnresolvableReference(_value_) is *true*, then
-            1. If _value_.[[Strict]] is *true*, throw a *ReferenceError* exception.
+          1. If _referenceRecord_ is not a Reference Record, throw a *ReferenceError* exception.
+          1. If IsUnresolvableReference(_referenceRecord_) is *true*, then
+            1. If _referenceRecord_.[[Strict]] is *true*, throw a *ReferenceError* exception.
             1. Let _globalObj_ be GetGlobalObject().
-            1. Perform ? Set(_globalObj_, _value_.[[ReferencedName]], _value_, *false*).
+            1. Perform ? Set(_globalObj_, _referenceRecord_.[[ReferencedName]], _referenceRecord_, *false*).
             1. Return ~unused~.
-          1. If IsPropertyReference(_value_) is *true*, then
-            1. [id="step-putvalue-toobject"] Let _baseObj_ be ? ToObject(_value_.[[Base]]).
-            1. If IsPrivateReference(_value_) is *true*, then
-              1. Return ? PrivateSet(_baseObj_, _value_.[[ReferencedName]], _value_).
-            1. If _value_.[[ReferencedName]] is not a property key, then
-              1. Set _value_.[[ReferencedName]] to ? ToPropertyKey(_value_.[[ReferencedName]]).
-            1. Let _succeeded_ be ? <emu-meta effects="user-code">_baseObj_.[[Set]](_value_.[[ReferencedName]], _value_, GetThisValue(_value_))</emu-meta>.
-            1. If _succeeded_ is *false* and _value_.[[Strict]] is *true*, throw a *TypeError* exception.
+          1. If IsPropertyReference(_referenceRecord_) is *true*, then
+            1. [id="step-putvalue-toobject"] Let _baseObj_ be ? ToObject(_referenceRecord_.[[Base]]).
+            1. If IsPrivateReference(_referenceRecord_) is *true*, then
+              1. Return ? PrivateSet(_baseObj_, _referenceRecord_.[[ReferencedName]], _referenceRecord_).
+            1. If _referenceRecord_.[[ReferencedName]] is not a property key, then
+              1. Set _referenceRecord_.[[ReferencedName]] to ? ToPropertyKey(_referenceRecord_.[[ReferencedName]]).
+            1. Let _succeeded_ be ? <emu-meta effects="user-code">_baseObj_.[[Set]](_referenceRecord_.[[ReferencedName]], _referenceRecord_, GetThisValue(_referenceRecord_))</emu-meta>.
+            1. If _succeeded_ is *false* and _referenceRecord_.[[Strict]] is *true*, throw a *TypeError* exception.
             1. Return ~unused~.
-          1. Let _base_ be _value_.[[Base]].
+          1. Let _base_ be _referenceRecord_.[[Base]].
           1. Assert: _base_ is an Environment Record.
-          1. Return ? <emu-meta effects="user-code">_base_.SetMutableBinding(_value_.[[ReferencedName]], _value_, _value_.[[Strict]])</emu-meta> (see <emu-xref href="#sec-environment-records"></emu-xref>).
+          1. Return ? <emu-meta effects="user-code">_base_.SetMutableBinding(_referenceRecord_.[[ReferencedName]], _referenceRecord_, _referenceRecord_.[[Strict]])</emu-meta> (see <emu-xref href="#sec-environment-records"></emu-xref>).
         </emu-alg>
         <emu-note>
           <p>The object that may be created in step <emu-xref href="#step-putvalue-toobject"></emu-xref> is not accessible outside of the above abstract operation and the ordinary object [[Set]] internal method. An implementation might choose to avoid the actual creation of that object.</p>
@@ -4541,15 +4541,15 @@
       <emu-clause id="sec-getthisvalue" type="abstract operation">
         <h1>
           GetThisValue (
-            _value_: a Reference Record,
+            _referenceRecord_: a Reference Record,
           ): an ECMAScript language value
         </h1>
         <dl class="header">
         </dl>
         <emu-alg>
-          1. Assert: IsPropertyReference(_value_) is *true*.
-          1. If IsSuperReference(_value_) is *true*, return _value_.[[ThisValue]].
-          1. Return _value_.[[Base]].
+          1. Assert: IsPropertyReference(_referenceRecord_) is *true*.
+          1. If IsSuperReference(_referenceRecord_) is *true*, return _referenceRecord_.[[ThisValue]].
+          1. Return _referenceRecord_.[[Base]].
         </emu-alg>
       </emu-clause>
 
