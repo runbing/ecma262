@@ -6954,8 +6954,8 @@
         SetterThatIgnoresPrototypeProperties (
           _thisValue_: an ECMAScript language value,
           _home_: an Object,
-          _p_: a property key,
-          _v_: an ECMAScript language value,
+          _propertyKey_: a property key,
+          _value_: an ECMAScript language value,
         ): either a normal completion containing ~unused~ or a throw completion
       </h1>
       <dl class="header">
@@ -6966,11 +6966,11 @@
         1. If SameValue(_thisValue_, _home_) is *true*, then
           1. NOTE: Throwing here emulates assignment to a non-writable data property on the _home_ object in strict mode code.
           1. Throw a *TypeError* exception.
-        1. Let _desc_ be ? _thisValue_.[[GetOwnProperty]](_p_).
+        1. Let _desc_ be ? _thisValue_.[[GetOwnProperty]](_propertyKey_).
         1. If _desc_ is *undefined*, then
-          1. Perform ? CreateDataPropertyOrThrow(_thisValue_, _p_, _v_).
+          1. Perform ? CreateDataPropertyOrThrow(_thisValue_, _propertyKey_, _value_).
         1. Else,
-          1. Perform ? Set(_thisValue_, _p_, _v_, *true*).
+          1. Perform ? Set(_thisValue_, _propertyKey_, _value_, *true*).
         1. Return ~unused~.
       </emu-alg>
     </emu-clause>
@@ -29824,17 +29824,17 @@
     <h1>Function Properties of the Global Object</h1>
 
     <emu-clause id="sec-eval-x" type="built-in function">
-      <h1>eval ( _x_ )</h1>
+      <h1>eval ( _source_ )</h1>
       <p>This function is the <dfn>%eval%</dfn> intrinsic object.</p>
       <p>It performs the following steps when called:</p>
       <emu-alg>
-        1. Return ? PerformEval(_x_, *false*, *false*).
+        1. Return ? PerformEval(_source_, *false*, *false*).
       </emu-alg>
 
       <emu-clause id="sec-performeval" type="abstract operation" oldids="sec-performeval-rules-outside-functions,sec-performeval-rules-outside-methods,sec-performeval-rules-outside-constructors">
         <h1>
           PerformEval (
-            _x_: an ECMAScript language value,
+            _source_: an ECMAScript language value,
             _strictCaller_: a Boolean,
             _direct_: a Boolean,
           ): either a normal completion containing an ECMAScript language value or a throw completion
@@ -29843,10 +29843,10 @@
         </dl>
         <emu-alg>
           1. Assert: If _direct_ is *false*, then _strictCaller_ is also *false*.
-          1. If _x_ is not a String, return _x_.
+          1. If _source_ is not a String, return _source_.
           1. Let _evalRealm_ be the current Realm Record.
           1. NOTE: In the case of a direct eval, _evalRealm_ is the realm of both the caller of `eval` and of the `eval` function itself.
-          1. Perform ? HostEnsureCanCompileStrings(_evalRealm_, « », _x_, _direct_).
+          1. Perform ? HostEnsureCanCompileStrings(_evalRealm_, « », _source_, _direct_).
           1. Let _inFunction_ be *false*.
           1. Let _inMethod_ be *false*.
           1. Let _inDerivedConstructor_ be *false*.
@@ -29861,7 +29861,7 @@
               1. Let _classFieldInitializerName_ be _func_.[[ClassFieldInitializerName]].
               1. If _classFieldInitializerName_ is not ~empty~, set _inClassFieldInitializer_ to *true*.
           1. Perform the following substeps in an implementation-defined order, possibly interleaving parsing and error detection:
-            1. Let _script_ be ParseText(_x_, |Script|).
+            1. Let _script_ be ParseText(_source_, |Script|).
             1. If _script_ is a List of errors, throw a *SyntaxError* exception.
             1. If _script_ Contains |ScriptBody| is *false*, return *undefined*.
             1. Let _body_ be the |ScriptBody| of _script_.
@@ -37615,8 +37615,8 @@ THH:mm:ss.sss
               _min_: a non-negative integer,
               _max_: a non-negative integer or +&infin;,
               _greedy_: a Boolean,
-              _x_: a MatchState,
-              _c_: a MatcherContinuation,
+              _matchState_: a MatchState,
+              _continue_: a MatcherContinuation,
               _parenIndex_: a non-negative integer,
               _parenCount_: a non-negative integer,
             ): either a MatchState or ~failure~
@@ -37624,26 +37624,26 @@ THH:mm:ss.sss
           <dl class="header">
           </dl>
           <emu-alg>
-            1. If _max_ = 0, return _c_(_x_).
-            1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures _m_, _min_, _max_, _greedy_, _x_, _c_, _parenIndex_, and _parenCount_ and performs the following steps when called:
+            1. If _max_ = 0, return _continue_(_matchState_).
+            1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures _m_, _min_, _max_, _greedy_, _matchState_, _continue_, _parenIndex_, and _parenCount_ and performs the following steps when called:
               1. Assert: _y_ is a MatchState.
-              1. [id="step-repeatmatcher-done"] If _min_ = 0 and _y_.[[EndIndex]] = _x_.[[EndIndex]], return ~failure~.
+              1. [id="step-repeatmatcher-done"] If _min_ = 0 and _y_.[[EndIndex]] = _matchState_.[[EndIndex]], return ~failure~.
               1. If _min_ = 0, let _min2_ be 0; else let _min2_ be _min_ - 1.
               1. If _max_ = +∞, let _max2_ be +∞; else let _max2_ be _max_ - 1.
-              1. Return RepeatMatcher(_m_, _min2_, _max2_, _greedy_, _y_, _c_, _parenIndex_, _parenCount_).
-            1. Let _cap_ be a copy of _x_.[[Captures]].
+              1. Return RepeatMatcher(_m_, _min2_, _max2_, _greedy_, _y_, _continue_, _parenIndex_, _parenCount_).
+            1. Let _cap_ be a copy of _matchState_.[[Captures]].
             1. [id="step-repeatmatcher-clear-captures"] For each integer _k_ in the inclusive interval from _parenIndex_ + 1 to _parenIndex_ + _parenCount_, set _cap_[_k_] to *undefined*.
-            1. Let _input_ be _x_.[[Input]].
-            1. Let _e_ be _x_.[[EndIndex]].
+            1. Let _input_ be _matchState_.[[Input]].
+            1. Let _e_ be _matchState_.[[EndIndex]].
             1. Let _xr_ be the MatchState { [[Input]]: _input_, [[EndIndex]]: _e_, [[Captures]]: _cap_ }.
             1. If _min_ ≠ 0, return _m_(_xr_, _d_).
             1. If _greedy_ is *false*, then
-              1. Let _z_ be _c_(_x_).
+              1. Let _z_ be _continue_(_matchState_).
               1. If _z_ is not ~failure~, return _z_.
               1. Return _m_(_xr_, _d_).
             1. Let _z_ be _m_(_xr_, _d_).
             1. If _z_ is not ~failure~, return _z_.
-            1. Return _c_(_x_).
+            1. Return _continue_(_matchState_).
           </emu-alg>
           <emu-note>
             <p>An |Atom| followed by a |Quantifier| is repeated the number of times specified by the |Quantifier|. A |Quantifier| can be non-greedy, in which case the |Atom| pattern is repeated as few times as possible while still matching the sequel, or it can be greedy, in which case the |Atom| pattern is repeated as many times as possible while still matching the sequel. The |Atom| pattern is repeated rather than the input character sequence that it matches, so different repetitions of the |Atom| can match different input substrings.</p>
@@ -37692,10 +37692,10 @@ THH:mm:ss.sss
           <dl class="header">
           </dl>
           <emu-alg>
-            1. Return a new Matcher with parameters (_x_, _c_) that captures nothing and performs the following steps when called:
-              1. Assert: _x_ is a MatchState.
-              1. Assert: _c_ is a MatcherContinuation.
-              1. Return _c_(_x_).
+            1. Return a new Matcher with parameters (_matchState_, _continue_) that captures nothing and performs the following steps when called:
+              1. Assert: _matchState_ is a MatchState.
+              1. Assert: _continue_ is a MatcherContinuation.
+              1. Return _continue_(_matchState_).
           </emu-alg>
         </emu-clause>
 
@@ -37709,12 +37709,12 @@ THH:mm:ss.sss
           <dl class="header">
           </dl>
           <emu-alg>
-            1. Return a new Matcher with parameters (_x_, _c_) that captures _m1_ and _m2_ and performs the following steps when called:
-              1. Assert: _x_ is a MatchState.
-              1. Assert: _c_ is a MatcherContinuation.
-              1. Let _r_ be _m1_(_x_, _c_).
+            1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _m1_ and _m2_ and performs the following steps when called:
+              1. Assert: _matchState_ is a MatchState.
+              1. Assert: _continue_ is a MatcherContinuation.
+              1. Let _r_ be _m1_(_matchState_, _continue_).
               1. If _r_ is not ~failure~, return _r_.
-              1. Return _m2_(_x_, _c_).
+              1. Return _m2_(_matchState_, _continue_).
           </emu-alg>
         </emu-clause>
 
@@ -37730,21 +37730,21 @@ THH:mm:ss.sss
           </dl>
           <emu-alg>
             1. If _direction_ is ~forward~, then
-              1. Return a new Matcher with parameters (_x_, _c_) that captures _m1_ and _m2_ and performs the following steps when called:
-                1. Assert: _x_ is a MatchState.
-                1. Assert: _c_ is a MatcherContinuation.
-                1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures _c_ and _m2_ and performs the following steps when called:
+              1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _m1_ and _m2_ and performs the following steps when called:
+                1. Assert: _matchState_ is a MatchState.
+                1. Assert: _continue_ is a MatcherContinuation.
+                1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures _continue_ and _m2_ and performs the following steps when called:
                   1. Assert: _y_ is a MatchState.
-                  1. Return _m2_(_y_, _c_).
-                1. Return _m1_(_x_, _d_).
+                  1. Return _m2_(_y_, _continue_).
+                1. Return _m1_(_matchState_, _d_).
             1. Assert: _direction_ is ~backward~.
-            1. Return a new Matcher with parameters (_x_, _c_) that captures _m1_ and _m2_ and performs the following steps when called:
-              1. Assert: _x_ is a MatchState.
-              1. Assert: _c_ is a MatcherContinuation.
-              1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures _c_ and _m1_ and performs the following steps when called:
+            1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _m1_ and _m2_ and performs the following steps when called:
+              1. Assert: _matchState_ is a MatchState.
+              1. Assert: _continue_ is a MatcherContinuation.
+              1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures _continue_ and _m1_ and performs the following steps when called:
                 1. Assert: _y_ is a MatchState.
-                1. Return _m1_(_y_, _c_).
-              1. Return _m2_(_x_, _d_).
+                1. Return _m1_(_y_, _continue_).
+              1. Return _m2_(_matchState_, _d_).
           </emu-alg>
         </emu-clause>
       </emu-clause>
@@ -37762,13 +37762,13 @@ THH:mm:ss.sss
         </emu-note>
         <emu-grammar>Assertion :: `^`</emu-grammar>
         <emu-alg>
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _regexpRecord_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
-            1. Let _input_ be _x_.[[Input]].
-            1. Let _e_ be _x_.[[EndIndex]].
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _regexpRecord_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
+            1. Let _input_ be _matchState_.[[Input]].
+            1. Let _e_ be _matchState_.[[EndIndex]].
             1. If _e_ = 0, or if _regexpRecord_.[[Multiline]] is *true* and the character _input_[_e_ - 1] is matched by |LineTerminator|, then
-              1. Return _c_(_x_).
+              1. Return _continue_(_matchState_).
             1. Return ~failure~.
         </emu-alg>
         <emu-note>
@@ -37776,57 +37776,57 @@ THH:mm:ss.sss
         </emu-note>
         <emu-grammar>Assertion :: `$`</emu-grammar>
         <emu-alg>
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _regexpRecord_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
-            1. Let _input_ be _x_.[[Input]].
-            1. Let _e_ be _x_.[[EndIndex]].
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _regexpRecord_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
+            1. Let _input_ be _matchState_.[[Input]].
+            1. Let _e_ be _matchState_.[[EndIndex]].
             1. Let _inputLength_ be the number of elements in _input_.
             1. If _e_ = _inputLength_, or if _regexpRecord_.[[Multiline]] is *true* and the character _input_[_e_] is matched by |LineTerminator|, then
-              1. Return _c_(_x_).
+              1. Return _continue_(_matchState_).
             1. Return ~failure~.
         </emu-alg>
         <emu-grammar>Assertion :: `\b`</emu-grammar>
         <emu-alg>
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _regexpRecord_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
-            1. Let _input_ be _x_.[[Input]].
-            1. Let _e_ be _x_.[[EndIndex]].
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _regexpRecord_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
+            1. Let _input_ be _matchState_.[[Input]].
+            1. Let _e_ be _matchState_.[[EndIndex]].
             1. Let _a_ be IsWordChar(_regexpRecord_, _input_, _e_ - 1).
             1. Let _b_ be IsWordChar(_regexpRecord_, _input_, _e_).
-            1. If _a_ is *true* and _b_ is *false*, or if _a_ is *false* and _b_ is *true*, return _c_(_x_).
+            1. If _a_ is *true* and _b_ is *false*, or if _a_ is *false* and _b_ is *true*, return _continue_(_matchState_).
             1. Return ~failure~.
         </emu-alg>
         <emu-grammar>Assertion :: `\B`</emu-grammar>
         <emu-alg>
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _regexpRecord_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
-            1. Let _input_ be _x_.[[Input]].
-            1. Let _e_ be _x_.[[EndIndex]].
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _regexpRecord_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
+            1. Let _input_ be _matchState_.[[Input]].
+            1. Let _e_ be _matchState_.[[EndIndex]].
             1. Let _a_ be IsWordChar(_regexpRecord_, _input_, _e_ - 1).
             1. Let _b_ be IsWordChar(_regexpRecord_, _input_, _e_).
-            1. If _a_ is *true* and _b_ is *true*, or if _a_ is *false* and _b_ is *false*, return _c_(_x_).
+            1. If _a_ is *true* and _b_ is *true*, or if _a_ is *false* and _b_ is *false*, return _continue_(_matchState_).
             1. Return ~failure~.
         </emu-alg>
         <emu-grammar>Assertion :: `(?=` Disjunction `)`</emu-grammar>
         <emu-alg>
           1. Let _m_ be CompileSubpattern of |Disjunction| with arguments _regexpRecord_ and ~forward~.
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _m_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _m_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
             1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures nothing and performs the following steps when called:
               1. Assert: _y_ is a MatchState.
               1. Return _y_.
-            1. Let _r_ be _m_(_x_, _d_).
+            1. Let _r_ be _m_(_matchState_, _d_).
             1. If _r_ is ~failure~, return ~failure~.
             1. Assert: _r_ is a MatchState.
             1. Let _cap_ be _r_.[[Captures]].
-            1. Let _input_ be _x_.[[Input]].
-            1. Let _xe_ be _x_.[[EndIndex]].
+            1. Let _input_ be _matchState_.[[Input]].
+            1. Let _xe_ be _matchState_.[[EndIndex]].
             1. Let _z_ be the MatchState { [[Input]]: _input_, [[EndIndex]]: _xe_, [[Captures]]: _cap_ }.
-            1. Return _c_(_z_).
+            1. Return _continue_(_z_).
         </emu-alg>
         <emu-note>
           <p>The form `(?=` |Disjunction| `)` specifies a zero-width positive lookahead. In order for it to succeed, the pattern inside |Disjunction| must match at the current position, but the current position is not advanced before matching the sequel. If |Disjunction| can match at the current position in several ways, only the first one is tried. Unlike other regular expression operators, there is no backtracking into a `(?=` form (this unusual behaviour is inherited from Perl). This only matters when the |Disjunction| contains capturing parentheses and the sequel of the pattern contains backreferences to those captures.</p>
@@ -37844,15 +37844,15 @@ THH:mm:ss.sss
         <emu-grammar>Assertion :: `(?!` Disjunction `)`</emu-grammar>
         <emu-alg>
           1. Let _m_ be CompileSubpattern of |Disjunction| with arguments _regexpRecord_ and ~forward~.
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _m_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _m_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
             1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures nothing and performs the following steps when called:
               1. Assert: _y_ is a MatchState.
               1. Return _y_.
-            1. Let _r_ be _m_(_x_, _d_).
+            1. Let _r_ be _m_(_matchState_, _d_).
             1. If _r_ is not ~failure~, return ~failure~.
-            1. Return _c_(_x_).
+            1. Return _continue_(_matchState_).
         </emu-alg>
         <emu-note>
           <p>The form `(?!` |Disjunction| `)` specifies a zero-width negative lookahead. In order for it to succeed, the pattern inside |Disjunction| must fail to match at the current position. The current position is not advanced before matching the sequel. |Disjunction| can contain capturing parentheses, but backreferences to them only make sense from within |Disjunction| itself. Backreferences to these capturing parentheses from elsewhere in the pattern always return *undefined* because the negative lookahead must fail for the pattern to succeed. For example,</p>
@@ -37863,33 +37863,33 @@ THH:mm:ss.sss
         <emu-grammar>Assertion :: `(?&lt;=` Disjunction `)`</emu-grammar>
         <emu-alg>
           1. Let _m_ be CompileSubpattern of |Disjunction| with arguments _regexpRecord_ and ~backward~.
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _m_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _m_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
             1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures nothing and performs the following steps when called:
               1. Assert: _y_ is a MatchState.
               1. Return _y_.
-            1. Let _r_ be _m_(_x_, _d_).
+            1. Let _r_ be _m_(_matchState_, _d_).
             1. If _r_ is ~failure~, return ~failure~.
             1. Assert: _r_ is a MatchState.
             1. Let _cap_ be _r_.[[Captures]].
-            1. Let _input_ be _x_.[[Input]].
-            1. Let _xe_ be _x_.[[EndIndex]].
+            1. Let _input_ be _matchState_.[[Input]].
+            1. Let _xe_ be _matchState_.[[EndIndex]].
             1. Let _z_ be the MatchState { [[Input]]: _input_, [[EndIndex]]: _xe_, [[Captures]]: _cap_ }.
-            1. Return _c_(_z_).
+            1. Return _continue_(_z_).
         </emu-alg>
         <emu-grammar>Assertion :: `(?&lt;!` Disjunction `)`</emu-grammar>
         <emu-alg>
           1. Let _m_ be CompileSubpattern of |Disjunction| with arguments _regexpRecord_ and ~backward~.
-          1. Return a new Matcher with parameters (_x_, _c_) that captures _m_ and performs the following steps when called:
-            1. Assert: _x_ is a MatchState.
-            1. Assert: _c_ is a MatcherContinuation.
+          1. Return a new Matcher with parameters (_matchState_, _continue_) that captures _m_ and performs the following steps when called:
+            1. Assert: _matchState_ is a MatchState.
+            1. Assert: _continue_ is a MatcherContinuation.
             1. Let _d_ be a new MatcherContinuation with parameters (_y_) that captures nothing and performs the following steps when called:
               1. Assert: _y_ is a MatchState.
               1. Return _y_.
-            1. Let _r_ be _m_(_x_, _d_).
+            1. Let _r_ be _m_(_matchState_, _d_).
             1. If _r_ is not ~failure~, return ~failure~.
-            1. Return _c_(_x_).
+            1. Return _continue_(_matchState_).
         </emu-alg>
 
         <emu-clause id="sec-runtime-semantics-iswordchar-abstract-operation" type="abstract operation">
