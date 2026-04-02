@@ -10235,11 +10235,11 @@
             <td>
               CreateImmutableBinding (
                 _name_: a String,
-                _isStrict_: a Boolean,
+                _strict_: a Boolean,
               ): either a normal completion containing ~unused~ or a throw completion
             </td>
             <td>
-              It creates a new but uninitialized immutable binding in an Environment Record. _name_ is the text of the bound name. If _isStrict_ is *true* then attempts to set it after it has been initialized will always throw an exception, regardless of the strict mode setting of operations that reference that binding.
+              It creates a new but uninitialized immutable binding in an Environment Record. _name_ is the text of the bound name. If _strict_ is *true* then attempts to set it after it has been initialized will always throw an exception, regardless of the strict mode setting of operations that reference that binding.
             </td>
             <td>
               It has concrete definitions in the following types:
@@ -10266,11 +10266,11 @@
               SetMutableBinding (
                 _name_: a String,
                 _value_: an ECMAScript language value,
-                _isStrict_: a Boolean,
+                _strict_: a Boolean,
               ): either a normal completion containing ~unused~ or a throw completion
             </td>
             <td>
-              It sets the value of an already existing mutable binding in an Environment Record. _name_ is the text of the bound name. _value_ is the value for the binding. If _isStrict_ is *true* and the binding cannot be set, this will throw a *TypeError* exception.
+              It sets the value of an already existing mutable binding in an Environment Record. _name_ is the text of the bound name. _value_ is the value for the binding. If _strict_ is *true* and the binding cannot be set, this will throw a *TypeError* exception.
             </td>
             <td>
               It has concrete definitions in the following types:
@@ -10281,11 +10281,11 @@
             <td>
               GetBindingValue (
                 _name_: a String,
-                _isStrict_: a Boolean,
+                _strict_: a Boolean,
               ): either a normal completion containing an ECMAScript language value or a throw completion
             </td>
             <td>
-              It returns the value of an already existing binding from an Environment Record. _name_ is the text of the bound name. _isStrict_ is used to identify references originating in strict mode code or that otherwise require strict mode reference semantics. If _isStrict_ is *true* and the binding does not exist, this will throw a *ReferenceError* exception. If the binding exists but is uninitialized a *ReferenceError* is thrown, regardless of the value of _isStrict_.
+              It returns the value of an already existing binding from an Environment Record. _name_ is the text of the bound name. _strict_ is used to identify references originating in strict mode code or that otherwise require strict mode reference semantics. If _strict_ is *true* and the binding does not exist, this will throw a *ReferenceError* exception. If the binding exists but is uninitialized a *ReferenceError* is thrown, regardless of the value of _strict_.
             </td>
             <td>
               It has concrete definitions in the following types:
@@ -10397,7 +10397,7 @@
           <h1>
             CreateImmutableBinding (
               _name_: a String,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): a normal completion containing ~unused~
           </h1>
           <dl class="header">
@@ -10405,11 +10405,11 @@
             <dd>a Declarative Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It creates a new immutable binding for the name _name_ that is uninitialized. A binding must not already exist in this Environment Record for _name_. If _isStrict_ is *true*, the new binding is marked as a strict binding.</dd>
+            <dd>It creates a new immutable binding for the name _name_ that is uninitialized. A binding must not already exist in this Environment Record for _name_. If _strict_ is *true*, the new binding is marked as a strict binding.</dd>
           </dl>
           <emu-alg>
             1. Assert: _envRec_ does not already have a binding for _name_.
-            1. Create an immutable binding in _envRec_ for _name_ and record that it is uninitialized. If _isStrict_ is *true*, record that the newly created binding is a strict binding.
+            1. Create an immutable binding in _envRec_ for _name_ and record that it is uninitialized. If _strict_ is *true*, record that the newly created binding is a strict binding.
             1. Return ~unused~.
           </emu-alg>
         </emu-clause>
@@ -10441,7 +10441,7 @@
             SetMutableBinding (
               _name_: a String,
               _value_: an ECMAScript language value,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing ~unused~ or a throw completion
           </h1>
           <dl class="header">
@@ -10449,22 +10449,22 @@
             <dd>a Declarative Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It attempts to change the bound value of the current binding of the identifier whose name is _name_ to the value _value_. A binding for _name_ normally already exists, but in rare cases it may not. If the binding is an immutable binding, a *TypeError* is thrown if _isStrict_ is *true*.</dd>
+            <dd>It attempts to change the bound value of the current binding of the identifier whose name is _name_ to the value _value_. A binding for _name_ normally already exists, but in rare cases it may not. If the binding is an immutable binding, a *TypeError* is thrown if _strict_ is *true*.</dd>
           </dl>
           <emu-alg>
             1. [id="step-setmutablebinding-missing-binding"] If _envRec_ does not have a binding for _name_, then
-              1. If _isStrict_ is *true*, throw a *ReferenceError* exception.
+              1. If _strict_ is *true*, throw a *ReferenceError* exception.
               1. Perform ! _envRec_.CreateMutableBinding(_name_, *true*).
               1. Perform ! _envRec_.InitializeBinding(_name_, _value_).
               1. Return ~unused~.
-            1. If the binding for _name_ in _envRec_ is a strict binding, set _isStrict_ to *true*.
+            1. If the binding for _name_ in _envRec_ is a strict binding, set _strict_ to *true*.
             1. If the binding for _name_ in _envRec_ has not yet been initialized, then
               1. Throw a *ReferenceError* exception.
             1. Else if the binding for _name_ in _envRec_ is a mutable binding, then
               1. Change its bound value to _value_.
             1. Else,
               1. Assert: This is an attempt to change the value of an immutable binding.
-              1. If _isStrict_ is *true*, throw a *TypeError* exception.
+              1. If _strict_ is *true*, throw a *TypeError* exception.
             1. Return ~unused~.
           </emu-alg>
           <emu-note>
@@ -10477,7 +10477,7 @@
           <h1>
             GetBindingValue (
               _name_: a String,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing an ECMAScript language value or a throw completion
           </h1>
           <dl class="header">
@@ -10485,7 +10485,7 @@
             <dd>a Declarative Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It returns the value of its bound identifier whose name is _name_. If the binding exists but is uninitialized a *ReferenceError* is thrown, regardless of the value of _isStrict_.</dd>
+            <dd>It returns the value of its bound identifier whose name is _name_. If the binding exists but is uninitialized a *ReferenceError* is thrown, regardless of the value of _strict_.</dd>
           </dl>
           <emu-alg>
             1. Assert: _envRec_ has a binding for _name_.
@@ -10656,7 +10656,7 @@
         </emu-clause>
 
         <emu-clause id="sec-object-environment-records-createimmutablebinding-n-s">
-          <h1>CreateImmutableBinding ( _name_, _isStrict_ )</h1>
+          <h1>CreateImmutableBinding ( _name_, _strict_ )</h1>
           <p>The CreateImmutableBinding concrete method of an Object Environment Record is never used within this specification.</p>
         </emu-clause>
 
@@ -10688,7 +10688,7 @@
             SetMutableBinding (
               _name_: a String,
               _value_: an ECMAScript language value,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing ~unused~ or a throw completion
           </h1>
           <dl class="header">
@@ -10696,13 +10696,13 @@
             <dd>an Object Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It attempts to set the value of the Environment Record's associated binding object's property whose name is _name_ to the value _value_. A property named _name_ normally already exists but if it does not or is not currently writable, error handling is determined by _isStrict_.</dd>
+            <dd>It attempts to set the value of the Environment Record's associated binding object's property whose name is _name_ to the value _value_. A property named _name_ normally already exists but if it does not or is not currently writable, error handling is determined by _strict_.</dd>
           </dl>
           <emu-alg>
             1. Let _bindingObject_ be _envRec_.[[BindingObject]].
             1. Let _stillExists_ be ? HasProperty(_bindingObject_, _name_).
-            1. If _stillExists_ is *false* and _isStrict_ is *true*, throw a *ReferenceError* exception.
-            1. Perform ? Set(_bindingObject_, _name_, _value_, _isStrict_).
+            1. If _stillExists_ is *false* and _strict_ is *true*, throw a *ReferenceError* exception.
+            1. Perform ? Set(_bindingObject_, _name_, _value_, _strict_).
             1. Return ~unused~.
           </emu-alg>
         </emu-clause>
@@ -10711,7 +10711,7 @@
           <h1>
             GetBindingValue (
               _name_: a String,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing an ECMAScript language value or a throw completion
           </h1>
           <dl class="header">
@@ -10719,13 +10719,13 @@
             <dd>an Object Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It returns the value of its associated binding object's property whose name is _name_. The property should already exist but if it does not the result depends upon _isStrict_.</dd>
+            <dd>It returns the value of its associated binding object's property whose name is _name_. The property should already exist but if it does not the result depends upon _strict_.</dd>
           </dl>
           <emu-alg>
             1. Let _bindingObject_ be _envRec_.[[BindingObject]].
             1. Let _value_ be ? HasProperty(_bindingObject_, _name_).
             1. If _value_ is *false*, then
-              1. If _isStrict_ is *false*, return *undefined*.
+              1. If _strict_ is *false*, return *undefined*.
               1. Throw a *ReferenceError* exception.
             1. Return ? Get(_bindingObject_, _name_).
           </emu-alg>
@@ -11043,7 +11043,7 @@
           <h1>
             CreateImmutableBinding (
               _name_: a String,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing ~unused~ or a throw completion
           </h1>
           <dl class="header">
@@ -11051,12 +11051,12 @@
             <dd>a Global Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It creates a new immutable binding for the name _name_ that is uninitialized. A binding must not already exist in this Environment Record for _name_. If _isStrict_ is *true*, the new binding is marked as a strict binding.</dd>
+            <dd>It creates a new immutable binding for the name _name_ that is uninitialized. A binding must not already exist in this Environment Record for _name_. If _strict_ is *true*, the new binding is marked as a strict binding.</dd>
           </dl>
           <emu-alg>
             1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
             1. If ! _declarativeRecord_.HasBinding(_name_) is *true*, throw a *TypeError* exception.
-            1. Return ! _declarativeRecord_.CreateImmutableBinding(_name_, _isStrict_).
+            1. Return ! _declarativeRecord_.CreateImmutableBinding(_name_, _strict_).
           </emu-alg>
         </emu-clause>
 
@@ -11089,7 +11089,7 @@
             SetMutableBinding (
               _name_: a String,
               _value_: an ECMAScript language value,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing ~unused~ or a throw completion
           </h1>
           <dl class="header">
@@ -11097,14 +11097,14 @@
             <dd>a Global Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It attempts to change the bound value of the current binding of the identifier whose name is _name_ to the value _value_. If the binding is an immutable binding and _isStrict_ is *true*, a *TypeError* is thrown. A property named _name_ normally already exists but if it does not or is not currently writable, error handling is determined by _isStrict_.</dd>
+            <dd>It attempts to change the bound value of the current binding of the identifier whose name is _name_ to the value _value_. If the binding is an immutable binding and _strict_ is *true*, a *TypeError* is thrown. A property named _name_ normally already exists but if it does not or is not currently writable, error handling is determined by _strict_.</dd>
           </dl>
           <emu-alg>
             1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
             1. If ! _declarativeRecord_.HasBinding(_name_) is *true*, then
-              1. Return ? _declarativeRecord_.SetMutableBinding(_name_, _value_, _isStrict_).
+              1. Return ? _declarativeRecord_.SetMutableBinding(_name_, _value_, _strict_).
             1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
-            1. Return ? <emu-meta effects="user-code">_objectRecord_.SetMutableBinding(_name_, _value_, _isStrict_)</emu-meta>.
+            1. Return ? <emu-meta effects="user-code">_objectRecord_.SetMutableBinding(_name_, _value_, _strict_)</emu-meta>.
           </emu-alg>
         </emu-clause>
 
@@ -11112,7 +11112,7 @@
           <h1>
             GetBindingValue (
               _name_: a String,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing an ECMAScript language value or a throw completion
           </h1>
           <dl class="header">
@@ -11120,14 +11120,14 @@
             <dd>a Global Environment Record _envRec_</dd>
 
             <dt>description</dt>
-            <dd>It returns the value of its bound identifier whose name is _name_. If the binding is an uninitialized binding throw a *ReferenceError* exception. A property named _name_ normally already exists but if it does not or is not currently writable, error handling is determined by _isStrict_.</dd>
+            <dd>It returns the value of its bound identifier whose name is _name_. If the binding is an uninitialized binding throw a *ReferenceError* exception. A property named _name_ normally already exists but if it does not or is not currently writable, error handling is determined by _strict_.</dd>
           </dl>
           <emu-alg>
             1. Let _declarativeRecord_ be _envRec_.[[DeclarativeRecord]].
             1. If ! _declarativeRecord_.HasBinding(_name_) is *true*, then
-              1. Return ? _declarativeRecord_.GetBindingValue(_name_, _isStrict_).
+              1. Return ? _declarativeRecord_.GetBindingValue(_name_, _strict_).
             1. Let _objectRecord_ be _envRec_.[[ObjectRecord]].
-            1. Return ? <emu-meta effects="user-code">_objectRecord_.GetBindingValue(_name_, _isStrict_)</emu-meta>.
+            1. Return ? <emu-meta effects="user-code">_objectRecord_.GetBindingValue(_name_, _strict_)</emu-meta>.
           </emu-alg>
         </emu-clause>
 
@@ -11354,7 +11354,7 @@
           <h1>
             GetBindingValue (
               _name_: a String,
-              _isStrict_: a Boolean,
+              _strict_: a Boolean,
             ): either a normal completion containing an ECMAScript language value or a throw completion
           </h1>
           <dl class="header">
@@ -11365,7 +11365,7 @@
             <dd>It returns the value of its bound identifier whose name is _name_. However, if the binding is an indirect binding the value of the target binding is returned. If the binding exists but is uninitialized a *ReferenceError* is thrown.</dd>
           </dl>
           <emu-alg>
-            1. Assert: _isStrict_ is *true*.
+            1. Assert: _strict_ is *true*.
             1. Assert: _envRec_ has a binding for _name_.
             1. If the binding for _name_ is an indirect binding, then
               1. Let _module_ and _n2_ be the indirection values provided when this binding for _name_ was created.
@@ -11376,7 +11376,7 @@
             1. Return the value currently bound to _name_ in _envRec_.
           </emu-alg>
           <emu-note>
-            <p>_isStrict_ will always be *true* because a |Module| is always strict mode code.</p>
+            <p>_strict_ will always be *true* because a |Module| is always strict mode code.</p>
           </emu-note>
         </emu-clause>
 
@@ -13593,10 +13593,10 @@
         1. Set _func_.[[SourceText]] to _sourceText_.
         1. Set _func_.[[FormalParameters]] to _parameterList_.
         1. Set _func_.[[ECMAScriptCode]] to _body_.
-        1. Let _isStrict_ be IsStrict(_body_).
-        1. Set _func_.[[Strict]] to _isStrict_.
+        1. Let _strict_ be IsStrict(_body_).
+        1. Set _func_.[[Strict]] to _strict_.
         1. If _thisMode_ is ~lexical-this~, set _func_.[[ThisMode]] to ~lexical~.
-        1. Else if _isStrict_ is *true*, set _func_.[[ThisMode]] to ~strict~.
+        1. Else if _strict_ is *true*, set _func_.[[ThisMode]] to ~strict~.
         1. Else, set _func_.[[ThisMode]] to ~global~.
         1. Set _func_.[[IsClassConstructor]] to *false*.
         1. Set _func_.[[Environment]] to _env_.
