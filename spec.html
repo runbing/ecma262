@@ -46755,7 +46755,7 @@ THH:mm:ss.sss
         <h1>
           RemoveWaiters (
             _waiterList_: a WaiterList Record,
-            _c_: a non-negative integer or +&infin;,
+            _count_: a non-negative integer or +&infin;,
           ): a List of Waiter Records
         </h1>
         <dl class="header">
@@ -46763,9 +46763,9 @@ THH:mm:ss.sss
         <emu-alg>
           1. Assert: The surrounding agent is in the critical section for _waiterList_.
           1. Let _len_ be the number of elements in _waiterList_.[[Waiters]].
-          1. Let _n_ be min(_c_, _len_).
-          1. Let _waiters_ be a List whose elements are the first _n_ elements of _waiterList_.[[Waiters]].
-          1. Remove the first _n_ elements of _waiterList_.[[Waiters]].
+          1. Set _count_ to min(_count_, _len_).
+          1. Let _waiters_ be a List whose elements are the first _count_ elements of _waiterList_.[[Waiters]].
+          1. Remove the first _count_ elements of _waiterList_.[[Waiters]].
           1. Return _waiters_.
         </emu-alg>
       </emu-clause>
@@ -47220,16 +47220,16 @@ THH:mm:ss.sss
         1. Let _taRecord_ be ? ValidateIntegerTypedArray(_typedArray_, *true*).
         1. Let _byteIndexInBuffer_ be ? ValidateAtomicAccess(_taRecord_, _index_).
         1. If _count_ is *undefined*, then
-          1. Let _c_ be +∞.
+          1. Set _count_ to +∞.
         1. Else,
           1. Let _intCount_ be ? ToIntegerOrInfinity(_count_).
-          1. Let _c_ be max(_intCount_, 0).
+          1. Set _count_ to max(_intCount_, 0).
         1. Let _buffer_ be _typedArray_.[[ViewedArrayBuffer]].
         1. Let _block_ be _buffer_.[[ArrayBufferData]].
         1. If IsSharedArrayBuffer(_buffer_) is *false*, return *+0*<sub>𝔽</sub>.
         1. Let _waiterList_ be GetWaiterList(_block_, _byteIndexInBuffer_).
         1. Perform EnterCriticalSection(_waiterList_).
-        1. Let _waiters_ be RemoveWaiters(_waiterList_, _c_).
+        1. Let _waiters_ be RemoveWaiters(_waiterList_, _count_).
         1. For each element _waiterRecord_ of _waiters_, do
           1. Perform NotifyWaiter(_waiterList_, _waiterRecord_).
         1. Perform LeaveCriticalSection(_waiterList_).
