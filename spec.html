@@ -41219,19 +41219,19 @@ THH:mm:ss.sss
           1. Let _writeIndex_ be 0.
           1. Let _readIndex_ be _actualStart_ + _actualSkipCount_.
           1. Repeat, while _writeIndex_ &lt; _actualStart_,
-            1. Let _pi_ be ! ToString(𝔽(_writeIndex_)).
-            1. Let _iValue_ be ? Get(_obj_, _pi_).
-            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _pi_, _iValue_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_writeIndex_)).
+            1. Let _iValue_ be ? Get(_obj_, _propertyKey_).
+            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _propertyKey_, _iValue_).
             1. Set _writeIndex_ to _writeIndex_ + 1.
           1. For each element _item_ of _items_, do
-            1. Let _pi_ be ! ToString(𝔽(_writeIndex_)).
-            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _pi_, _item_).
+            1. Let _propertyKey_ be ! ToString(𝔽(_writeIndex_)).
+            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _propertyKey_, _item_).
             1. Set _writeIndex_ to _writeIndex_ + 1.
           1. Repeat, while _writeIndex_ &lt; _newLen_,
-            1. Let _pi_ be ! ToString(𝔽(_writeIndex_)).
+            1. Let _propertyKey_ be ! ToString(𝔽(_writeIndex_)).
             1. Let _from_ be ! ToString(𝔽(_readIndex_)).
             1. Let _fromValue_ be ? Get(_obj_, _from_).
-            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _pi_, _fromValue_).
+            1. Perform ! CreateDataPropertyOrThrow(_newArray_, _propertyKey_, _fromValue_).
             1. Set _writeIndex_ to _writeIndex_ + 1.
             1. Set _readIndex_ to _readIndex_ + 1.
           1. Return _newArray_.
