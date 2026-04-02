@@ -22622,28 +22622,28 @@
           <emu-clause id="sec-%foriniteratorprototype%.next" type="built-in function">
             <h1>%ForInIteratorPrototype%.next ( )</h1>
             <emu-alg>
-              1. Let _obj_ be the *this* value.
-              1. Assert: _obj_ is an Object.
-              1. Assert: _obj_ has all of the internal slots of a For-In Iterator instance (<emu-xref href="#sec-properties-of-for-in-iterator-instances"></emu-xref>).
-              1. Let _object_ be _obj_.[[Object]].
+              1. Let _iter_ be the *this* value.
+              1. Assert: _iter_ is an Object.
+              1. Assert: _iter_ has all of the internal slots of a For-In Iterator instance (<emu-xref href="#sec-properties-of-for-in-iterator-instances"></emu-xref>).
+              1. Let _object_ be _iter_.[[Object]].
               1. Repeat,
-                1. If _obj_.[[ObjectWasVisited]] is *false*, then
+                1. If _iter_.[[ObjectWasVisited]] is *false*, then
                   1. Let _keys_ be ? <emu-meta effects="user-code">_object_.[[OwnPropertyKeys]]()</emu-meta>.
                   1. For each element _key_ of _keys_, do
                     1. If _key_ is a String, then
-                      1. Append _key_ to _obj_.[[RemainingKeys]].
-                  1. Set _obj_.[[ObjectWasVisited]] to *true*.
-                1. Repeat, while _obj_.[[RemainingKeys]] is not empty,
-                  1. Let _r_ be the first element of _obj_.[[RemainingKeys]].
-                  1. Remove the first element from _obj_.[[RemainingKeys]].
-                  1. If _obj_.[[VisitedKeys]] does not contain _r_, then
+                      1. Append _key_ to _iter_.[[RemainingKeys]].
+                  1. Set _iter_.[[ObjectWasVisited]] to *true*.
+                1. Repeat, while _iter_.[[RemainingKeys]] is not empty,
+                  1. Let _r_ be the first element of _iter_.[[RemainingKeys]].
+                  1. Remove the first element from _iter_.[[RemainingKeys]].
+                  1. If _iter_.[[VisitedKeys]] does not contain _r_, then
                     1. Let _desc_ be ? <emu-meta effects="user-code">_object_.[[GetOwnProperty]](_r_)</emu-meta>.
                     1. If _desc_ is not *undefined*, then
-                      1. Append _r_ to _obj_.[[VisitedKeys]].
+                      1. Append _r_ to _iter_.[[VisitedKeys]].
                       1. If _desc_.[[Enumerable]] is *true*, return CreateIteratorResultObject(_r_, *false*).
                 1. Set _object_ to ? <emu-meta effects="user-code">_object_.[[GetPrototypeOf]]()</emu-meta>.
-                1. Set _obj_.[[Object]] to _object_.
-                1. Set _obj_.[[ObjectWasVisited]] to *false*.
+                1. Set _iter_.[[Object]] to _object_.
+                1. Set _iter_.[[ObjectWasVisited]] to *false*.
                 1. If _object_ is *null*, return CreateIteratorResultObject(*undefined*, *true*).
             </emu-alg>
           </emu-clause>
