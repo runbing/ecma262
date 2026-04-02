@@ -27526,7 +27526,7 @@
           </emu-figure>
           <p>Loading and linking happen as before, and all modules end up with [[Status]] set to ~linked~.</p>
 
-          <p>Calling _A_.Evaluate() calls InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to ~evaluating~. Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~evaluating~. At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called and we call _D_.ExecuteModule with a new PromiseCapability tracking the asynchronous execution of _D_. We unwind back to the InnerModuleEvaluation on _B_, setting _B_.[[PendingAsyncDependencies]] to 1 and _B_.[[AsyncEvaluationOrder]] to 1. We unwind back to the original InnerModuleEvaluation on _A_, setting _A_.[[PendingAsyncDependencies]] to 1. In the next iteration of the loop over _A_'s dependencies, we call InnerModuleEvaluation on _C_ and thus on _D_ (again a no-op) and _outerEnv_. As _outerEnv_ has no dependencies and is not part of a cycle, we call ExecuteAsyncModule(_outerEnv_) in the same manner as _D_ and _outerEnv_ is immediately removed from the stack. We unwind once more to the InnerModuleEvaluation on _C_, setting _C_.[[AsyncEvaluationOrder]] to 3. Now we finish the loop over _A_'s dependencies, set _A_.[[AsyncEvaluationOrder]] to 4, and remove the entire strongly connected component from the stack, transitioning all of the modules to ~evaluating-async~ at once. At this point, the fields of the modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-1"></emu-xref>.</p>
+          <p>Calling _A_.Evaluate() calls InnerModuleEvaluation on _A_, _B_, and _D_, which all transition to ~evaluating~. Then InnerModuleEvaluation is called on _A_ again, which is a no-op because it is already ~evaluating~. At this point, _D_.[[PendingAsyncDependencies]] is 0, so ExecuteAsyncModule(_D_) is called and we call _D_.ExecuteModule with a new PromiseCapability tracking the asynchronous execution of _D_. We unwind back to the InnerModuleEvaluation on _B_, setting _B_.[[PendingAsyncDependencies]] to 1 and _B_.[[AsyncEvaluationOrder]] to 1. We unwind back to the original InnerModuleEvaluation on _A_, setting _A_.[[PendingAsyncDependencies]] to 1. In the next iteration of the loop over _A_'s dependencies, we call InnerModuleEvaluation on _C_ and thus on _D_ (again a no-op) and _E_. As _E_ has no dependencies and is not part of a cycle, we call ExecuteAsyncModule(_E_) in the same manner as _D_ and _E_ is immediately removed from the stack. We unwind once more to the InnerModuleEvaluation on _C_, setting _C_.[[AsyncEvaluationOrder]] to 3. Now we finish the loop over _A_'s dependencies, set _A_.[[AsyncEvaluationOrder]] to 4, and remove the entire strongly connected component from the stack, transitioning all of the modules to ~evaluating-async~ at once. At this point, the fields of the modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-1"></emu-xref>.</p>
 
           <emu-table id="table-module-graph-cycle-async-fields-1" caption="Module fields after the initial Evaluate() call">
             <table>
@@ -27542,7 +27542,7 @@
                   <th>_B_</th>
                   <th>_C_</th>
                   <th>_D_</th>
-                  <th>_outerEnv_</th>
+                  <th>_E_</th>
                 </tr>
               </thead>
               <tr>
@@ -27581,16 +27581,16 @@
                 <th>[[PendingAsyncDependencies]]</th>
                 <td>2 (_B_ and _C_)</td>
                 <td>1 (_D_)</td>
-                <td>2 (_D_ and _outerEnv_)</td>
+                <td>2 (_D_ and _E_)</td>
                 <td>0</td>
                 <td>0</td>
               </tr>
             </table>
           </emu-table>
 
-          <p>Let us assume that _outerEnv_ finishes executing first. When that happens, AsyncModuleExecutionFulfilled is called, _outerEnv_.[[Status]] is set to ~evaluated~ and _C_.[[PendingAsyncDependencies]] is decremented to become 1. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-2"></emu-xref>.</p>
+          <p>Let us assume that _E_ finishes executing first. When that happens, AsyncModuleExecutionFulfilled is called, _E_.[[Status]] is set to ~evaluated~ and _C_.[[PendingAsyncDependencies]] is decremented to become 1. The fields of the updated modules are as given in <emu-xref href="#table-module-graph-cycle-async-fields-2"></emu-xref>.</p>
 
-          <emu-table id="table-module-graph-cycle-async-fields-2" caption="Module fields after module _outerEnv_ finishes executing">
+          <emu-table id="table-module-graph-cycle-async-fields-2" caption="Module fields after module _E_ finishes executing">
             <table>
               <thead>
                 <tr>
@@ -27601,7 +27601,7 @@
                     <span class="row">Module</span>
                   </th>
                   <th>_C_</th>
-                  <th>_outerEnv_</th>
+                  <th>_E_</th>
                 </tr>
               </thead>
               <tr>
