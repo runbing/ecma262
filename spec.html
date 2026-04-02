@@ -53120,16 +53120,16 @@ THH:mm:ss.sss
           1. Repeat, while _k_ &lt; _len_,
             1. Let _codeUnit_ be the code unit at index _k_ within _string_.
             1. If _unescapedSet_ contains _codeUnit_, then
-              1. Let _set_ be _codeUnit_.
+              1. Let _str_ be _codeUnit_.
             1. Else,
               1. Let _n_ be the numeric value of _codeUnit_.
               1. If _n_ &lt; 256, then
                 1. Let _hex_ be the String representation of _n_, formatted as an uppercase hexadecimal number.
-                1. Let _set_ be the string-concatenation of *"%"* and StringPad(_hex_, 2, *"0"*, ~start~).
+                1. Let _str_ be the string-concatenation of *"%"* and StringPad(_hex_, 2, *"0"*, ~start~).
               1. Else,
                 1. Let _hex_ be the String representation of _n_, formatted as an uppercase hexadecimal number.
-                1. Let _set_ be the string-concatenation of *"%u"* and StringPad(_hex_, 4, *"0"*, ~start~).
-            1. Set _result_ to the string-concatenation of _result_ and _set_.
+                1. Let _str_ be the string-concatenation of *"%u"* and StringPad(_hex_, 4, *"0"*, ~start~).
+            1. Set _result_ to the string-concatenation of _result_ and _str_.
             1. Set _k_ to _k_ + 1.
           1. Return _result_.
         </emu-alg>
@@ -53181,8 +53181,8 @@ THH:mm:ss.sss
         <emu-alg>
           1. Let _obj_ be the *this* value.
           1. Perform ? RequireObjectCoercible(_obj_).
-          1. Let _set_ be ? ToString(_obj_).
-          1. Let _size_ be the length of _set_.
+          1. Let _str_ be ? ToString(_obj_).
+          1. Let _size_ be the length of _str_.
           1. Let _intStart_ be ? ToIntegerOrInfinity(_start_).
           1. If _intStart_ = -∞, set _intStart_ to 0.
           1. Else if _intStart_ &lt; 0, set _intStart_ to max(_size_ + _intStart_, 0).
@@ -53190,7 +53190,7 @@ THH:mm:ss.sss
           1. If _length_ is *undefined*, let _intLength_ be _size_; else let _intLength_ be ? ToIntegerOrInfinity(_length_).
           1. Set _intLength_ to the result of clamping _intLength_ between 0 and _size_.
           1. Let _intEnd_ be min(_intStart_ + _intLength_, _size_).
-          1. Return the substring of _set_ from _intStart_ to _intEnd_.
+          1. Return the substring of _str_ from _intStart_ to _intEnd_.
         </emu-alg>
         <emu-note>
           <p>This method is intentionally generic; it does not require that its *this* value be a String object. Therefore it can be transferred to other kinds of objects for use as a method.</p>
@@ -53201,8 +53201,8 @@ THH:mm:ss.sss
         <h1>String.prototype.anchor ( _name_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"a"*, *"name"*, _name_).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"a"*, *"name"*, _name_).
         </emu-alg>
 
         <emu-annex id="sec-createhtml" type="abstract operation">
@@ -53218,7 +53218,7 @@ THH:mm:ss.sss
           </dl>
           <emu-alg>
             1. Perform ? RequireObjectCoercible(_string_).
-            1. Let _set_ be ? ToString(_string_).
+            1. Let _str_ be ? ToString(_string_).
             1. Let _p1_ be the string-concatenation of *"&lt;"* and _tag_.
             1. If _attribute_ is not the empty String, then
               1. Let _value_ be ? ToString(_value_).
@@ -53232,7 +53232,7 @@ THH:mm:ss.sss
                 * _escapedV_
                 * the code unit 0x0022 (QUOTATION MARK)
             1. Let _p2_ be the string-concatenation of _p1_ and *">"*.
-            1. Let _p3_ be the string-concatenation of _p2_ and _set_.
+            1. Let _p3_ be the string-concatenation of _p2_ and _str_.
             1. Let _p4_ be the string-concatenation of _p3_, *"&lt;/"*, _tag_, and *">"*.
             1. Return _p4_.
           </emu-alg>
@@ -53243,8 +53243,8 @@ THH:mm:ss.sss
         <h1>String.prototype.big ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"big"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"big"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53252,8 +53252,8 @@ THH:mm:ss.sss
         <h1>String.prototype.blink ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"blink"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"blink"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53261,8 +53261,8 @@ THH:mm:ss.sss
         <h1>String.prototype.bold ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"b"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"b"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53270,8 +53270,8 @@ THH:mm:ss.sss
         <h1>String.prototype.fixed ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"tt"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"tt"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53279,8 +53279,8 @@ THH:mm:ss.sss
         <h1>String.prototype.fontcolor ( _colour_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"font"*, *"color"*, _colour_).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"font"*, *"color"*, _colour_).
         </emu-alg>
       </emu-annex>
 
@@ -53288,8 +53288,8 @@ THH:mm:ss.sss
         <h1>String.prototype.fontsize ( _size_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"font"*, *"size"*, _size_).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"font"*, *"size"*, _size_).
         </emu-alg>
       </emu-annex>
 
@@ -53297,8 +53297,8 @@ THH:mm:ss.sss
         <h1>String.prototype.italics ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"i"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"i"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53306,8 +53306,8 @@ THH:mm:ss.sss
         <h1>String.prototype.link ( _url_ )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"a"*, *"href"*, _url_).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"a"*, *"href"*, _url_).
         </emu-alg>
       </emu-annex>
 
@@ -53315,8 +53315,8 @@ THH:mm:ss.sss
         <h1>String.prototype.small ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"small"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"small"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53324,8 +53324,8 @@ THH:mm:ss.sss
         <h1>String.prototype.strike ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"strike"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"strike"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53333,8 +53333,8 @@ THH:mm:ss.sss
         <h1>String.prototype.sub ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"sub"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"sub"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
@@ -53342,8 +53342,8 @@ THH:mm:ss.sss
         <h1>String.prototype.sup ( )</h1>
         <p>This method performs the following steps when called:</p>
         <emu-alg>
-          1. Let _set_ be the *this* value.
-          1. Return ? CreateHTML(_set_, *"sup"*, *""*, *""*).
+          1. Let _str_ be the *this* value.
+          1. Return ? CreateHTML(_str_, *"sup"*, *""*, *""*).
         </emu-alg>
       </emu-annex>
 
