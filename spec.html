@@ -39168,14 +39168,14 @@ THH:mm:ss.sss
             1. Let _position_ be ? ToIntegerOrInfinity(? Get(_result_, *"index"*)).
             1. Set _position_ to the result of clamping _position_ between 0 and _lengthS_.
             1. Let _captures_ be a new empty List.
-            1. Let _captureIndex_ be 1.
-            1. Repeat, while _captureIndex_ ≤ _nCaptures_,
-              1. Let _capN_ be ? Get(_result_, ! ToString(𝔽(_captureIndex_))).
+            1. Let _captureNumber_ be 1.
+            1. Repeat, while _captureNumber_ ≤ _nCaptures_,
+              1. Let _capN_ be ? Get(_result_, ! ToString(𝔽(_captureNumber_))).
               1. If _capN_ is not *undefined*, then
                 1. Set _capN_ to ? ToString(_capN_).
               1. Append _capN_ to _captures_.
-              1. NOTE: When _captureIndex_ = 1, the preceding step puts the first element into _captures_ (at index 0). More generally, the _captureIndex_<sup>th</sup> capture (the characters captured by the _captureIndex_<sup>th</sup> set of capturing parentheses) is at _captures_[_captureIndex_ - 1].
-              1. Set _captureIndex_ to _captureIndex_ + 1.
+              1. NOTE: When _captureNumber_ = 1, the preceding step puts the first element into _captures_ (at index 0). More generally, the _captureNumber_<sup>th</sup> capture (the characters captured by the _captureNumber_<sup>th</sup> set of capturing parentheses) is at _captures_[_captureNumber_ - 1].
+              1. Set _captureNumber_ to _captureNumber_ + 1.
             1. Let _namedCaptures_ be ? Get(_result_, *"groups"*).
             1. If _functionalReplace_ is *true*, then
               1. Let _replacerArgs_ be the list-concatenation of « _matched_ », _captures_, and « 𝔽(_position_), _str_ ».
