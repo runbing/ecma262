@@ -3244,19 +3244,19 @@
             The normal return type is either Object or Null.
           </li>
           <li>
-            If target is non-extensible, and [[GetPrototypeOf]] returns a value _value_, then any future calls to [[GetPrototypeOf]] should return the SameValue as _value_.
+            If target is non-extensible, and [[GetPrototypeOf]] returns a value _proto_, then any future calls to [[GetPrototypeOf]] should return the SameValue as _proto_.
           </li>
         </ul>
         <emu-note>
           <p>An object's prototype chain should have finite length (that is, starting from any object, recursively applying the [[GetPrototypeOf]] internal method to its result should eventually lead to the value *null*). However, this requirement is not enforceable as an object level invariant if the prototype chain includes any exotic objects that do not use the ordinary object definition of [[GetPrototypeOf]]. Such a circular prototype chain may result in infinite loops when accessing object properties.</p>
         </emu-note>
-        <h2>[[SetPrototypeOf]] ( _value_ )</h2>
+        <h2>[[SetPrototypeOf]] ( _proto_ )</h2>
         <ul>
           <li>
             The normal return type is Boolean.
           </li>
           <li>
-            If target is non-extensible, [[SetPrototypeOf]] must return *false*, unless _value_ is the SameValue as the target's observed [[GetPrototypeOf]] value.
+            If target is non-extensible, [[SetPrototypeOf]] must return *false*, unless _proto_ is the SameValue as the target's observed [[GetPrototypeOf]] value.
           </li>
         </ul>
         <h2>[[IsExtensible]] ( )</h2>
